@@ -353,7 +353,7 @@
 			background-size: contain;
 			background-repeat: no-repeat;
 			background-position: center;
-			background-image: url(assets/ui/logo.png);
+			background-image: url(/assets/ui/logo.png);
 		}
 	}
 
@@ -438,7 +438,7 @@
 							position: relative;
 							width: 100%;
 							height: 100%;
-							background-image: url(assets/ui/blue-hp-bar.png);
+							background-image: url(/assets/ui/blue-hp-bar.png);
 							background-repeat: no-repeat;
 							background-position: left;
 							background-size: cover;
@@ -466,7 +466,7 @@
 							position: relative;
 							width: 100%;
 							height: 100%;
-							background-image: url(assets/ui/red-hp-bar.png);
+							background-image: url(/assets/ui/red-hp-bar.png);
 							background-repeat: no-repeat;
 							background-position: right;
 							background-size: cover;
