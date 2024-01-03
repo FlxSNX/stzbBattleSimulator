@@ -163,6 +163,9 @@ export class BattleManger {
                             e.skipAttackByAttackLimit();
                         }else{
                             // 执行普攻
+                            e.BEFORE_ATK.forEach(f => {
+                                f();
+                            })
                             e.callAttack();
                             if(this.Over)return;
                         }

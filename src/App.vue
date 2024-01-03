@@ -93,7 +93,7 @@
 						int: 0,
 						spd: 0
 					},
-					equipskill: [1005,1002]
+					equipskill: [1002,1006]
 				},
 				{
 					id: 1003,//武将Id
@@ -115,7 +115,7 @@
 						int: 0,
 						spd: 0
 					},
-					equipskill: [1005,1002]
+					equipskill: [1002,1006]
 				},
 			],
 
@@ -202,12 +202,12 @@
 			<div class="card-area">
 				<div class="card-box">
 					<div class="card" v-for="item in battleinfo.BlueTeam?.hero">
-						<img :src="`/src/assets/card/${item.Id}.png`" class="card-img" v-if="item && item.Arms > 0">
-						<img :src="`/src/assets/card/${item.Id}.png`" class="card-img gray" v-else>
+						<img :src="`/assets/card/${item.Id}.png`" class="card-img" v-if="item && item.Arms > 0">
+						<img :src="`/assets/card/${item.Id}.png`" class="card-img gray" v-else>
 
-						<img src="/src/assets/ui/card.png" class="card-border">
+						<img src="/assets/ui/card.png" class="card-border">
 						<div class="camp">
-							<img :src="`/src/assets/ui/camp${item.Camp}.png`">
+							<img :src="`/assets/ui/camp${item.Camp}.png`">
 						</div>
 						<div class="hero-name">
 							{{ item.Name }}
@@ -225,11 +225,11 @@
 				</div>
 				<div class="card-box">
 					<div class="card" v-for="item in battleinfo.RedTeam?.hero">
-						<img :src="`/src/assets/card/${item.Id}.png`" class="card-img" v-if="item && item.Arms > 0">
-						<img :src="`/src/assets/card/${item.Id}.png`" class="card-img gray" v-else>
-						<img src="/src/assets/ui/card.png" class="card-border">
+						<img :src="`/assets/card/${item.Id}.png`" class="card-img" v-if="item && item.Arms > 0">
+						<img :src="`/assets/card/${item.Id}.png`" class="card-img gray" v-else>
+						<img src="/assets/ui/card.png" class="card-border">
 						<div class="camp">
-							<img :src="`/src/assets/ui/camp${item.Camp}.png`">
+							<img :src="`/assets/ui/camp${item.Camp}.png`">
 						</div>
 						<div class="hero-name">
 							{{ item.Name }}
@@ -278,11 +278,11 @@
 			<div class="card-area">
 				<div class="card-box">
 					<div class="card" v-for="item in team.blue">
-						<img :src="`/src/assets/card/${item.id}.png`" class="card-img" v-if="item.id != null">
+						<img :src="`/assets/card/${item.id}.png`" class="card-img" v-if="item.id != null">
 
-						<img src="/src/assets/ui/card.png" class="card-border">
+						<img src="/assets/ui/card.png" class="card-border">
 						<div class="camp">
-							<img :src="`/src/assets/ui/camp${HEROS[item.id] ? HEROS[item.id].camp : 5}.png`">
+							<img :src="`/assets/ui/camp${HEROS[item.id] ? HEROS[item.id].camp : 5}.png`">
 						</div>
 						<div class="hero-name">
 							{{ HEROS[item.id]?.name }}
@@ -300,11 +300,11 @@
 				</div>
 				<div class="card-box">
 					<div class="card" v-for="item in team.red">
-						<img :src="`/src/assets/card/${item.id}.png`" class="card-img" v-if="item.id != null">
+						<img :src="`/assets/card/${item.id}.png`" class="card-img" v-if="item.id != null">
 
-						<img src="/src/assets/ui/card.png" class="card-border">
+						<img src="/assets/ui/card.png" class="card-border">
 						<div class="camp">
-							<img :src="`/src/assets/ui/camp${HEROS[item.id] ? HEROS[item.id].camp : 5}.png`">
+							<img :src="`/assets/ui/camp${HEROS[item.id] ? HEROS[item.id].camp : 5}.png`">
 						</div>
 						<div class="hero-name">
 							{{ HEROS[item.id]?.name }}

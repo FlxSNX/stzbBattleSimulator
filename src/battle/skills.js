@@ -239,4 +239,49 @@ export const __SKILLS__ = {
             });
         },
     },
+    1008: {
+        name: "其疾如风",
+        desc: "战斗开始后前3回合，使我军全体速度属性提高41(受谋略属性影响)，并使其每回合有70%的几率可以进行两次普通攻击",
+        level: "S",
+        type: 1,
+        target: 1,
+        target_type: "team",
+        limit: 0,
+        rate: -1,
+        damage_type: 0,
+        damage_rate: 0,
+        damage_grow_rate: 0.6,
+        damage_grow_attr: 'spd',
+        callskill: (self) => {
+            self.Manger.Record.pushRecord(self,'发动【其疾如风】')
+            let team;
+
+            if(self.BattleCamp == 'red'){
+                team = self.Manger.RedTeam.hero;
+            }else{
+                team = self.Manger.BlueTeam.hero;
+            }
+
+            team.forEach(e => {
+                e.BEFORE_ATK.push(() =>{
+                    if(self.Manger.Round >= 1 && self.Manger.Round <= 3){
+                        if(getRandomBool(70/100)){
+                            if(e.State.doubleAttack.rounds <= 0){
+                                e.State.doubleAttack = {
+                                    rounds:1,
+                                    from:{
+                                        hero: self,
+                                        skill: 1008
+                                    }
+                                }
+                            }
+                        }else{
+                            self.Manger.Record.pushRecord(e,'的其疾如风未生效',0)
+                        }
+                    }
+                });
+                self.Manger.Record.pushRecord(e,'的连击(预备)效果已施加',1)
+            });
+        },
+    },
 }

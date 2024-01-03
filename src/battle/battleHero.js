@@ -28,6 +28,8 @@ export class BattleHero {
     constructor(config,battlecamp,Manger){
         // 受击时执行的效果
         this.ON_HURT = [];
+        // 攻击前执行的效果
+        this.BEFORE_ATK = [];
 
         // 一些效果已执行的标记
         this.StateFlag = {

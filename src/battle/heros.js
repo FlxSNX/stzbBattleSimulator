@@ -66,7 +66,7 @@ export const __HEROS__ = {
         cost: 35,
         arm: 103,
         limit: 3,
-        skill: 1007,
+        skill: 1008,
         attrs: {
             atk: 80.00,
             def: 81.00,
