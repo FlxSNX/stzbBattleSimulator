@@ -11,6 +11,16 @@ body {
 	src: url(/assets/FZLanTingHei_L_GBK.TTF);
 }
 
+@font-face {
+	font-family: "FZLBJW";
+	src: url(/assets/FZLBJW.ttf);
+}
+
+@font-face {
+	font-family: "FZLBJW_B";
+	src: url(/assets/FZLBJW_B.ttf);
+}
+
 #app{
 	width: 100vw;
 	height: 100vh;

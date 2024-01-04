@@ -66,7 +66,7 @@ export const __HEROS__ = {
         cost: 35,
         arm: 103,
         limit: 3,
-        skill: 1008,
+        skill: 1007,
         attrs: {
             atk: 80.00,
             def: 81.00,
@@ -82,4 +82,27 @@ export const __HEROS__ = {
             des: 1.73
         }
     },
+    1004:{
+        name: "张辽", //名称
+        camp: 2, //阵营 1=蜀 2=魏 3=吴 4=汉 5=群 6=晋
+        star: 5, //星级
+        cost: 35, //统率
+        arm: 102, //兵种
+        limit: 3, //攻击距离
+        skill: 1008, //初始技能
+        attrs: { //初始属性
+            atk: 80.00,
+            def: 81.00,
+            int: 80.00,
+            spd: 38.00,
+            des: 18.00
+        },
+        attrs_grow: { //属性成长率
+            atk: 1.54,
+            def: 1.83,
+            int: 1.28,
+            spd: 0.92,
+            des: 1.73
+        }
+    }
 }
