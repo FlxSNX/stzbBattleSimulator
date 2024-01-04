@@ -166,7 +166,7 @@ const testfunc = () => {
 </script>
 
 <template>
-	<TeamConfig />
+	<TeamConfig v-show="false"/>
 	<div class="header">
 		<div class="logo"></div>
 	</div>
@@ -353,6 +353,7 @@ const testfunc = () => {
 			<!-- <button @click="testfunc">Debug</button> -->
 
 			<div class="stbtn-1" @click="testfunc">DeBug</div>
+			<div class="stbtn-1" @click="testfunc">开始战斗</div>
 			<div class="stbtn-1">统计</div>
 			<div class="stbtn-1">配置队伍</div>
 		</div>
