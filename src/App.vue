@@ -7,78 +7,153 @@ import TeamConfig from './components/TeamConfg.vue';
 
 const record = ref([]);
 const battleinfo = ref({});
+const showTeamConfig = ref(false);
+
+// const team = {
+// 	blue: [
+// 		{
+// 			id: 0,//武将Id
+// 			level: 1,//武将等级
+// 			extraAttrsAlloc: {//属性分配
+// 				atk: 0,
+// 				def: 0,
+// 				int: 0,
+// 				spd: 0
+// 			},
+// 			equipskill: [0, 0]
+// 		},
+// 		{
+// 			id: 0,//武将Id
+// 			level: 1,//武将等级
+// 			extraAttrsAlloc: {//属性分配
+// 				atk: 0,
+// 				def: 0,
+// 				int: 0,
+// 				spd: 0
+// 			},
+// 			equipskill: [0, 0]
+// 		},
+// 		{
+// 			id: 0,//武将Id
+// 			level: 40,//武将等级
+// 			extraAttrsAlloc: {//属性分配
+// 				atk: 0,
+// 				def: 0,
+// 				int: 0,
+// 				spd: 0
+// 			},
+// 			equipskill: [0, 0]
+// 		}
+// 	],
+
+// 	red: [
+// 		{
+// 			id: 0,//武将Id
+// 			level: 1,//武将等级
+// 			extraAttrsAlloc: {//属性分配
+// 				atk: 0,
+// 				def: 0,
+// 				int: 0,
+// 				spd: 0
+// 			},
+// 			equipskill: [0, 0]
+// 		},
+// 		{
+// 			id: 0,//武将Id
+// 			level: 1,//武将等级
+// 			extraAttrsAlloc: {//属性分配
+// 				atk: 0,
+// 				def: 0,
+// 				int: 0,
+// 				spd: 0
+// 			},
+// 			equipskill: [0, 0]
+// 		},
+// 		{
+// 			id: 0,//武将Id
+// 			level: 1,//武将等级
+// 			extraAttrsAlloc: {//属性分配
+// 				atk: 0,
+// 				def: 0,
+// 				int: 0,
+// 				spd: 0
+// 			},
+// 			equipskill: [0, 0]
+// 		}
+// 	]
+// }
 
 const team = {
 	blue: [
 		{
-			id: 0,//武将Id
-			level: 1,//武将等级
+			id: 1001,//武将Id
+			level: 40,//武将等级
 			extraAttrsAlloc: {//属性分配
-				atk: 0,
+				atk: 90,
 				def: 0,
 				int: 0,
 				spd: 0
 			},
-			equipskill: [0, 0]
+			equipskill: [1002, 1006]
 		},
 		{
-			id: 0,//武将Id
-			level: 1,//武将等级
-			extraAttrsAlloc: {//属性分配
-				atk: 0,
-				def: 0,
-				int: 0,
-				spd: 0
-			},
-			equipskill: [0, 0]
-		},
-		{
-			id: 0,//武将Id
+			id: 1004,//武将Id
 			level: 40,//武将等级
 			extraAttrsAlloc: {//属性分配
 				atk: 0,
 				def: 0,
+				int: 90,
+				spd: 0
+			},
+			equipskill: []
+		},
+		{
+			id: 1001,//武将Id
+			level: 40,//武将等级
+			extraAttrsAlloc: {//属性分配
+				atk: 90,
+				def: 0,
 				int: 0,
 				spd: 0
 			},
-			equipskill: [0, 0]
-		}
+			equipskill: [1002, 1006]
+		},
 	],
 
 	red: [
 		{
-			id: 0,//武将Id
-			level: 1,//武将等级
+			id: 1002,//武将Id
+			level: 40,//武将等级
 			extraAttrsAlloc: {//属性分配
-				atk: 0,
+				atk: 90,
 				def: 0,
 				int: 0,
 				spd: 0
 			},
-			equipskill: [0, 0]
+			equipskill: [1002, 1006]
 		},
 		{
-			id: 0,//武将Id
-			level: 1,//武将等级
+			id: 1002,//武将Id
+			level: 40,//武将等级
 			extraAttrsAlloc: {//属性分配
-				atk: 0,
+				atk: 90,
 				def: 0,
 				int: 0,
 				spd: 0
 			},
-			equipskill: [0, 0]
+			equipskill: [1002, 1006]
 		},
 		{
-			id: 0,//武将Id
-			level: 1,//武将等级
+			id: 1002,//武将Id
+			level: 40,//武将等级
 			extraAttrsAlloc: {//属性分配
-				atk: 0,
+				atk: 90,
 				def: 0,
 				int: 0,
 				spd: 0
 			},
-			equipskill: [0, 0]
-		}
+			equipskill: [1002, 1006]
+		},
 	]
 }
 
@@ -166,7 +241,7 @@ const testfunc = () => {
 </script>
 
 <template>
-	<TeamConfig v-show="false"/>
+	<TeamConfig v-model:show="showTeamConfig" />
 	<div class="header">
 		<div class="logo"></div>
 	</div>
@@ -355,7 +430,7 @@ const testfunc = () => {
 			<div class="stbtn-1" @click="testfunc">DeBug</div>
 			<div class="stbtn-1" @click="testfunc">开始战斗</div>
 			<div class="stbtn-1">统计</div>
-			<div class="stbtn-1">配置队伍</div>
+			<div class="stbtn-1" @click="showTeamConfig = true">配置队伍</div>
 		</div>
 		<div class="record">
 			<div class="record-item" v-for="e in record">

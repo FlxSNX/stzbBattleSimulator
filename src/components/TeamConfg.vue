@@ -1,26 +1,64 @@
 <script setup>
-
+    import { defineProps,defineEmits,ref } from 'vue'
+    const props = defineProps(['show']);
+    const emit = defineEmits(['update:show']);
+    const camp = ref('blue');
+    const testt = ref({
+        red : {
+            name:'马云潞'
+        },
+        blue : {
+            name:'木鹿大王'
+        },
+    })
+    console.log(props);
 </script>
 
 <template>
-    <div class="team-config-warp">
+    <div class="team-config-warp" v-show="props.show">
         <div class="box">
             <div class="header">
                 <div class="title">阵容配置</div>
-                <div class="close"></div>
+                <div class="close" @click="emit('update:show', false)"></div>
             </div>
             <div class="tabs">
-                <div class="click">我方</div>
+                <div :class="[{'click': camp == 'blue'}]" @click="camp = 'blue'">我方</div>
                 <div></div>
-                <div>敌方</div>
+                <div :class="[{'click': camp == 'red'}]" @click="camp = 'red'">敌方</div>
             </div>
             <div class="h"></div>
             <div class="cards">
                 <div class="card">
                     <div class="posname">大营</div>
-                    <div class="name">未配置</div>
+                    <div class="name">{{ testt[camp].name }}</div>
                     <div class="image">
                         <img src="/assets/card/0.png">
+                    </div>
+                    <div class="skills">
+                        <div class="skill">
+                            <div class="skill-icon">
+                                <div class="skill-type"></div>
+                            </div>
+                            <div class="skill-name">
+                                未配置
+                            </div>
+                        </div>
+                        <div class="skill">
+                            <div class="skill-icon a">
+                                <div class="skill-type bd"></div>
+                            </div>
+                            <div class="skill-name">
+                                兵无常势
+                            </div>
+                        </div>
+                        <div class="skill">
+                            <div class="skill-icon">
+                                <div class="skill-type"></div>
+                            </div>
+                            <div class="skill-name">
+                                未配置
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="card">
@@ -29,12 +67,64 @@
                     <div class="image">
                         <img src="/assets/card/0.png">
                     </div>
+                    <div class="skills">
+                        <div class="skill">
+                            <div class="skill-icon">
+                                <div class="skill-type"></div>
+                            </div>
+                            <div class="skill-name">
+                                 未配置
+                            </div>
+                        </div>
+                        <div class="skill">
+                            <div class="skill-icon">
+                                <div class="skill-type"></div>
+                            </div>
+                            <div class="skill-name">
+                                未配置
+                            </div>
+                        </div>
+                        <div class="skill">
+                            <div class="skill-icon">
+                                <div class="skill-type"></div>
+                            </div>
+                            <div class="skill-name">
+                                未配置
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="card">
                     <div class="posname">前锋</div>
                     <div class="name">未配置</div>
                     <div class="image">
                         <img src="/assets/card/0.png">
+                    </div>
+                    <div class="skills">
+                        <div class="skill">
+                            <div class="skill-icon">
+                                <div class="skill-type"></div>
+                            </div>
+                            <div class="skill-name">
+                                 未配置
+                            </div>
+                        </div>
+                        <div class="skill">
+                            <div class="skill-icon">
+                                <div class="skill-type"></div>
+                            </div>
+                            <div class="skill-name">
+                                未配置
+                            </div>
+                        </div>
+                        <div class="skill">
+                            <div class="skill-icon">
+                                <div class="skill-type"></div>
+                            </div>
+                            <div class="skill-name">
+                                未配置
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -152,7 +242,7 @@
             align-items: center;
             padding: 1vw 0 1vw 1vw;
 
-            &>.card{
+            &>.card {
                 position: relative;
                 display: flex;
                 background-color: rgba(0, 0, 0, .3);
@@ -160,61 +250,179 @@
                 width: 90%;
                 font-family: "FZLBJW_B";
 
-                &>.posname{
+                &>.posname {
                     position: absolute;
                     color: #8f8f8f;
                     font-size: 1.4vw;
                     width: 1.4vw;
                     left: -2.1vw;
                     top: .1vw;
-                    background-color: rgba(41,43,43);
+                    background-color: rgba(41, 43, 43);
                     padding: .2vw;
                     border-radius: 2px;
                 }
 
-                &>.name{
+                &>.name {
                     color: #e4dd9e;
                     font-size: 1.25vw;
                     background: rgba(0, 0, 0, .7);
                     width: 1.25vw;
-                    background-color: rgba(41,43,43);
+                    background-color: rgba(41, 43, 43);
                     padding: .2vw;
 
-                    &.shu{
-                        background: linear-gradient(140deg, rgb(26, 175, 37,.4) 10%, hsla(0,0%,100%,0));
+                    &.shu {
+                        background: linear-gradient(140deg, rgb(26, 175, 37, .4) 10%, hsla(0, 0%, 100%, 0));
                     }
 
-                    &.wu{
-                        background: linear-gradient(140deg, rgb(200, 9, 9,.4) 10%, hsla(0,0%,100%,0));
+                    &.wu {
+                        background: linear-gradient(140deg, rgb(200, 9, 9, .4) 10%, hsla(0, 0%, 100%, 0));
                     }
 
-                    &.wei{
-                        background: linear-gradient(140deg, rgb(10, 50, 200,.4) 10%, hsla(0,0%,100%,0));
+                    &.wei {
+                        background: linear-gradient(140deg, rgb(10, 50, 200, .4) 10%, hsla(0, 0%, 100%, 0));
                     }
 
-                    &.han{
-                        background: linear-gradient(140deg, rgb(160, 0, 200,.4) 10%, hsla(0,0%,100%,0));
+                    &.han {
+                        background: linear-gradient(140deg, rgb(160, 0, 200, .4) 10%, hsla(0, 0%, 100%, 0));
                     }
 
-                    &.jin{
-                        background: linear-gradient(140deg, rgb(0, 80, 90,.4) 10%, hsla(0,0%,100%,0));
+                    &.jin {
+                        background: linear-gradient(140deg, rgb(0, 80, 90, .4) 10%, hsla(0, 0%, 100%, 0));
                     }
 
-                    &.qun{
-                        background: linear-gradient(140deg, rgb(169,169,169,.4) 10%, hsla(0,0%,100%,0));
+                    &.qun {
+                        background: linear-gradient(140deg, rgb(169, 169, 169, .4) 10%, hsla(0, 0%, 100%, 0));
                     }
                 }
 
-                &>.image{
+                &>.image {
                     position: relative;
                     width: 31%;
-                    
-                    &>img{
+                    cursor: pointer;
+
+                    &>img {
                         position: absolute;
                         width: 100%;
                         height: 100%;
                         object-fit: cover;
                         object-position: 0 -5vh;
+                    }
+                }
+
+                &>.skills {
+                    position: relative;
+                    display: flex;
+                    width: 45%;
+                    /* background-color: aqua; */
+                    justify-content: space-evenly;
+                    /* align-items: center; */
+
+                    &>:nth-child(1)>.skill-icon>.skill-type {
+                        background-image: url(/assets/ui/skill_none.png);
+                    }
+
+                    &>:nth-child(2)>.skill-icon>.skill-type,
+                    &>:nth-child(3)>.skill-icon>.skill-type {
+                        background-image: url(/assets/ui/skill_add.png);
+                    }
+
+                    &>.skill {
+                        display: flex;
+                        position: relative;
+                        width: 25%;
+                        height: 100%;
+                        /* background-image: url(/assets/ui/skill_s.png); */
+                        background-repeat: no-repeat;
+                        /* background-position: 10vw 10vw; */
+                        background-position: center;
+                        background-size: contain;
+                        align-items: center;
+                        /* justify-content: center; */
+                        transform: scale(.9);
+                        cursor: pointer;
+                        flex-direction: column;
+                        margin-top: -.3vw;
+
+                        &>.skill-icon {
+                            display: flex;
+                            position: relative;
+                            width: 100%;
+                            height: 80%;
+                            /* background-image: url(/assets/ui/skill_s.png); */
+                            background-repeat: no-repeat;
+                            /* background-position: 10vw 10vw; */
+                            background-position: center;
+                            background-size: contain;
+                            align-items: center;
+                            justify-content: center;
+                            /* transform: scale(.8); */
+                            cursor: pointer;
+
+                            &>.skill-type {
+                                width: 100%;
+                                height: 100%;
+                                background-repeat: no-repeat;
+                                background-position: center;
+                                background-size: contain;
+                                transform: scale(.89);
+
+                                &.zh {
+                                    background-image: url(/assets/ui/skill_zh.png);
+                                }
+
+                                &.bd {
+                                    background-image: url(/assets/ui/skill_bd.png);
+                                }
+
+                                &.zj {
+                                    background-image: url(/assets/ui/skill_zj.png);
+                                }
+
+                                &.zd {
+                                    background-image: url(/assets/ui/skill_zd.png);
+                                }
+                            }
+
+                            &.s {
+                                background-image: url(/assets/ui/skill_s.png);
+                                & ~ .skill-name{
+                                    display: flex;
+                                    color: #fff;
+                                    background-image: url(/assets/ui/skill_s_b.png);
+                                }
+                            }
+
+                            &.a {
+                                background-image: url(/assets/ui/skill_a.png);
+                                & ~ .skill-name{
+                                    display: flex;
+                                    color: #fff;
+                                    background-image: url(/assets/ui/skill_a_b.png);
+                                }
+                            }
+
+                            &.b {
+                                background-image: url(/assets/ui/skill_b.png);
+                                & ~ .skill-name{
+                                    display: flex;
+                                    color: #fff;
+                                    background-image: url(/assets/ui/skill_b_b.png);
+                                }
+                            }
+                        }
+
+                        &>.skill-name{
+                            width: 95%;
+                            height: 20%;
+                            display: none;
+                            background-size: contain;
+                            background-repeat: no-repeat;
+                            background-position: center;
+                            /* align-items: center; */
+                            justify-content: center;
+                            font-size: 1.5vw;
+                            /* margin-top: -.2vw; */
+                        }
                     }
                 }
             }
