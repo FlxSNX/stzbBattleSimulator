@@ -33,29 +33,29 @@ export class BattleManger {
         };
 
         this.SortSpdHeros = [];
-        let redindex = 4;
-        let blueindex = 3
+        let redindex = heroBattleTeam.blue.length + heroBattleTeam.red.length;
+        let blueindex = 1;
         heroBattleTeam.blue.forEach((e,i) => {
             let Posname = '';
             if(heroBattleTeam.blue.length == 2){
                 switch (i) {
                     case 0:
-                        Posname = '中军';
+                        Posname = '大营';
                     break;
                     case 1:
-                        Posname = '大营';
+                        Posname = '中军';
                     break;
                 }
             }else if(heroBattleTeam.blue.length == 3){
                 switch (i) {
                     case 0:
-                        Posname = '前锋';
+                        Posname = '大营';
                     break;
                     case 1:
                         Posname = '中军';
                     break;
                     case 2:
-                        Posname = '大营';
+                        Posname = '前锋';
                     break;
                 }
             }else{
@@ -66,7 +66,7 @@ export class BattleManger {
             hero.Posname = Posname;
             hero.Index = blueindex;
             hero.Name = hero.Name+hero.Index;
-            blueindex--;
+            blueindex++;
             this.BattleHeros.push(hero);
             this.BlueTeam.hero.push(hero);
             this.BlueTeam.total += hero.Arms;
@@ -77,22 +77,22 @@ export class BattleManger {
             if(heroBattleTeam.red.length == 2){
                 switch (i) {
                     case 0:
-                        Posname = '中军';
+                        Posname = '大营';
                     break;
                     case 1:
-                        Posname = '大营';
+                        Posname = '中军';
                     break;
                 }
             }else if(heroBattleTeam.red.length == 3){
                 switch (i) {
                     case 0:
-                        Posname = '前锋';
+                        Posname = '大营';
                     break;
                     case 1:
                         Posname = '中军';
                     break;
                     case 2:
-                        Posname = '大营';
+                        Posname = '前锋';
                     break;
                 }
             }else{
@@ -103,7 +103,7 @@ export class BattleManger {
             hero.Posname = Posname;
             hero.Index = redindex;
             hero.Name = hero.Name+hero.Index;
-            redindex++;
+            redindex--;
             this.BattleHeros.push(hero);
             this.RedTeam.hero.push(hero);
             this.RedTeam.total += hero.Arms;
@@ -118,11 +118,11 @@ export class BattleManger {
         let redTeam = [];
 
         this.Record.pushSysRecord('【攻方阵容】');
-        [...this.BlueTeam.hero].reverse().forEach(e=>{
+        [...this.BlueTeam.hero].forEach(e=>{
             this.Record.pushSysRecord(`(${e.Posname}) [${e.Name}] ${e.Level}级 兵力：${e.Arms}`,1);
         })
         this.Record.pushSysRecord('【守方阵容】');
-        [...this.RedTeam.hero].reverse().forEach(e=>{
+        [...this.RedTeam.hero].forEach(e=>{
             this.Record.pushSysRecord(`(${e.Posname}) [${e.Name}] ${e.Level}级 兵力：${e.Arms}`,1);
         })
 
@@ -133,7 +133,9 @@ export class BattleManger {
             // if(index != 0) this.pushRecord(`------------------------${roundName}回合------------------------`);
             if(index != 0) this.Record.pushSysRecord(`------------------------${roundName}回合------------------------`);
 
-            this.sortBattleHerosBySpd()
+            this.sortBattleHerosBySpd();
+
+            console.log(`${roundName}回合 速度排序`,this.SortSpdHeros);
 
             this.SortSpdHeros.forEach((e) => {
                 // 清除已攻击次数
@@ -210,7 +212,7 @@ export class BattleManger {
     sortBattleHerosBySpd(){
         this.SortSpdHeros = [];
 
-        [...[...this.BlueTeam.hero].reverse(),...[...this.RedTeam.hero].reverse()].forEach((e) => {
+        [...[...this.BlueTeam.hero],...[...this.RedTeam.hero]].forEach((e) => {
             this.SortSpdHeros.push(e);
         })
 

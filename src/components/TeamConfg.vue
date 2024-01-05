@@ -1,7 +1,13 @@
 <script setup>
-    import { defineProps,defineEmits,ref } from 'vue'
-    const props = defineProps(['show']);
-    const emit = defineEmits(['update:show']);
+    import { ref,toRefs } from 'vue'
+    import { __HEROS__ as HEROS } from '../battle/heros';
+    import { __SKILLS__ as SKILLS } from '../battle/skills';
+
+
+    const props = defineProps(['show','team']);
+    const emit = defineEmits(['update:show','update:team']);
+
+    const { show, team } = toRefs(props);
     const camp = ref('blue');
     const testt = ref({
         red : {
@@ -11,7 +17,17 @@
             name:'木鹿大王'
         },
     })
-    console.log(props);
+    console.log(team.value[camp.value][0]);
+
+    const heroCampclass = ['shu','wei','wu','han','qun','jin'];
+    const skilltypeclass = ['zh','zd','zj','bd'];
+    const posname = ['大营','中军','前锋'];
+
+    const selectSkill = (camp,hindex,sindex) => {
+        if(sindex  == 0)return;
+        console.log(camp,hindex,sindex);
+        team.value[camp][hindex].equipskill[sindex-1] = 1002
+    }
 </script>
 
 <template>
@@ -19,7 +35,7 @@
         <div class="box">
             <div class="header">
                 <div class="title">阵容配置</div>
-                <div class="close" @click="emit('update:show', false)"></div>
+                <div class="close" @click="emit('update:show', !show)"></div>
             </div>
             <div class="tabs">
                 <div :class="[{'click': camp == 'blue'}]" @click="camp = 'blue'">我方</div>
@@ -28,101 +44,23 @@
             </div>
             <div class="h"></div>
             <div class="cards">
-                <div class="card">
-                    <div class="posname">大营</div>
-                    <div class="name">{{ testt[camp].name }}</div>
+                <div class="card" v-for="(hero, index) in team[camp]">
+                    <div class="posname">{{ posname[index] }}</div>
+                    <div class="name" :class="heroCampclass[HEROS[hero.id].camp-1]">{{ HEROS[hero.id].name }}</div>
                     <div class="image">
-                        <img src="/assets/card/0.png">
+                        <img :src="`/assets/card/${hero.id}.png`">
                     </div>
                     <div class="skills">
-                        <div class="skill">
-                            <div class="skill-icon">
+                        <div class="skill" v-for="(skill, skillIndex) in [HEROS[hero.id].skill, ...hero.equipskill]" @click="selectSkill(camp,index,skillIndex)">
+                            <div class="skill-icon" :class="SKILLS[skill].level" v-if="skill">
+                                <div class="skill-type" :class="skilltypeclass[SKILLS[skill].type-1]"></div>
+                            </div>
+                            <div class="skill-name" v-if="skill">
+                                {{ SKILLS[skill].name }}
+                            </div>
+
+                            <div class="skill-icon" v-if="!skill">
                                 <div class="skill-type"></div>
-                            </div>
-                            <div class="skill-name">
-                                未配置
-                            </div>
-                        </div>
-                        <div class="skill">
-                            <div class="skill-icon a">
-                                <div class="skill-type bd"></div>
-                            </div>
-                            <div class="skill-name">
-                                兵无常势
-                            </div>
-                        </div>
-                        <div class="skill">
-                            <div class="skill-icon">
-                                <div class="skill-type"></div>
-                            </div>
-                            <div class="skill-name">
-                                未配置
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="posname">中军</div>
-                    <div class="name">未配置</div>
-                    <div class="image">
-                        <img src="/assets/card/0.png">
-                    </div>
-                    <div class="skills">
-                        <div class="skill">
-                            <div class="skill-icon">
-                                <div class="skill-type"></div>
-                            </div>
-                            <div class="skill-name">
-                                 未配置
-                            </div>
-                        </div>
-                        <div class="skill">
-                            <div class="skill-icon">
-                                <div class="skill-type"></div>
-                            </div>
-                            <div class="skill-name">
-                                未配置
-                            </div>
-                        </div>
-                        <div class="skill">
-                            <div class="skill-icon">
-                                <div class="skill-type"></div>
-                            </div>
-                            <div class="skill-name">
-                                未配置
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="posname">前锋</div>
-                    <div class="name">未配置</div>
-                    <div class="image">
-                        <img src="/assets/card/0.png">
-                    </div>
-                    <div class="skills">
-                        <div class="skill">
-                            <div class="skill-icon">
-                                <div class="skill-type"></div>
-                            </div>
-                            <div class="skill-name">
-                                 未配置
-                            </div>
-                        </div>
-                        <div class="skill">
-                            <div class="skill-icon">
-                                <div class="skill-type"></div>
-                            </div>
-                            <div class="skill-name">
-                                未配置
-                            </div>
-                        </div>
-                        <div class="skill">
-                            <div class="skill-icon">
-                                <div class="skill-type"></div>
-                            </div>
-                            <div class="skill-name">
-                                未配置
                             </div>
                         </div>
                     </div>
@@ -271,27 +209,27 @@
                     padding: .2vw;
 
                     &.shu {
-                        background: linear-gradient(140deg, rgb(26, 175, 37, .4) 10%, hsla(0, 0%, 100%, 0));
+                        background: linear-gradient(150deg, rgb(26, 175, 37, .4) 10%, hsla(0, 0%, 100%, 0));
                     }
 
                     &.wu {
-                        background: linear-gradient(140deg, rgb(200, 9, 9, .4) 10%, hsla(0, 0%, 100%, 0));
+                        background: linear-gradient(150deg, rgb(200, 9, 9, .4) 10%, hsla(0, 0%, 100%, 0));
                     }
 
                     &.wei {
-                        background: linear-gradient(140deg, rgb(10, 50, 200, .4) 10%, hsla(0, 0%, 100%, 0));
+                        background: linear-gradient(150deg, rgb(10, 50, 200, .4) 10%, hsla(0, 0%, 100%, 0));
                     }
 
                     &.han {
-                        background: linear-gradient(140deg, rgb(160, 0, 200, .4) 10%, hsla(0, 0%, 100%, 0));
+                        background: linear-gradient(150deg, rgb(160, 0, 200, .4) 10%, hsla(0, 0%, 100%, 0));
                     }
 
                     &.jin {
-                        background: linear-gradient(140deg, rgb(0, 80, 90, .4) 10%, hsla(0, 0%, 100%, 0));
+                        background: linear-gradient(150deg, rgb(0, 80, 90, .4) 10%, hsla(0, 0%, 100%, 0));
                     }
 
                     &.qun {
-                        background: linear-gradient(140deg, rgb(169, 169, 169, .4) 10%, hsla(0, 0%, 100%, 0));
+                        background: linear-gradient(150deg, rgb(125, 125, 125, .4) 10%, hsla(0, 0%, 100%, 0));
                     }
                 }
 
@@ -338,7 +276,7 @@
                         background-size: contain;
                         align-items: center;
                         /* justify-content: center; */
-                        transform: scale(.9);
+                        transform: scale(.92);
                         cursor: pointer;
                         flex-direction: column;
                         margin-top: -.3vw;
@@ -383,7 +321,7 @@
                                 }
                             }
 
-                            &.s {
+                            &.S {
                                 background-image: url(/assets/ui/skill_s.png);
                                 & ~ .skill-name{
                                     display: flex;
@@ -392,7 +330,7 @@
                                 }
                             }
 
-                            &.a {
+                            &.A {
                                 background-image: url(/assets/ui/skill_a.png);
                                 & ~ .skill-name{
                                     display: flex;
@@ -401,7 +339,7 @@
                                 }
                             }
 
-                            &.b {
+                            &.B {
                                 background-image: url(/assets/ui/skill_b.png);
                                 & ~ .skill-name{
                                     display: flex;
@@ -418,9 +356,9 @@
                             background-size: contain;
                             background-repeat: no-repeat;
                             background-position: center;
-                            /* align-items: center; */
+                            align-items: center;
                             justify-content: center;
-                            font-size: 1.5vw;
+                            font-size: 1.45vw;
                             /* margin-top: -.2vw; */
                         }
                     }

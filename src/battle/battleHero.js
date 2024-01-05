@@ -219,15 +219,21 @@ export class BattleHero {
 
     callPassiveSkill(){
         this.SkillsOrder.forEach(e => {
+            if(!e)return;
             let skill = this.Skills[e];
-            if(skill.type == 4){
-                skill.callskill(this);
+            try {
+                if(skill.type == 4){
+                    skill.callskill(this);
+                }
+            } catch (error) {
+                console.log(this);
             }
         });
     }
 
     callCommandSkill(){
         this.SkillsOrder.forEach(e => {
+            if(!e)return;
             let skill = this.Skills[e];
             if(skill.type == 1){
                 skill.callskill(this);
@@ -241,6 +247,7 @@ export class BattleHero {
 
     callPursuitSkill(target){
         this.SkillsOrder.forEach(e => {
+            if(!e)return;
             let skill = this.Skills[e];
             if(skill.type == 3){
                 if(target.Arms != 0 && getRandomBool(skill.rate/100)){
@@ -255,10 +262,12 @@ export class BattleHero {
     getAttackTarget(){
         let canAtk = [];
 
-        // 先按距离顺序排列武将
-        let heros = [...[...this.Manger.BlueTeam.hero].reverse(),...this.Manger.RedTeam.hero].filter((e)=>{
+        // 先按距离顺序排列武将 这里需要颠倒红队顺序来排列 因为红队大营是RedTeam的第一个武将
+        let heros = [...this.Manger.BlueTeam.hero,...[...this.Manger.RedTeam.hero].reverse()].filter((e)=>{
             return e.Arms > 0;
         });
+
+        // console.log(heros);
 
         // 然后获取自身位置
         let selfindex = null;

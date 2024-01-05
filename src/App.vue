@@ -83,21 +83,10 @@ const showTeamConfig = ref(false);
 // 	]
 // }
 
-const team = {
+const team = ref({
 	blue: [
 		{
-			id: 1001,//武将Id
-			level: 40,//武将等级
-			extraAttrsAlloc: {//属性分配
-				atk: 90,
-				def: 0,
-				int: 0,
-				spd: 0
-			},
-			equipskill: [1002, 1006]
-		},
-		{
-			id: 1004,//武将Id
+			id: 1003,//武将Id
 			level: 40,//武将等级
 			extraAttrsAlloc: {//属性分配
 				atk: 0,
@@ -105,19 +94,30 @@ const team = {
 				int: 90,
 				spd: 0
 			},
-			equipskill: []
+			equipskill: [1002, 1005]
 		},
 		{
-			id: 1001,//武将Id
-			level: 40,//武将等级
+			id: 1003,//武将Id
+			level: 39,//武将等级
 			extraAttrsAlloc: {//属性分配
-				atk: 90,
+				atk: 0,
 				def: 0,
-				int: 0,
+				int: 90,
 				spd: 0
 			},
-			equipskill: [1002, 1006]
+			equipskill: [1002, 0]
 		},
+		{
+			id: 1003,//武将Id
+			level: 38,//武将等级
+			extraAttrsAlloc: {//属性分配
+				atk: 0,
+				def: 0,
+				int: 90,
+				spd: 0
+			},
+			equipskill: [0, 0]
+		}
 	],
 
 	red: [
@@ -134,28 +134,28 @@ const team = {
 		},
 		{
 			id: 1002,//武将Id
-			level: 40,//武将等级
+			level: 39,//武将等级
 			extraAttrsAlloc: {//属性分配
 				atk: 90,
 				def: 0,
 				int: 0,
 				spd: 0
 			},
-			equipskill: [1002, 1006]
+			equipskill: [1002, 0]
 		},
 		{
 			id: 1002,//武将Id
-			level: 40,//武将等级
+			level: 38,//武将等级
 			extraAttrsAlloc: {//属性分配
 				atk: 90,
 				def: 0,
 				int: 0,
 				spd: 0
 			},
-			equipskill: [1002, 1006]
+			equipskill: [0, 0]
 		},
 	]
-}
+})
 
 const testfunc = () => {
 	const team = {
@@ -238,10 +238,20 @@ const testfunc = () => {
 	battleinfo.value = bm;
 	console.log(bm);
 }
+
+const battleStart = () => {
+	// team.value.blue.reverse();
+	// team.value.red.reverse();
+	// const bm = new BattleManger({blue:[...team.value.blue].reverse(),red:[...team.value.red].reverse()});
+	const bm = new BattleManger(team.value);
+	record.value = bm.Record.Records;
+	battleinfo.value = bm;
+	console.log(bm);
+}
 </script>
 
 <template>
-	<TeamConfig v-model:show="showTeamConfig" />
+	<TeamConfig v-model:show="showTeamConfig" v-model:team="team"/>
 	<div class="header">
 		<div class="logo"></div>
 	</div>
@@ -287,7 +297,7 @@ const testfunc = () => {
 			</div>
 			<div class="card-area">
 				<div class="card-box">
-					<div class="card" v-for="item in battleinfo.BlueTeam?.hero">
+					<div class="card" v-for="item in battleinfo.BlueTeam.hero.reverse()">
 						<img :src="`/assets/card/${item.Id}.png`" class="card-img" v-if="item && item.Arms > 0">
 						<img :src="`/assets/card/${item.Id}.png`" class="card-img gray" v-else>
 
@@ -306,13 +316,13 @@ const testfunc = () => {
 						<div class="hurtarms">{{ item.HurtArms }}</div>
 						<div class="skills">
 							<div class="skill" v-for="e in item.SkillsOrder">
-								<div class="level">{{ item.Skills[e].level }}</div>{{ item.Skills[e].name }}
+								<div class="level" v-if="e">{{ item.Skills[e].level }}</div>{{ e ? item.Skills[e].name : ' - ' }}
 							</div>
 						</div>
 					</div>
 				</div>
 				<div class="card-box">
-					<div class="card" v-for="item in battleinfo.RedTeam?.hero">
+					<div class="card" v-for="item in battleinfo.RedTeam.hero.reverse()">
 						<img :src="`/assets/card/${item.Id}.png`" class="card-img" v-if="item && item.Arms > 0">
 						<img :src="`/assets/card/${item.Id}.png`" class="card-img gray" v-else>
 						<img src="/assets/ui/card.png" class="card-border">
@@ -330,13 +340,15 @@ const testfunc = () => {
 						<div class="hurtarms">{{ item.HurtArms }}</div>
 						<div class="skills">
 							<div class="skill" v-for="e in item.SkillsOrder">
-								<div class="level">{{ item.Skills[e].level }}</div>{{ item.Skills[e].name }}
+								<div class="level" v-if="e">{{ item.Skills[e].level }}</div>{{ e ? item.Skills[e].name : ' - ' }}
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
+
+		<!-- 未开始战斗的ui -->
 		<div class="battle" v-if="battleinfo.BattleHeros == undefined">
 			<div class="header-area">
 				<div class="blue-team">
@@ -366,69 +378,37 @@ const testfunc = () => {
 				</div>
 			</div>
 			<div class="card-area">
-				<div class="card-box">
-					<div class="card" v-for="item in team.blue">
-						<img :src="`/assets/card/${item.id}.png`" class="card-img" v-if="item.id != null">
-
+				<div class="card-box" v-for="e in 2">
+					<div class="card" v-for="item in 3">
+						<img :src="`/assets/card/0.png`" class="card-img">
 						<img src="/assets/ui/card.png" class="card-border">
 						<div class="camp">
-							<img :src="`/assets/ui/camp${HEROS[item.id] ? HEROS[item.id].camp : 5}.png`">
-						</div>
-						<div class="hero-name">
-							{{ HEROS[item.id]?.name }}
+							<img :src="`/assets/ui/camp5.png`">
 						</div>
 						<div class="level">
-							Lv<span>.{{ item.level }}</span>
+							Lv<span>.1</span>
 						</div>
 						<div class="juexing"></div>
 						<div class="skills">
 							<div class="skill">
-								<div class="level">{{ 'D' }}</div>{{ ' - ' }}
+								{{ ' - ' }}
 							</div>
 							<div class="skill">
-								<div class="level">{{ 'D' }}</div>{{ ' - ' }}
+								{{ ' - ' }}
 							</div>
 							<div class="skill">
-								<div class="level">{{ 'D' }}</div>{{ ' - ' }}
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="card-box">
-					<div class="card" v-for="item in team.red">
-						<img :src="`/assets/card/${item.id}.png`" class="card-img" v-if="item.id != null">
-
-						<img src="/assets/ui/card.png" class="card-border">
-						<div class="camp">
-							<img :src="`/assets/ui/camp${HEROS[item.id] ? HEROS[item.id].camp : 5}.png`">
-						</div>
-						<div class="hero-name">
-							{{ HEROS[item.id]?.name }}
-						</div>
-						<div class="level">
-							Lv<span>.{{ item.level }}</span>
-						</div>
-						<div class="juexing"></div>
-						<div class="skills">
-							<div class="skill">
-								<div class="level">{{ 'D' }}</div>{{ ' - ' }}
-							</div>
-							<div class="skill">
-								<div class="level">{{ 'D' }}</div>{{ ' - ' }}
-							</div>
-							<div class="skill">
-								<div class="level">{{ 'D' }}</div>{{ ' - ' }}
+								{{ ' - ' }}
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
+
 		<div class="stbtn-box">
 			<!-- <button @click="testfunc">Debug</button> -->
-
 			<div class="stbtn-1" @click="testfunc">DeBug</div>
-			<div class="stbtn-1" @click="testfunc">开始战斗</div>
+			<div class="stbtn-1" @click="battleStart">开始战斗</div>
 			<div class="stbtn-1">统计</div>
 			<div class="stbtn-1" @click="showTeamConfig = true">配置队伍</div>
 		</div>
