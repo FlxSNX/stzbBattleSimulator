@@ -1,5 +1,11 @@
 # stzbBattleSimulator
 率土之滨 战斗模拟器 (开发中)  
+伤害恢复计算公式参考 `自由指挥官`发的相关攻略   
+* [率土秘卷一：恢复效果](https://ds.163.com/feed/61d6fcb5849ee2000141813e)
+* [率土秘卷二：物理伤害](https://ds.163.com/feed/61d80f25c5a3250001371489)
+* [率土秘卷三：策略伤害](https://ds.163.com/feed/61d960a5c5a3250001385b66)
+* ...
+
 闲着没事瞎折腾的 可能不会填完坑
 ## 预览(Preview)
 [Preview](https://stzb-battle-simulator.vercel.app/?_blank)
