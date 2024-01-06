@@ -16,6 +16,8 @@
  */
 
 import { clacAttackDamage,getRandomBool,calcRecover } from "./battleCalcFunc"
+import { keepTwoDecimal } from "../uilts";
+
 
 export const __SKILLS__ = {
     1001: {
@@ -262,7 +264,12 @@ export const __SKILLS__ = {
                 team = self.Manger.BlueTeam.hero;
             }
 
+            let spdadd = 41 + (Math.floor((self.Attrs.spd - 80) * 0.075));
+
             team.forEach(e => {
+                e.Attrs.spd = keepTwoDecimal(spdadd+e.Attrs.spd);
+                self.Manger.Record.pushRecord(e,`的速度属性提高了${spdadd}(${e.Attrs.spd})`,1);
+
                 e.BEFORE_ATK.push(() =>{
                     if(self.Manger.Round >= 1 && self.Manger.Round <= 3){
                         if(getRandomBool(70/100)){
@@ -280,6 +287,7 @@ export const __SKILLS__ = {
                         }
                     }
                 });
+
                 self.Manger.Record.pushRecord(e,'的连击(预备)效果已施加',1)
             });
         },
