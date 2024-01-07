@@ -252,9 +252,9 @@ const battleStart = () => {
 
 <template>
 	<TeamConfig v-model:show="showTeamConfig" v-model:team="team"/>
-	<div class="header">
+	<!-- <div class="header">
 		<div class="logo"></div>
-	</div>
+	</div> -->
 	<div class="main">
 		<div class="battle" v-if="battleinfo.BattleHeros != undefined">
 			<div class="header-area">
@@ -450,8 +450,10 @@ const battleStart = () => {
 }
 
 .main {
-	width: calc((100vh - 4vh) / 0.5625);
-	height: calc(100vh - 4vh);
+	// width: calc((100vh - 4vh) / 0.5625);
+	// height: calc(100vh - 4vh);
+	width: calc((100vh) / 0.5625);
+	height: calc(100vh);
 	// background-image: url(assets/ui/bg.png);
 	background-position: right;
 	background-repeat: no-repeat;
@@ -465,7 +467,7 @@ const battleStart = () => {
 	&>.battle {
 		flex-shrink: 0;
 		position: relative;
-		width: 100%;
+		width: 98%;
 		height: 75%;
 		margin-top: 10vh;
 		// background-color: rebeccapurple;
