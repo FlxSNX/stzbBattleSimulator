@@ -5,14 +5,23 @@
 import { keepTwoDecimal } from "../uilts";
 
 // 计算物理伤害
-export const clacAttackDamage = (attacker,target,DamageRate) => {
+export const clacAttackDamage = (attacker,target,damageInfo) => {
+    let DamageRate = damageInfo.rate;
     // 兵力基础伤害
     let armsDamage = (attacker.Arms * 373) / (7700 + attacker.Arms);
     //攻击基础伤害
     let basicDamage = attacker.Attrs.atk * getRandNum() * (DamageRate / 100) * getDamageAddition(attacker,target);
     //主要伤害
-    let atkdefdiff = calcAtkDefDiff(attacker.Attrs.atk,target.Attrs.def);
+    let targetDef = target.Attrs.def;
+    if (damageInfo.source == 1011){
+        targetDef = 0;
+    }
+    let atkdefdiff = calcAtkDefDiff(attacker.Attrs.atk,targetDef);
     let mainDamage = (((300 * attacker.Arms) / (3500 + attacker.Arms)) * (DamageRate / 100) * getDamageAddition(attacker,target)) * atkdefdiff;
+
+    if (damageInfo.source == 1011){
+        console.log(atkdefdiff,"陈到攻防",attacker.Attrs.atk,mainDamage);
+    }
     return Math.round(armsDamage + basicDamage + mainDamage);
 }
 
@@ -31,7 +40,7 @@ const getDamageAddition = (attacker,target) => {
 // 计算攻防差
 const calcAtkDefDiff = (atk,def) => {
     let diff = atk - def;
-    if(diff > 0){
+    if(diff >= 0){
         return keepTwoDecimal(3 - (500 / (250 + diff)))
     }else{
         return keepTwoDecimal(100 / (100 - diff))

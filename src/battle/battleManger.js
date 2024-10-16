@@ -152,6 +152,7 @@ export class BattleManger {
                     }else{
                         if(this.Over)return;
                         e.clearStateRounds();
+                        e.callEffect("行动前");
                         e.ON_ACTION.forEach(call => {
                             call();
                         })

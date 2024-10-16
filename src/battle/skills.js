@@ -236,11 +236,13 @@ export const __SKILLS__ = {
                         e.revocer(revocer,self,'皇裔流离');
                     }
                 }
-                e.ON_HURT.push(subskill);
+                // e.ON_HURT.push(subskill);
+                e.addEffect("受伤时",`${self.BattleCamp}${self.Camp} - ${self.Id}${self.Name}皇裔流离急救效果`,subskill)
                 self.Manger.Record.pushRecord(e,'的急救效果已施加',1)
             });
         },
     },
+
     1008: {
         name: "其疾如风",
         desc: "战斗开始后前3回合，使我军全体速度属性提高41(受谋略属性影响)，并使其每回合有70%的几率可以进行两次普通攻击",
@@ -292,6 +294,7 @@ export const __SKILLS__ = {
             });
         },
     },
+
     1009: {
         name: "奋疾先登",
         desc: "每回合行动时使自身攻击伤害提升8.0%，自身速度每高于一名武将，则攻击伤害额外提升8.0%。该效果提升至40%时，将对距离3以内的敌军群体发动一次攻击（伤害率190.0%），发动后攻击伤害提升效果消失，同时使目标速度属性降低20.0，该效果可叠加并持续直到战斗结束",
@@ -350,6 +353,7 @@ export const __SKILLS__ = {
             self.ON_ACTION.push(subskill)
         },
     },
+    
     1010: {
         name: "奇兵拒北",
         desc: "每回合行动时有30.0%几率对敌军大营和中军分别发动一次攻击（伤害率180.0%），同时使速度最高的友军单体对敌军大营及中军分别发动一次攻击（伤害率120.0%-180.0%）。每回合奇兵拒北未生效时可提升其5%的发动率，可叠加，生效后发动率提升效果消失",
@@ -387,7 +391,7 @@ export const __SKILLS__ = {
                     }
                     // 自身执行效果
                     targets.forEach(e => {
-                        if(e.Posname == '大营' || e.Posname == '中军'){
+                        if((e.Posname == '大营' || e.Posname == '中军') && targets.Arms > 0){
                             e.beHurt(self,{
                                 type: 1,
                                 rate: damageRate
@@ -407,7 +411,7 @@ export const __SKILLS__ = {
                     // 速度最快友军执行效果 暂时没考虑暴走
                     self.Manger.Record.pushActionRecord(spdhero,self,'执行来自','的【奇兵拒北】效果');
                     targets.forEach(e => {
-                        if(e.Posname == '大营' || e.Posname == '中军'){
+                        if((e.Posname == '大营' || e.Posname == '中军') && targets.Arms > 0){
                             e.beHurt(self,{
                                 type: 1,
                                 rate: getRandomInt(teamMinDamageRate,teamMaxDamageRate)
@@ -432,6 +436,78 @@ export const __SKILLS__ = {
             }
 
             self.ON_ACTION.push(subskill)
+        },
+    },
+
+    1011: {
+        name: "忠克猛烈",
+        desc: "本战法造成的伤害无视兵种相克及目标的防御属性；对敌军单体发动1次攻击(伤害率280.0%)，并使其陷入犹豫状态，持续1回合；直到陈到下回合行动前，目标每受到1次攻击伤害，陈到对其发动1次攻击(伤害率80.0%)，期间最多可触发3次",
+        level: "S",
+        type: 2,
+        target: 1,
+        target_type: "enemy",
+        limit: 0,
+        rate: -1,
+        damage_type: 1,
+        damage_rate: 280,
+        damage_grow_rate: 0,
+        damage_grow_attr: null,
+        callskill: (self) => {
+            let ttt = getRandomBool(1);
+            console.log(ttt,"忠克猛烈");
+            if(ttt){
+                self.Manger.Record.pushRecord(self,'发动【忠克猛烈】')
+                // 战法攻击效果
+                let target = self.getTarget(4,1);
+                target[0].beHurt(self,{
+                    type: 1,
+                    rate: 280,
+                    sourceType: 2,
+                    source: 1011
+                })
+                // 使其陷入混乱1回合
+                if(!target[0].isConfusion()){
+                    target[0].State.confusion = {
+                        rounds:1,
+                        from:{
+                            hero: self,
+                            skill: 1011
+                        }
+                    }
+                    self.Manger.Record.pushActionRecord(self,target[0],'的【忠克猛烈】使','陷入混乱1回合');
+                }else{
+                    self.Manger.Record.pushRecord(target[0],'已存在混乱效果',1);
+                }
+
+                let tag = `${self.BattleCamp}${self.Camp} - ${self.Id}${self.Name}忠克猛烈目标受伤效果`;
+
+                // 施加受到伤害时陈到对其发动攻击
+                let subskill = (attacker,args) => {
+                    // 需判处此伤害不是自己的【忠克猛烈】触发的,避免死循环
+                    if(args.source == 1011 && attacker == self)return;
+                    // 期间最多触发3次
+                    if(self.countGet(tag+"次数") >= 3)return;
+                    self.countAdd(tag+"次数");
+                    self.Manger.Record.pushActionRecord(self,self,'执行来自','的【忠克猛烈】效果');
+                    target[0].beHurt(self,{
+                        type: 1,
+                        rate: 80,
+                        sourceType: 2,
+                        source: 1011,
+                    });
+                    
+                }
+                
+                target[0].addEffect("受伤时",tag,subskill)
+                // 陈到行动前 清除所有人的 【忠克猛烈】施加的 "受到伤害时陈到对其发动攻击" 的效果
+                let clear = () => {
+                    self.Manger.SortSpdHeros.forEach(e => {
+                        e.clearEffect("受伤时",tag);
+                    });
+                    self.countRest(tag+"次数");
+                }
+                self.addEffect("行动前",tag+"清除",clear);
+            }
         },
     },
 }

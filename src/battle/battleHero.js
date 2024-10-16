@@ -27,13 +27,25 @@ export class BattleHero {
     */
     constructor(config,battlecamp,Manger){
         // 受击时执行的效果
-        this.ON_HURT = [];
+        /*
+            {
+                func //效果方法
+                num //可触发次数
+                clearType //结算类型 roundB回合开始 roundA回合结束 ACTIONB行动前 ACTIONA行动后
+                round //持续回合
+            }
+        */
+        this.ON_HURT = {};
         // 攻击前执行的效果
         this.BEFORE_ATK = [];
         // 行动时效果
         this.ON_ACTION = [];
         // 发动率增加效果
         this.RATE_ADD = {};
+        // 行动前效果
+        this.BEFORE_ACTION = {};
+        // 计数器
+        this.Counter = {};
 
         // 一些效果已执行的标记
         this.StateFlag = {
@@ -220,7 +232,7 @@ export class BattleHero {
             })
         }
     }
-
+    // 执行被动技能
     callPassiveSkill(){
         this.SkillsOrder.forEach(e => {
             if(!e)return;
@@ -234,7 +246,7 @@ export class BattleHero {
             }
         });
     }
-
+    // 执行指挥技能
     callCommandSkill(){
         this.SkillsOrder.forEach(e => {
             if(!e)return;
@@ -244,11 +256,17 @@ export class BattleHero {
             }
         });
     }
-
+    // 执行主动技能
     callActiveSkill(){
-
+        this.SkillsOrder.forEach(e => {
+            if(!e)return;
+            let skill = this.Skills[e];
+            if(skill.type == 2){
+                skill.callskill(this);
+            }
+        });
     }
-
+    // 执行追击技能
     callPursuitSkill(target){
         this.SkillsOrder.forEach(e => {
             if(!e)return;
@@ -372,9 +390,19 @@ export class BattleHero {
     }
 
     // 受到伤害
+    /*
+        damageInfo {
+            rate //伤害率
+            type //伤害类型 暂定 1物理 2谋略
+            sourceType //伤害来源类型 暂定 默认base base=普攻 skill=技能
+            source //伤害来源 默认0 为技能时传技能ID
+        }
+    */
     beHurt(attacker,damageInfo){
         let realDamage = 0;
-        let damage = clacAttackDamage(attacker,this,damageInfo.rate);
+        if(!damageInfo.sourceType)damageInfo.sourceType = "base";
+        if(!damageInfo.source)damageInfo.source = 0;
+        let damage = clacAttackDamage(attacker,this,damageInfo);
         // let record = {msg:'',sub:[]};
         
         if(damage >= this.Arms){
@@ -398,9 +426,7 @@ export class BattleHero {
             this.HurtArms = Math.floor(this.HurtArms * 0.6);
         }
 
-        this.ON_HURT.forEach(e => {
-            e();
-        })
+        this.callEffect('受伤时',attacker,damageInfo);
     }
 
     // 受到恢复
@@ -496,5 +522,73 @@ export class BattleHero {
         // this.Manger.pushRecord(`[${this.Name}] 由于受到 [${this.State.attackLimit.from.hero.Name}] [${SKILLS[this.State.attackLimit.from.skill].name}]的怯战效果影响 无法进行攻击`);
         this.Manger.Record.pushRecord(this,'陷入怯战无法进行攻击');
         this.StateFlag.attackLimit = true;
+    }
+
+    // 添加效果
+    addEffect(on,tag,func){
+        let obj;
+        switch (on) {
+            case "受伤时":
+                obj = this.ON_HURT;
+                break;
+            case "行动前":
+                obj = this.BEFORE_ACTION;
+                break;
+        }
+        obj[tag] = func
+    }
+    // 移除效果
+    clearEffect(on,tag){
+        let obj;
+        switch (on) {
+            case "受伤时":
+                obj = this.ON_HURT;
+                break;
+            case "行动前":
+                obj = this.BEFORE_ACTION;
+                break;
+        }
+        delete obj[tag]
+    }
+    // 执行效果
+    callEffect(on,...args){
+        let obj;
+        switch (on) {
+            case "受伤时":
+                obj = this.ON_HURT;
+                break;
+            case "行动前":
+                obj = this.BEFORE_ACTION;
+                break;
+        }
+
+        console.log(obj);
+        for (let key in obj) {
+           obj[key](...args)
+        }
+    }
+    // 计数器增加
+    countAdd(tag,num=1){
+        if(this.Counter[tag]){
+            this.Counter[tag]++;
+        }else{
+            this.Counter[tag] = 1;
+        }
+    }
+    // 计数器减少
+    countSub(tag,num=1){
+        if(this.Counter[tag]){
+            this.Counter[tag]--;
+        }
+    }
+    // 计数器重置
+    countRest(tag){
+        if(this.Counter[tag]){
+            this.Counter[tag] = 0;
+        }
+    }
+    // 计数器获取
+    countGet(tag){
+        return this.Counter[tag] ? this.Counter[tag] : 0;
     }
 }
