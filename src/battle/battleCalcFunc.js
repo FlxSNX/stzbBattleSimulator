@@ -89,3 +89,7 @@ export function getRandomBool(probability) {
     results = shuffleArray(results);
     return results[Math.floor(Math.random() * 100)];
 }
+
+export function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}

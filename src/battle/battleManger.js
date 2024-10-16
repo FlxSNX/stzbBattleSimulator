@@ -65,7 +65,8 @@ export class BattleManger {
             let hero = new BattleHero(e,'blue',this);
             hero.Posname = Posname;
             hero.Index = blueindex;
-            hero.Name = hero.Name+hero.Index;
+            // hero.Name = hero.Name+hero.Index;
+            hero.Name = hero.Name;
             blueindex++;
             this.BattleHeros.push(hero);
             this.BlueTeam.hero.push(hero);
@@ -102,7 +103,8 @@ export class BattleManger {
             let hero = new BattleHero(e,'red',this);
             hero.Posname = Posname;
             hero.Index = redindex;
-            hero.Name = hero.Name+hero.Index;
+            // hero.Name = hero.Name+hero.Index;
+            hero.Name = hero.Name;
             redindex--;
             this.BattleHeros.push(hero);
             this.RedTeam.hero.push(hero);
@@ -150,7 +152,9 @@ export class BattleManger {
                     }else{
                         if(this.Over)return;
                         e.clearStateRounds();
-
+                        e.ON_ACTION.forEach(call => {
+                            call();
+                        })
                         // 判断混乱
                         if(e.isConfusion()){
                             e.skipRoundByConfusion();
@@ -179,6 +183,15 @@ export class BattleManger {
                     // this.pushRecord(`[${e.Name}] 由于阵亡 跳过回合`);
                 }
             });
+
+            if(this.Round == 0){
+                [...this.BlueTeam.hero].forEach(e=>{
+                    this.Record.pushRecord(e,`攻击(${e.Attrs.atk}) 谋略(${e.Attrs.int}) 防御(${e.Attrs.def}) 速度(${e.Attrs.spd})`);
+                });
+                [...this.RedTeam.hero].forEach(e=>{
+                    this.Record.pushRecord(e,`攻击(${e.Attrs.atk}) 谋略(${e.Attrs.int}) 防御(${e.Attrs.def}) 速度(${e.Attrs.spd})`);
+                });
+            }
 
             if(this.Round >= 1){
                 // 每个正式回合结束递减伤兵

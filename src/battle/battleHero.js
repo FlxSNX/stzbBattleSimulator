@@ -30,6 +30,10 @@ export class BattleHero {
         this.ON_HURT = [];
         // 攻击前执行的效果
         this.BEFORE_ATK = [];
+        // 行动时效果
+        this.ON_ACTION = [];
+        // 发动率增加效果
+        this.RATE_ADD = {};
 
         // 一些效果已执行的标记
         this.StateFlag = {
@@ -295,6 +299,49 @@ export class BattleHero {
         }else{// 如果大于一个目标 进行随机选择
             let randtarget = canAtk[Math.floor(Math.random() * canAtk.length)];
             return randtarget;
+        }
+    }
+
+    // 获取目标
+    getTarget(range,num){
+        let canAtk = [];
+
+        // 先按距离顺序排列武将 这里需要颠倒红队顺序来排列 因为红队大营是RedTeam的第一个武将
+        let heros = [...this.Manger.BlueTeam.hero,...[...this.Manger.RedTeam.hero].reverse()].filter((e)=>{
+            return e.Arms > 0;
+        });
+
+        // 然后获取自身位置
+        let selfindex = null;
+        heros.forEach((e,i) => {
+            if(e == this){
+                selfindex = (i+1);
+            }
+        })
+
+        // 获取可攻击目标
+        heros.forEach((e,i) => {
+            // 判断距离是否足够 且目标没有阵亡
+            if(e != this && Math.abs(selfindex - (i+1)) <= range && e.Arms > 0){
+                if(e.BattleCamp == this.BattleCamp){
+                    return
+                }
+                canAtk.push(e);
+            }
+        })
+
+        if(canAtk.length < num){
+            return canAtk
+        }else{
+            let canAtkCopy = canAtk.slice();
+            let i = canAtk.length;
+            let targets = []
+            while (targets.length < num) {
+                let randindex = Math.floor(Math.random() * canAtkCopy.length);
+                targets.push(canAtkCopy[randindex]);
+                canAtkCopy.splice(randindex,1);
+            }
+            return targets;
         }
     }
 

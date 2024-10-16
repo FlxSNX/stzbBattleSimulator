@@ -15,7 +15,7 @@
  * DamageGrowAttr: 根据哪个属性进行成长 atk=攻击 int=谋略 def=防御 spd=速度
  */
 
-import { clacAttackDamage,getRandomBool,calcRecover } from "./battleCalcFunc"
+import { clacAttackDamage,getRandomBool,calcRecover,getRandomInt } from "./battleCalcFunc"
 import { keepTwoDecimal } from "../uilts";
 
 
@@ -290,6 +290,139 @@ export const __SKILLS__ = {
 
                 self.Manger.Record.pushRecord(e,'的连击(预备)效果已施加',1)
             });
+        },
+    },
+    1009: {
+        name: "奋疾先登",
+        desc: "每回合行动时使自身攻击伤害提升8.0%，自身速度每高于一名武将，则攻击伤害额外提升8.0%。该效果提升至40%时，将对距离3以内的敌军群体发动一次攻击（伤害率190.0%），发动后攻击伤害提升效果消失，同时使目标速度属性降低20.0，该效果可叠加并持续直到战斗结束",
+        level: "S",
+        type: 1,
+        target: 1,
+        target_type: "self",
+        limit: 0,
+        rate: -1,
+        damage_type: 0,
+        damage_rate: 0,
+        damage_grow_rate: 0,
+        damage_grow_attr: null,
+        callskill: (self) => {
+            self.Manger.Record.pushRecord(self,'发动【奋疾先登】')
+            let damageRate = 190;
+            let maxAddDamageRate = 40;
+            let addDamageRate = 8;
+            
+            const subskill = () => {
+                console.log(self.Manger.SortSpdHeros)
+                let selfindex = null;
+                self.Manger.SortSpdHeros.forEach((e,i) => {
+                    if(e == self)selfindex = i;
+                })
+                let addCount = self.Manger.SortSpdHeros.length - selfindex - 1;
+                console.log(addCount);
+                self.State.attackDamageAdd.command.rounds = -1;
+                self.State.attackDamageAdd.command.value += (addDamageRate + addCount * addDamageRate);
+                self.Manger.Record.pushActionRecord(self,self,'【奋疾先登】的效果使',`造成的攻击伤害提高${(addDamageRate + addCount * addDamageRate)}%(${self.State.attackDamageAdd.command.value}%)`);
+                if(self.State.attackDamageAdd.command.value >= maxAddDamageRate){
+                    let targets = self.getTarget(3,2);
+                    targets.forEach(e => {
+                        self.Manger.Record.pushActionRecord(self,self,'执行来自','的【奋疾先登】效果');
+                        e.beHurt(self,{
+                            type: 1,
+                            rate: 190
+                        });
+                        e.Attrs.spd = keepTwoDecimal(e.Attrs.spd - 20);
+                        if(e.Attrs.spd < 0)e.Attrs.spd = 0;
+                        self.Manger.Record.pushActionRecord(self,e,'【奋疾先登】的效果使',`的速度属性降低了20(${e.Attrs.spd})`,1);
+                    });
+                    self.State.attackDamageAdd.command.value = 0;
+                }
+            }
+
+            self.ON_ACTION.push(subskill)
+        },
+    },
+    1010: {
+        name: "奇兵拒北",
+        desc: "每回合行动时有30.0%几率对敌军大营和中军分别发动一次攻击（伤害率180.0%），同时使速度最高的友军单体对敌军大营及中军分别发动一次攻击（伤害率120.0%-180.0%）。每回合奇兵拒北未生效时可提升其5%的发动率，可叠加，生效后发动率提升效果消失",
+        level: "S",
+        type: 1,
+        target: 1,
+        target_type: "self",
+        limit: 0,
+        rate: -1,
+        damage_type: 0,
+        damage_rate: 0,
+        damage_grow_rate: 0,
+        damage_grow_attr: null,
+        callskill: (self) => {
+            self.Manger.Record.pushRecord(self,'发动【奇兵拒北】')
+            let rate = 0.3;
+            let addRate = 0.05;
+            let damageRate = 180;
+            let teamMinDamageRate = 120; 
+            let teamMaxDamageRate = 180;
+            
+            const subskill = () => {
+                let currentRate = rate + (self.RATE_ADD[1010] ? self.RATE_ADD[1010].value : 0);
+                self.Manger.Record.pushRecord(self,'的【奇兵拒北】当前发动率('+currentRate*100+'%)')
+                if(getRandomBool(currentRate)){
+                    self.Manger.Record.pushActionRecord(self,self,'执行来自','的【奇兵拒北】效果');
+                    let targets;
+                    let team;
+                    if(self.BattleCamp == 'red'){
+                        targets = self.Manger.BlueTeam.hero;
+                        team = self.Manger.RedTeam.hero;
+                    }else{
+                        targets = self.Manger.RedTeam.hero;
+                        team = self.Manger.BlueTeam.hero;
+                    }
+                    // 自身执行效果
+                    targets.forEach(e => {
+                        if(e.Posname == '大营' || e.Posname == '中军'){
+                            e.beHurt(self,{
+                                type: 1,
+                                rate: 180
+                            });
+                        }
+                    })
+                    let spdhero = null;
+                    team.forEach(e => {
+                        if(e != self && e.Arms > 0){
+                            if(spdhero == null){
+                                spdhero = e;
+                            }else if(e.Attrs.spd > spdhero.Attrs.spd){
+                                spdhero = e;
+                            }
+                        }
+                    });
+                    // 速度最快友军执行效果 暂时没考虑暴走时的友军选择
+                    self.Manger.Record.pushActionRecord(spdhero,self,'执行来自','的【奇兵拒北】效果');
+                    targets.forEach(e => {
+                        if(e.Posname == '大营' || e.Posname == '中军'){
+                            e.beHurt(self,{
+                                type: 1,
+                                rate: getRandomInt(120,180)
+                            });
+                        }
+                    })
+
+                    if(self.RATE_ADD[1010]){
+                        delete self.RATE_ADD[1010]
+                    }
+                }else{
+                    self.Manger.Record.pushRecord(self,'的【奇兵拒北】没有生效')
+                    if(self.RATE_ADD[1010]){
+                        self.RATE_ADD[1010].value += addRate;
+                    }else{
+                        self.RATE_ADD[1010] = {
+                            value: addRate,
+                            rounds: -1
+                        }
+                    }
+                }
+            }
+
+            self.ON_ACTION.push(subskill)
         },
     },
 }

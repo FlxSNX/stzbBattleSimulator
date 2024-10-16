@@ -38,9 +38,9 @@
                 <div class="close" @click="emit('update:show', !show)"></div>
             </div>
             <div class="tabs">
-                <div :class="[{'click': camp == 'blue'}]" @click="camp = 'blue'">我方</div>
+                <div :class="[{'click': camp == 'blue'}]" @click="camp = 'blue'">攻方</div>
                 <div></div>
-                <div :class="[{'click': camp == 'red'}]" @click="camp = 'red'">敌方</div>
+                <div :class="[{'click': camp == 'red'}]" @click="camp = 'red'">守方</div>
             </div>
             <div class="h"></div>
             <div class="cards">
@@ -88,7 +88,7 @@
         width: 160vh;
         height: 80%;
         background-color: black;
-        background-image: url(/assets/ui/bg.png);
+        background-image: url(/assets/ui/bg2.png);
         background-position: right;
         background-size: cover;
         background-repeat: no-repeat;
