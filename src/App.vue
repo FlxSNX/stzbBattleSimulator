@@ -100,10 +100,10 @@ const team = ref({
 			id: 1007,//武将Id
 			level: 40,//武将等级
 			extraAttrsAlloc: {//属性分配
-				atk: 0,
+				atk: 80,
 				def: 0,
 				int: 0,
-				spd: 910
+				spd: 10
 			},
 			equipskill: [0, 0]
 		},
@@ -111,7 +111,7 @@ const team = ref({
 			id: 1006,//武将Id
 			level: 40,//武将等级
 			extraAttrsAlloc: {//属性分配
-				atk: 80,
+				atk: 90,
 				def: 0,
 				int: 0,
 				spd: 0

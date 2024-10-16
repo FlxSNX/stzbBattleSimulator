@@ -447,13 +447,13 @@ export const __SKILLS__ = {
         target: 1,
         target_type: "enemy",
         limit: 0,
-        rate: -1,
+        rate: 50,
         damage_type: 1,
         damage_rate: 280,
         damage_grow_rate: 0,
         damage_grow_attr: null,
         callskill: (self) => {
-            let ttt = getRandomBool(1);
+            let ttt = getRandomBool(0.5);
             console.log(ttt,"忠克猛烈");
             if(ttt){
                 self.Manger.Record.pushRecord(self,'发动【忠克猛烈】')
