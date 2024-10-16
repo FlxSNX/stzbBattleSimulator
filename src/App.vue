@@ -695,6 +695,7 @@ const battleStart = () => {
 
 					.skills {
 						display: flex;
+						display: none;
 						flex-direction: column;
 						align-items: center;
 						position: absolute;

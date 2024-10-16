@@ -230,7 +230,7 @@ export const __SKILLS__ = {
             }
 
             team.forEach(e => {
-                const subskill = () =>{
+                let subskill = () =>{
                     if(getRandomBool(50/100)){
                         let revocer = calcRecover(self,68,0.6)
                         e.revocer(revocer,self,'皇裔流离');
@@ -311,24 +311,16 @@ export const __SKILLS__ = {
             let maxAddDamageRate = 40;
             let addDamageRate = 8;
             
-            const subskill = () => {
-                console.log(self.Manger.SortSpdHeros)
-                let selfindex = null;
-                self.Manger.SortSpdHeros.forEach((e,i) => {
-                    if(e == self)selfindex = i;
-                })
-                let addCount = self.Manger.SortSpdHeros.length - selfindex - 1;
-                console.log(addCount);
-                self.State.attackDamageAdd.command.rounds = -1;
-                self.State.attackDamageAdd.command.value += (addDamageRate + addCount * addDamageRate);
-                self.Manger.Record.pushActionRecord(self,self,'【奋疾先登】的效果使',`造成的攻击伤害提高${(addDamageRate + addCount * addDamageRate)}%(${self.State.attackDamageAdd.command.value}%)`);
-                if(self.State.attackDamageAdd.command.value >= maxAddDamageRate){
+            let subskill = () => {
+                let attack = () => {
+                    // TODO 考虑暴走
                     let targets = self.getTarget(3,2);
                     targets.forEach(e => {
                         self.Manger.Record.pushActionRecord(self,self,'执行来自','的【奋疾先登】效果');
                         e.beHurt(self,{
                             type: 1,
-                            rate: 190
+                            rate: damageRate
+
                         });
                         e.Attrs.spd = keepTwoDecimal(e.Attrs.spd - 20);
                         if(e.Attrs.spd < 0)e.Attrs.spd = 0;
@@ -336,6 +328,23 @@ export const __SKILLS__ = {
                     });
                     self.State.attackDamageAdd.command.value = 0;
                 }
+                
+                self.State.attackDamageAdd.command.rounds = -1;
+                self.State.attackDamageAdd.command.value += addDamageRate;
+                self.Manger.Record.pushActionRecord(self,self,'【奋疾先登】使',`造成的攻击伤害提高${self.State.attackDamageAdd.command.value}%`);
+                if(self.State.attackDamageAdd.command.value >= maxAddDamageRate)attack()
+
+                self.Manger.SortSpdHeros.forEach((e,i) => {
+                    if(e != self && e.Arms > 0){
+                        if(self.Attrs.spd > e.Attrs.spd){
+                            self.State.attackDamageAdd.command.rounds = -1;
+                            self.State.attackDamageAdd.command.value += addDamageRate;
+                            self.Manger.Record.pushActionRecord(e,self,'执行来自','的【奋疾先登】效果');
+                            self.Manger.Record.pushActionRecord(self,self,'【奋疾先登】使',`造成的攻击伤害提高${self.State.attackDamageAdd.command.value}%`);
+                            if(self.State.attackDamageAdd.command.value >= maxAddDamageRate)attack()
+                        }
+                    }
+                })
             }
 
             self.ON_ACTION.push(subskill)
@@ -362,7 +371,7 @@ export const __SKILLS__ = {
             let teamMinDamageRate = 120; 
             let teamMaxDamageRate = 180;
             
-            const subskill = () => {
+            let subskill = () => {
                 let currentRate = rate + (self.RATE_ADD[1010] ? self.RATE_ADD[1010].value : 0);
                 self.Manger.Record.pushRecord(self,'的【奇兵拒北】当前发动率('+currentRate*100+'%)')
                 if(getRandomBool(currentRate)){
@@ -381,7 +390,7 @@ export const __SKILLS__ = {
                         if(e.Posname == '大营' || e.Posname == '中军'){
                             e.beHurt(self,{
                                 type: 1,
-                                rate: 180
+                                rate: damageRate
                             });
                         }
                     })
@@ -395,13 +404,13 @@ export const __SKILLS__ = {
                             }
                         }
                     });
-                    // 速度最快友军执行效果 暂时没考虑暴走时的友军选择
+                    // 速度最快友军执行效果 暂时没考虑暴走
                     self.Manger.Record.pushActionRecord(spdhero,self,'执行来自','的【奇兵拒北】效果');
                     targets.forEach(e => {
                         if(e.Posname == '大营' || e.Posname == '中军'){
                             e.beHurt(self,{
                                 type: 1,
-                                rate: getRandomInt(120,180)
+                                rate: getRandomInt(teamMinDamageRate,teamMaxDamageRate)
                             });
                         }
                     })

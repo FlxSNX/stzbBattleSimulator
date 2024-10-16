@@ -121,11 +121,11 @@ export class BattleManger {
 
         this.Record.pushSysRecord('【攻方阵容】');
         [...this.BlueTeam.hero].forEach(e=>{
-            this.Record.pushSysRecord(`(${e.Posname}) [${e.Name}] ${e.Level}级 兵力：${e.Arms}`,1);
+            this.Record.pushSysRecord(`(${e.Posname}) 【${e.Name}】 ${e.Level}级 兵力：${e.Arms}`,1);
         })
         this.Record.pushSysRecord('【守方阵容】');
         [...this.RedTeam.hero].forEach(e=>{
-            this.Record.pushSysRecord(`(${e.Posname}) [${e.Name}] ${e.Level}级 兵力：${e.Arms}`,1);
+            this.Record.pushSysRecord(`(${e.Posname}) 【${e.Name}】 ${e.Level}级 兵力：${e.Arms}`,1);
         })
 
         for (let index = 0; index < BattleRound.length; index++) {
