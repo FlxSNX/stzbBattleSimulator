@@ -7,7 +7,8 @@
 * [部分战法受属性影响的成长率](https://ds.163.com/feed/60ba5ac4517f0f055ad52ce0)
 * ...
 
-闲着没事瞎折腾的 可能不会填完坑
+~闲着没事瞎折腾的 可能不会填完坑~  
+弃坑了几个月,最近正在继续开发中 [24-10-18]
 ## 预览(Preview)
 [Preview](https://stzb-battle-simulator.vercel.app/?_blank)
 ## TODO
