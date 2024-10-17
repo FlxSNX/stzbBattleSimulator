@@ -357,9 +357,11 @@ export const __SKILLS__ = [
                         targets = self.Manger.RedTeam.hero;
                         team = self.Manger.BlueTeam.hero;
                     }
+                    console.log("【奇兵拒北】效果","debug",targets);
                     // 自身执行效果
                     targets.forEach(e => {
-                        if ((e.Posname == '大营' || e.Posname == '中军') && targets.Arms > 0) {
+                        if ((e.Posname == '大营' || e.Posname == '中军') && e.Arms > 0) {
+                            console.log("【奇兵拒北】效果","debug",e);
                             e.beHurt(self, {
                                 type: 1,
                                 rate: damageRate
@@ -379,7 +381,7 @@ export const __SKILLS__ = [
                     // 速度最快友军执行效果 暂时没考虑暴走
                     self.Manger.Record.pushActionRecord(spdhero, self, '执行来自', '的【奇兵拒北】效果');
                     targets.forEach(e => {
-                        if ((e.Posname == '大营' || e.Posname == '中军') && targets.Arms > 0) {
+                        if ((e.Posname == '大营' || e.Posname == '中军') && e.Arms > 0) {
                             e.beHurt(self, {
                                 type: 1,
                                 rate: getRandomInt(teamMinDamageRate, teamMaxDamageRate)
