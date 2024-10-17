@@ -139,6 +139,13 @@ export class BattleManger {
 
             console.log(`${roundName}回合 速度排序`,this.SortSpdHeros);
 
+            // 先执行回合开始时的效果
+            this.SortSpdHeros.forEach((e) => {
+                if(e.Arms > 0 && this.Round > 0){
+                    e.callHook("回合开始时");
+                }
+            });
+
             this.SortSpdHeros.forEach((e) => {
                 // 清除已攻击次数
                 e.State.attackNum = 0;
@@ -152,7 +159,7 @@ export class BattleManger {
                     }else{
                         if(this.Over)return;
                         e.clearStateRounds();
-                        e.callEffect("行动前");
+                        e.callHook("行动前");
                         e.ON_ACTION.forEach(call => {
                             call();
                         })
@@ -170,7 +177,7 @@ export class BattleManger {
                             e.skipAttackByAttackLimit();
                         }else{
                             // 执行普攻
-                            e.BEFORE_ATK.forEach(f => {
+                            e.BEFORE_BASEATK.forEach(f => {
                                 f();
                             })
                             e.callAttack();

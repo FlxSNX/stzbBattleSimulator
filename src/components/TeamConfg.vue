@@ -1,9 +1,12 @@
 <script setup>
     import { ref,toRefs } from 'vue'
     import { __HEROS__ as HEROS } from '../battle/heros';
-    import { __SKILLS__ as SKILLS } from '../battle/skills';
+    import { __SKILLS__ } from '../battle/skills';
 
-
+    let SKILLS = [];
+    __SKILLS__.forEach(e => {
+        SKILLS[e.id] = e;
+    });
     const props = defineProps(['show','team']);
     const emit = defineEmits(['update:show','update:team']);
 
@@ -301,8 +304,9 @@
                                 height: 100%;
                                 background-repeat: no-repeat;
                                 background-position: center;
-                                background-size: contain;
-                                transform: scale(.89);
+                                background-size: 76%;
+                                /* background-size: contain; */
+                                /* transform: scale(.89); */
 
                                 &.zh {
                                     background-image: url(/assets/ui/skill_zh.png);

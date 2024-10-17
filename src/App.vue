@@ -86,6 +86,17 @@ const showTeamConfig = ref(false);
 const team = ref({
 	blue: [
 		{
+			id: 1007,//武将Id
+			level: 40,//武将等级
+			extraAttrsAlloc: {//属性分配
+				atk: 80,
+				def: 0,
+				int: 0,
+				spd: 10
+			},
+			equipskill: [1012, 1013]
+		},
+		{
 			id: 1003,//武将Id
 			level: 40,//武将等级
 			extraAttrsAlloc: {//属性分配
@@ -97,22 +108,11 @@ const team = ref({
 			equipskill: [0, 0]
 		},
 		{
-			id: 1007,//武将Id
-			level: 40,//武将等级
-			extraAttrsAlloc: {//属性分配
-				atk: 80,
-				def: 0,
-				int: 0,
-				spd: 10
-			},
-			equipskill: [0, 0]
-		},
-		{
 			id: 1006,//武将Id
 			level: 40,//武将等级
 			extraAttrsAlloc: {//属性分配
-				atk: 90,
-				def: 0,
+				atk: 0,
+				def: 90,
 				int: 0,
 				spd: 0
 			},
