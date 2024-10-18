@@ -40,4 +40,25 @@ export class Record {
 
         this.Records.push(record);
     }
+
+    pushRoundRecord(msg){
+        let record = {
+            msg,
+            level: 0,
+            roundTitle: 1
+        }
+
+        this.Records.push(record);
+    }
+
+    pushHeroRoundStart(hero1){
+        let record = {
+            hero1,
+            msg: "行动阶段",
+            level: 0,
+            heroRoundStart: 1
+        }
+
+        this.Records.push(record);
+    }
 }

@@ -132,8 +132,7 @@ export class BattleManger {
             if(this.Over)break;
             this.Round = BattleRound[index];
             let roundName = this.Round == 0 ? '准备' : '第'+this.Round;
-            // if(index != 0) this.pushRecord(`------------------------${roundName}回合------------------------`);
-            if(index != 0) this.Record.pushSysRecord(`------------------------${roundName}回合------------------------`);
+            if(index != 0) this.Record.pushRoundRecord(`${roundName}回合`);
 
             this.sortBattleHerosBySpd();
 
@@ -159,7 +158,9 @@ export class BattleManger {
                     }else{
                         if(this.Over)return;
                         e.clearStateRounds();
+                        e.Manger.Record.pushHeroRoundStart(e);
                         e.callHook("行动前");
+                        this.Record.pushRecord(e,"行动开始");
                         e.ON_ACTION.forEach(call => {
                             call();
                         })

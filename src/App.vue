@@ -251,7 +251,7 @@ const battleStart = () => {
 </script>
 
 <template>
-	<TeamConfig v-model:show="showTeamConfig" v-model:team="team"/>
+	<TeamConfig v-model:show="showTeamConfig" v-model:team="team" />
 	<!-- <div class="header">
 		<div class="logo"></div>
 	</div> -->
@@ -288,7 +288,8 @@ const battleStart = () => {
 								:style="`width: calc(${battleinfo.RedTeam?.arms} / ${battleinfo.RedTeam?.total} * 100%)`">
 							</div>
 						</div>
-						<div class="text">{{ battleinfo.RedTeam?.arms }}/<span>{{ battleinfo.RedTeam?.total }}</span></div>
+						<div class="text">{{ battleinfo.RedTeam?.arms }}/<span>{{ battleinfo.RedTeam?.total }}</span>
+						</div>
 					</div>
 					<div class="team-name">
 						🤡🤡🤡
@@ -316,7 +317,8 @@ const battleStart = () => {
 						<div class="hurtarms">{{ item.HurtArms }}</div>
 						<div class="skills">
 							<div class="skill" v-for="e in item.SkillsOrder">
-								<div class="level" v-if="e">{{ item.Skills[e].level }}</div>{{ e ? item.Skills[e].name : ' - ' }}
+								<div class="level" v-if="e">{{ item.Skills[e].level }}</div>{{ e ? item.Skills[e].name :
+		' - ' }}
 							</div>
 						</div>
 					</div>
@@ -340,7 +342,8 @@ const battleStart = () => {
 						<div class="hurtarms">{{ item.HurtArms }}</div>
 						<div class="skills">
 							<div class="skill" v-for="e in item.SkillsOrder">
-								<div class="level" v-if="e">{{ item.Skills[e].level }}</div>{{ e ? item.Skills[e].name : ' - ' }}
+								<div class="level" v-if="e">{{ item.Skills[e].level }}</div>{{ e ? item.Skills[e].name :
+		' - ' }}
 							</div>
 						</div>
 					</div>
@@ -413,17 +416,17 @@ const battleStart = () => {
 			<div class="stbtn-1" @click="showTeamConfig = true">配置队伍</div>
 		</div>
 		<div class="record">
-			<div class="record-item" v-for="e in record">
+			<div class="record-item" v-for="e in record" :class="{ 'round-title': e.roundTitle == 1,'hero-round-start': e.heroRoundStart == 1 }" :style="{'background-image':(e.heroRoundStart == 1 ? `url(/assets/card/${e.hero1.Id}_long.png)` : '')}">
 				<div class="sub" v-if="e.level == 1"></div>
 				<span v-if="e.hero1 && e.hero1.BattleCamp == 'blue'" style="color: rgb(154,213,137);">【{{ e.hero1.Name
-				}}】</span>
+					}}】</span>
 				<span v-if="e.hero1 && e.hero1.BattleCamp == 'red'" style="color: rgb(255,72,71);">【{{ e.hero1.Name
-				}}】</span>
+					}}】</span>
 				<span v-if="e.predicate">{{ e.predicate }}</span>
 				<span v-if="e.hero2 && e.hero2.BattleCamp == 'blue'" style="color: rgb(154,213,137);">【{{ e.hero2.Name
-				}}】</span>
+					}}】</span>
 				<span v-if="e.hero2 && e.hero2.BattleCamp == 'red'" style="color: rgb(255,72,71);">【{{ e.hero2.Name
-				}}】</span>
+					}}】</span>
 				{{ e.msg }}
 			</div>
 		</div>
@@ -762,6 +765,31 @@ const battleStart = () => {
 
 		.record-item {
 			display: flex;
+
+			padding: 0 7.2vw;
+
+			&.round-title {
+				font-family: "FZLBJW_B";
+				background-color: rgba(0, 0, 0, .5);
+				padding: 0.3vw 0;
+				margin: .3vw 0;
+				justify-content: center;
+				align-items: center;
+				font-size: .9vw;
+				color: #e4dd9e;
+			}
+
+			&.hero-round-start {
+				background-color: rgba(0, 0, 0, .5);
+				padding-top: 0.6vw;
+				padding-bottom: 0.6vw;
+				margin: .3vw 0;
+				color: #e4dd9e;
+				background-repeat: no-repeat;
+				// background-position: left 20%;
+				background-size: contain;
+			}
+
 
 			.sub {
 				width: 1vw;

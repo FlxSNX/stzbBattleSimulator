@@ -345,7 +345,8 @@ export const __SKILLS__ = [
 
             let subskill = () => {
                 let currentRate = rate + (self.RATE_ADD[1010] ? self.RATE_ADD[1010].value : 0);
-                self.Manger.Record.pushRecord(self, '的【奇兵拒北】当前发动率(' + currentRate * 100 + '%)')
+                // TODO 发动率显示的精度问题
+                self.Manger.Record.pushRecord(self, '的【奇兵拒北】当前生效几率为(' + currentRate * 100 + '%)')
                 if (getRandomBool(currentRate)) {
                     self.Manger.Record.pushActionRecord(self, self, '执行来自', '的【奇兵拒北】效果');
                     let targets;
@@ -420,9 +421,7 @@ export const __SKILLS__ = [
         limit: 0,
         rate: 50,
         callskill: function (self) {
-            let ttt = getRandomBool(0.5);
-            console.log(ttt, "忠克猛烈");
-            if (ttt) {
+            if (getRandomBool(0.5)) {
                 self.Manger.Record.pushRecord(self, '发动【忠克猛烈】')
                 // 战法攻击效果
                 let target = self.getTarget(4, 1);
@@ -470,6 +469,7 @@ export const __SKILLS__ = [
                     self.countRest(tag + "次数");
                 }
                 self.addHook("行动前", tag + "清除", clear);
+                return true;
             }
         },
     },

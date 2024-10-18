@@ -288,7 +288,10 @@ export class BattleHero {
             if (!e) return;
             let skill = this.Skills[e];
             if (skill.type == 2) {
-                skill.callskill(this);
+                let currentRate = skill.rate + (this.RATE_ADD[skill.id] ? self.RATE_ADD[skill.id].value : 0);   
+                this.Manger.Record.pushRecord(this, `的【${skill.name}】发动率为${currentRate}%`)
+                let ret = skill.callskill(this);
+                if(ret !== true)this.Manger.Record.pushRecord(this, `的【${skill.name}】未发动`);
             }
         });
     }
