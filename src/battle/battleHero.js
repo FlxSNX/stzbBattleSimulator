@@ -40,6 +40,8 @@ export class BattleHero {
         this.BEFORE_ATK = {}
         // 攻击后
         this.AFTER_ATK = {}
+        // 准备中的战法
+        this.IN_READY_SKILL = []
 
         // 计数器
         this.Counter = {};
@@ -108,21 +110,6 @@ export class BattleHero {
                 }
             },
 
-            /* // 攻击伤害加成 大于当前数值则替换 不同来源可叠加
-            attackDamageAdd:{},
-
-            // 策略攻击伤害加成 大于当前数值则替换 不同来源可叠加
-            inteDamageAdd:{
-                 // 被动来源
-                 passive:{},
-                 // 指挥来源
-                 command:{},
-                 // 主动来源
-                 active:{},
-                 // 追击来源
-                 pursuit:{}
-            } */
-
             // 攻击伤害加成
             attackDamageAdd: {
                 passive: null,
@@ -133,30 +120,11 @@ export class BattleHero {
 
             // 策略攻击伤害加成
             inteDamageAdd: {
-                // 被动加成
-                passive: {
-                    value: 0, //数值
-                    rounds: 0 //持续回合
-                },
-                // 指挥加成
-                command: {
-                    value: 0, //数值
-                    rounds: 0 //持续回合
-                },
-                // 主动加成
-                active: {
-                    value: 0, //数值
-                    rounds: 0 //持续回合
-                }
-            },
-
-            // // 攻击伤害加成&降低BUFF
-            // attackDamageRate: {
-            //     passive: {},
-            //     command: {},
-            //     active: {},
-            //     passive: {}
-            // }
+                passive: null,
+                command: null,
+                active: null,
+                passive: null
+            }
         },
             this.Manger = Manger;
         this.BattleCamp = battlecamp;
@@ -256,7 +224,7 @@ export class BattleHero {
                 this.SkillsOrder.push(e);
             })
         }
-        console.log(SKILLS, this.Skills);
+        // console.log(SKILLS, this.Skills);
     }
     // 执行被动技能
     callPassiveSkill() {
@@ -288,10 +256,15 @@ export class BattleHero {
             if (!e) return;
             let skill = this.Skills[e];
             if (skill.type == 2) {
-                let currentRate = skill.rate + (this.RATE_ADD[skill.id] ? self.RATE_ADD[skill.id].value : 0);   
-                this.Manger.Record.pushRecord(this, `的【${skill.name}】发动率为${currentRate}%`)
-                let ret = skill.callskill(this);
-                if(ret !== true)this.Manger.Record.pushRecord(this, `的【${skill.name}】未发动`);
+                let currentRate = skill.rate + (this.RATE_ADD[skill.id] ? self.RATE_ADD[skill.id].value : 0);
+                console.log(this.canAddReadySkill(skill));
+                if(this.canAddReadySkill(skill)){
+                    this.Manger.Record.pushRecord(this, `的【${skill.name}】发动率为${currentRate}%`)
+                    let ret = skill.callskill(this);
+                    if(ret !== true)this.Manger.Record.pushRecord(this, `的【${skill.name}】未发动`);
+                }else{
+                    this.subReadySkillRound(skill);
+                }
             }
         });
     }
@@ -446,10 +419,10 @@ export class BattleHero {
 
         // 受到伤害后 获得此次伤害95%的伤兵
         this.HurtArms += Math.floor(realDamage * 0.95);
-        console.log(this.Name, this.Manger.Round, `受伤获得伤兵${Math.floor(realDamage * 0.95)}`, this.HurtArms);
+        // console.log(this.Name, this.Manger.Round, `受伤获得伤兵${Math.floor(realDamage * 0.95)}`, this.HurtArms);
         // 如果因此次伤害阵亡 伤兵数量减少到60%
         if (this.Arms == 0) {
-            console.log(this.Name, this.Manger.Round, ` 因阵亡伤兵减少到60%`, Math.floor(this.HurtArms * 0.6));
+            // console.log(this.Name, this.Manger.Round, ` 因阵亡伤兵减少到60%`, Math.floor(this.HurtArms * 0.6));
             this.HurtArms = Math.floor(this.HurtArms * 0.6);
         }
 
@@ -473,6 +446,16 @@ export class BattleHero {
         add += this.getState("attackDamageAdd", 2);
         add += this.getState("attackDamageAdd", 3);
         add += this.getState("attackDamageAdd", 4);
+        return add;
+    }
+
+    // 获取 "造成的策略伤害提高"
+    getInteDamageAdd() {
+        let add = 0;
+        add += this.getState("inteDamageAdd", 1);
+        add += this.getState("inteDamageAdd", 2);
+        add += this.getState("inteDamageAdd", 3);
+        add += this.getState("inteDamageAdd", 4);
         return add;
     }
 
@@ -581,7 +564,7 @@ export class BattleHero {
     // 执行技能效果
     callHook(on, ...args) {
         let obj = this.getHookObj(on);
-        console.log(obj);
+        // console.log(obj);
         for (let key in obj) {
             obj[key](...args)
         }
@@ -637,13 +620,30 @@ export class BattleHero {
             case "attackDamageAdd":
                 name = "攻击伤害提高"
                 break;
+            case "inteDamageAdd":
+                name = "策略伤害提高"
+                break;
         }
         return name;
     }
 
     // 获取效果冲突类型
+    /* 
+        1 = 同类型不叠加
+        2 = 数值替换 取最高效果
+        3 = 任意类型不叠加
+    */
     getStateLimit(value) {
-
+        let ret;
+        switch (value) {
+            case "attackDamageAdd":
+                ret = 1;
+                break;
+            case "inteDamageAdd":
+                ret = 1;
+                break;
+        }
+        return ret;
     }
 
     // 添加状态
@@ -658,20 +658,19 @@ export class BattleHero {
     addState(name, value, round, from, hero, type = 1) {
         let typename = this.getSkillTypeName(from.type);
         if (this.State[name][typename]) {
-            /*  if (from != this.State[name][typename].from && value > this.State[name][typename].value) {
-                 this.State[name][typename] = {
-                     type: type, //类型
-                     value: value, //数值
-                     rounds: round, //回合数 type为2时 为次数
-                     from: from, //效果来源技能
-                     hero: hero
-                 }
-             }else if() {
-                 // 战报返回已存在更强效果
-             } */
-            if (from == this.State[name][typename].from) {
-                this.State[name][typename].value += value;
+            let limit = this.getStateLimit(name);
+            switch (limit) {
+                case 1:
+                    if (from == this.State[name][typename].from && this.State[name][typename].type == 1) {
+                        this.State[name][typename].value += value;
+                        this.State[name][typename].round = round;
+                        return this.State[name][typename];
+                    }else{
+                        this.Manger.Record.pushRecord(this,`已存在来自【${this.State[name][typename].from.name}】的${this.getStateName(name)}效果`);
+                    }
+                    break;
             }
+            
         } else {
             this.State[name][typename] = {
                 type: type, //类型
@@ -680,7 +679,7 @@ export class BattleHero {
                 from: from, //效果来源技能
                 hero: hero
             }
-            // console.log(name,"Debug");
+            return this.State[name][typename];
         }
     }
     getState(name, type, returnObj = false) {
@@ -704,7 +703,45 @@ export class BattleHero {
             // this.Manger.Record.pushActionRecord(this, hero, `的来自`, `【${from.name}】的${this.getStateName(name)}效果消失了`);
         }
     }
-    // addAttackDamageAddState(){
+    // 准备技能需被 混乱 犹豫所打断
+    // TODO 需要考虑 法正 和 胜兵的准备回合跳过如何处理
+    // 添加准备技能
+    addReadySkill(from,round,func){
+        if(this.canAddReadySkill(from)){
+            let ready = {
+                from,
+                round,
+                func
+            }
+            this.IN_READY_SKILL.push(ready);
+            this.Manger.Record.pushRecord(this,`的战法【${from.name}】开始准备`);
+            return true;
+        }
+        return false;
+    }
 
-    // }
+    // 减少准备技能回合数
+    subReadySkillRound(skill){
+        this.IN_READY_SKILL.forEach(e => {
+            if(skill == e.from){
+                if(e.round > 0){
+                    e.round -= 1;
+                }
+
+                if(e.round <= 0){
+                    this.Manger.Record.pushRecord(this,`发动【${skill.name}】`);
+                    e.func();
+                }
+            }
+        });
+    }
+
+    // 获取是否可添加准备战法 因为当同一战法正在准备中 不可再次进行准备
+    canAddReadySkill(skill){
+        let ret = true;
+        this.IN_READY_SKILL.forEach(e => {
+            if(e.from == skill)ret = false;
+        });
+        return ret;
+    }
 }

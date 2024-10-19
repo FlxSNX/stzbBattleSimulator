@@ -56,7 +56,8 @@ export class Record {
             hero1,
             msg: "行动阶段",
             level: 0,
-            heroRoundStart: 1
+            heroRoundStart: 1,
+            arms: hero1.Arms
         }
 
         this.Records.push(record);

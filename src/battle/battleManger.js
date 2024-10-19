@@ -136,7 +136,7 @@ export class BattleManger {
 
             this.sortBattleHerosBySpd();
 
-            console.log(`${roundName}回合 速度排序`,this.SortSpdHeros);
+            // console.log(`${roundName}回合 速度排序`,this.SortSpdHeros);
 
             // 先执行回合开始时的效果
             this.SortSpdHeros.forEach((e) => {
@@ -206,7 +206,7 @@ export class BattleManger {
                 // 每个正式回合结束递减伤兵
                 this.BattleHeros.forEach(e => {
                     if(e.Arms > 0 && e.HurtArms > 0){
-                        console.log(e.Name,this.Round,'递减伤兵',Math.floor(e.HurtArms * 0.87));
+                        // console.log(e.Name,this.Round,'递减伤兵',Math.floor(e.HurtArms * 0.87));
                         e.HurtArms = Math.floor(e.HurtArms * 0.87);
                     }
                 })

@@ -51,7 +51,7 @@
                     <div class="posname">{{ posname[index] }}</div>
                     <div class="name" :class="heroCampclass[HEROS[hero.id].camp-1]">{{ HEROS[hero.id].name }}</div>
                     <div class="image">
-                        <img :src="`/assets/card/${hero.id}.png`">
+                        <img :src="`/assets/card/${hero.id}_long.png`">
                     </div>
                     <div class="skills">
                         <div class="skill" v-for="(skill, skillIndex) in [HEROS[hero.id].skill, ...hero.equipskill]" @click="selectSkill(camp,index,skillIndex)">
@@ -246,7 +246,7 @@
                         width: 100%;
                         height: 100%;
                         object-fit: cover;
-                        object-position: 0 -5vh;
+                        /* object-position: 0 -5vh; */
                     }
                 }
 

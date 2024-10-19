@@ -301,7 +301,7 @@ export const __SKILLS__ = [
                         self.Manger.Record.pushActionRecord(self, e, '【奋疾先登】的效果使', `的速度属性降低了20(${e.Attrs.spd})`, 1);
                     });
                     self.delState("attackDamageAdd", this);
-                    self.Manger.Record.pushActionRecord(self, self, `的来自`, `【${this.name}】的${stateName}效果消失了`, 1);
+                    self.Manger.Record.pushActionRecord(self, self, `来自`, `【${this.name}】的${stateName}效果消失了`, 1);
                 }
 
                 self.addState("attackDamageAdd", addDamageRate, -1, this, self)
@@ -317,7 +317,6 @@ export const __SKILLS__ = [
                             if (self.getState("attackDamageAdd", this.type) >= maxAddDamageRate) attack()
                         }
                     }
-                    // TODO 敌方最高兵力施加造成伤害降低 & 自身受到攻击后洞察
                 })
             }
 
@@ -358,11 +357,11 @@ export const __SKILLS__ = [
                         targets = self.Manger.RedTeam.hero;
                         team = self.Manger.BlueTeam.hero;
                     }
-                    console.log("【奇兵拒北】效果","debug",targets);
+                    // console.log("【奇兵拒北】效果","debug",targets);
                     // 自身执行效果
                     targets.forEach(e => {
                         if ((e.Posname == '大营' || e.Posname == '中军') && e.Arms > 0) {
-                            console.log("【奇兵拒北】效果","debug",e);
+                            // console.log("【奇兵拒北】效果","debug",e);
                             e.beHurt(self, {
                                 type: 1,
                                 rate: damageRate
@@ -424,7 +423,7 @@ export const __SKILLS__ = [
             if (getRandomBool(0.5)) {
                 self.Manger.Record.pushRecord(self, '发动【忠克猛烈】')
                 // 战法攻击效果
-                let target = self.getTarget(4, 1);
+                let target = self.getTarget(5, 1);
                 target[0].beHurt(self, {
                     type: 1,
                     rate: 280,
@@ -522,27 +521,69 @@ export const __SKILLS__ = [
                 let subRate = clacSkillAdditionRate(30, 0.25, self.Attrs.int);
 
                 let stateName = self.getStateName("attackDamageAdd");
+                let stateName2 = self.getStateName("inteDamageAdd");
 
                 let delAddRate = (attacker) => {
                     let obj = attacker.getState("attackDamageAdd", this.type, true);
                     if (obj.from == this && obj.hero == self) {
                         attacker.delState("attackDamageAdd", this);
-                        self.Manger.Record.pushActionRecord(attacker, self, `的来自`, `【${this.name}】的${stateName}效果消失了`, 1);
+                        attacker.delState("inteDamageAdd", this);
+                        self.Manger.Record.pushActionRecord(attacker, self, `来自`, `【${this.name}】的${stateName}效果消失了`, 1);
+                        self.Manger.Record.pushActionRecord(attacker, self, `来自`, `【${this.name}】的${stateName2}效果消失了`, 1);
                     }
+                    attacker.clearHook("攻击后",makeSkillTag(self, this, "攻击后移除增伤"));
                 }
 
                 let subskill = () => {
                     self.Manger.SortSpdHeros.forEach(e => {
                         // TODO 考虑暴走
                         if (e.BattleCamp == self.BattleCamp && e.Posname == '大营') {
-                            e.addState("attackDamageAdd", addRate, 1, this, self, 2);
-                            self.Manger.Record.pushActionRecord(self, e, `【${this.name}】使`, `造成的${stateName}${e.getState("attackDamageAdd", this.type)}%`);
+                            let ret = e.addState("attackDamageAdd", addRate, 1, this, self, 2);
+                            let ret2 = e.addState("inteDamageAdd", addRate, 1, this, self, 2);
+                            if(ret)self.Manger.Record.pushActionRecord(self, e, `【${this.name}】使`, `造成的${stateName}${ret.value}%`);
+                            if(ret2)self.Manger.Record.pushActionRecord(self, e, `【${this.name}】使`, `造成的${stateName2}${ret2.value}%`);
                             e.addHook("攻击后", makeSkillTag(self, this, "攻击后移除增伤"), delAddRate);
                         }
                     })
                 }
-                console.log(makeSkillTag(self, this, "行动前添加攻击伤害增加"));
                 self.addHook("行动前", makeSkillTag(self, this, "行动前添加攻击伤害增加"), subskill);
+                // TODO 敌方最高兵力施加造成伤害降低 & 自身受到攻击后洞察
+            }
+        }
+    },
+
+    {
+        id: 1014,
+        name: "浑水摸鱼",
+        desc: "1回合准备，使敌军群体陷入混乱状态，持续2回合",
+        level: "S",
+        type: 2,
+        target: 2,
+        target_type: "enemy",
+        limit: 4,
+        rate: 35,
+        callskill: function (self) {
+            // 准备型战法先创建子技能方法 然后提交在准备战法效果执行堆里
+            if(getRandomBool(this.rate / 100)){
+                let subskill = () => {
+                    // 先获取目标
+                    let targets = self.getTarget(this.limit,this.target);
+    
+                    targets.forEach(target => {
+                        if (!target.isConfusion()) {
+                            target.State.confusion = {
+                                rounds: 2,
+                                from: this
+                            }
+                            self.Manger.Record.pushRecord(target, `陷入混乱2回合`,1);
+                        } else {
+                            self.Manger.Record.pushRecord(target, '已存在混乱效果',1);
+                        }
+                    })
+                }
+    
+                self.addReadySkill(this,1,subskill);
+                return true;
             }
         }
     },

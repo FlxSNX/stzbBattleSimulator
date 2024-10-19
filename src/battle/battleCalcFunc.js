@@ -25,9 +25,9 @@ export const clacAttackDamage = (attacker, target, damageInfo, skill) => {
     let atkdefdiff = calcAtkDefDiff(attacker.Attrs.atk, targetDef);
     let mainDamage = (((300 * attacker.Arms) / (3500 + attacker.Arms)) * (DamageRate / 100) * damageAddition) * atkdefdiff;
     console.log(attacker.Name, "兵力基础伤害:", armsDamage, "兵力:", attacker.Arms, "基础伤害:", basicDamage, "主要伤害:", mainDamage, "总伤害:", Math.round(armsDamage + basicDamage + mainDamage));
-    if (skill && skill.id == 1011) {
-        console.log(atkdefdiff, "陈到攻防", attacker.Attrs.atk, mainDamage);
-    }
+    // if (skill && skill.id == 1011) {
+    //     console.log(atkdefdiff, "陈到攻防", attacker.Attrs.atk, mainDamage);
+    // }
     return Math.round(armsDamage + basicDamage + mainDamage);
 }
 

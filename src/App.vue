@@ -105,7 +105,7 @@ const team = ref({
 				int: 90,
 				spd: 0
 			},
-			equipskill: [0, 0]
+			equipskill: [1014, 0]
 		},
 		{
 			id: 1006,//武将Id
@@ -410,7 +410,7 @@ const battleStart = () => {
 
 		<div class="stbtn-box">
 			<!-- <button @click="testfunc">Debug</button> -->
-			<div class="stbtn-1" @click="testfunc">DeBug</div>
+			<!-- <div class="stbtn-1" @click="testfunc">DeBug</div> -->
 			<div class="stbtn-1" @click="battleStart">开始战斗</div>
 			<div class="stbtn-1">统计</div>
 			<div class="stbtn-1" @click="showTeamConfig = true">配置队伍</div>
@@ -428,6 +428,7 @@ const battleStart = () => {
 				<span v-if="e.hero2 && e.hero2.BattleCamp == 'red'" style="color: rgb(255,72,71);">【{{ e.hero2.Name
 					}}】</span>
 				{{ e.msg }}
+				<span v-if="e.heroRoundStart == 1" style="flex-grow: 2;text-align: right;">兵力 {{ e.arms }}</span>
 			</div>
 		</div>
 	</div>
