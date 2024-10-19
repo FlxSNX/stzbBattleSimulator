@@ -47,7 +47,7 @@ export const __SKILLS__ = [
             target.beHurt(self, {
                 type: 2,
                 rate: 200,
-            });
+            },this);
         }
     },
 
@@ -60,7 +60,7 @@ export const __SKILLS__ = [
         target: 1,
         target_type: "self",
         limit: 0,
-        rate: -1,
+        rata: "--",
         callskill: function (self) {
             let manger = self.Manger;
             if (manger.Round == "-1") {
@@ -97,7 +97,7 @@ export const __SKILLS__ = [
             target.beHurt(self, {
                 type: 2,
                 rate: 200,
-            });
+            },this);
 
             if (!target.isConfusion()) {
                 target.State.confusion = {
@@ -123,7 +123,7 @@ export const __SKILLS__ = [
         target: 1,
         target_type: "self",
         limit: 1,
-        rate: -1,
+        rata: "--",
         callskill: function (self) {
             let manger = self.Manger;
             if (manger.Round == 0) {
@@ -194,7 +194,7 @@ export const __SKILLS__ = [
         target: 1,
         target_type: "team",
         limit: 0,
-        rate: -1,
+        rata: "--",
         callskill: function (self) {
             self.Manger.Record.pushRecord(self, '发动【皇裔流离】')
             let team;
@@ -207,7 +207,7 @@ export const __SKILLS__ = [
 
             team.forEach(e => {
                 let subskill = () => {
-                    if (getRandomBool(50 / 100)) {
+                    if (getRandomBool(50)) {
                         let revocer = calcRecover(self, 68, 0.6)
                         e.revocer(revocer, self, '皇裔流离');
                     }
@@ -228,7 +228,7 @@ export const __SKILLS__ = [
         target: 1,
         target_type: "team",
         limit: 0,
-        rate: -1,
+        rata: "--",
         callskill: function (self) {
             self.Manger.Record.pushRecord(self, '发动【其疾如风】')
             let team;
@@ -247,7 +247,7 @@ export const __SKILLS__ = [
 
                 e.BEFORE_BASEATK.push(() => {
                     if (self.Manger.Round >= 1 && self.Manger.Round <= 3) {
-                        if (getRandomBool(70 / 100)) {
+                        if (getRandomBool(70)) {
                             if (e.State.doubleAttack.rounds <= 0) {
                                 e.State.doubleAttack = {
                                     rounds: 1,
@@ -277,7 +277,7 @@ export const __SKILLS__ = [
         target: 1,
         target_type: "self",
         limit: 0,
-        rate: -1,
+        rata: "--",
         callskill: function (self) {
             self.Manger.Record.pushRecord(self, '发动【奋疾先登】')
             let damageRate = 190;
@@ -294,8 +294,7 @@ export const __SKILLS__ = [
                         e.beHurt(self, {
                             type: 1,
                             rate: damageRate
-
-                        });
+                        },this);
                         e.Attrs.spd = keepTwoDecimal(e.Attrs.spd - 20);
                         if (e.Attrs.spd < 0) e.Attrs.spd = 0;
                         self.Manger.Record.pushActionRecord(self, e, '【奋疾先登】的效果使', `的速度属性降低了20(${e.Attrs.spd})`, 1);
@@ -333,19 +332,18 @@ export const __SKILLS__ = [
         target: 1,
         target_type: "self",
         limit: 0,
-        rate: -1,
+        rata: "--",
         callskill: function (self) {
             self.Manger.Record.pushRecord(self, '发动【奇兵拒北】')
-            let rate = 0.3;
-            let addRate = 0.05;
+            let rate = 30;
+            let addRate = 5;
             let damageRate = 180;
             let teamMinDamageRate = 120;
             let teamMaxDamageRate = 180;
 
             let subskill = () => {
                 let currentRate = rate + (self.RATE_ADD[1010] ? self.RATE_ADD[1010].value : 0);
-                // TODO 发动率显示的精度问题
-                self.Manger.Record.pushRecord(self, '的【奇兵拒北】当前生效几率为(' + currentRate * 100 + '%)')
+                self.Manger.Record.pushRecord(self, '的【奇兵拒北】当前生效几率为(' + currentRate + '%)')
                 if (getRandomBool(currentRate)) {
                     self.Manger.Record.pushActionRecord(self, self, '执行来自', '的【奇兵拒北】效果');
                     let targets;
@@ -365,7 +363,7 @@ export const __SKILLS__ = [
                             e.beHurt(self, {
                                 type: 1,
                                 rate: damageRate
-                            });
+                            },this);
                         }
                     })
                     let spdhero = null;
@@ -385,7 +383,7 @@ export const __SKILLS__ = [
                             e.beHurt(self, {
                                 type: 1,
                                 rate: getRandomInt(teamMinDamageRate, teamMaxDamageRate)
-                            });
+                            },this);
                         }
                     })
 
@@ -420,7 +418,7 @@ export const __SKILLS__ = [
         limit: 0,
         rate: 50,
         callskill: function (self) {
-            if (getRandomBool(0.5)) {
+            if (getRandomBool(this.rate)) {
                 self.Manger.Record.pushRecord(self, '发动【忠克猛烈】')
                 // 战法攻击效果
                 let target = self.getTarget(5, 1);
@@ -482,7 +480,7 @@ export const __SKILLS__ = [
         target: 1,
         target_type: "self",
         limit: 0,
-        rate: -1,
+        rata: "--",
         callskill: function (self) {
             let manger = self.Manger;
             if (manger.Round == "-1") {
@@ -512,7 +510,7 @@ export const __SKILLS__ = [
         target: 1,
         target_type: "self",
         limit: 0,
-        rate: -1,
+        rata: "--",
         callskill: function (self) {
             let manger = self.Manger;
             if (manger.Round == 0) {
@@ -531,7 +529,7 @@ export const __SKILLS__ = [
                         self.Manger.Record.pushActionRecord(attacker, self, `来自`, `【${this.name}】的${stateName}效果消失了`, 1);
                         self.Manger.Record.pushActionRecord(attacker, self, `来自`, `【${this.name}】的${stateName2}效果消失了`, 1);
                     }
-                    attacker.clearHook("攻击后",makeSkillTag(self, this, "攻击后移除增伤"));
+                    attacker.clearHook("攻击后", makeSkillTag(self, this, "攻击后移除增伤"));
                 }
 
                 let subskill = () => {
@@ -540,8 +538,8 @@ export const __SKILLS__ = [
                         if (e.BattleCamp == self.BattleCamp && e.Posname == '大营') {
                             let ret = e.addState("attackDamageAdd", addRate, 1, this, self, 2);
                             let ret2 = e.addState("inteDamageAdd", addRate, 1, this, self, 2);
-                            if(ret)self.Manger.Record.pushActionRecord(self, e, `【${this.name}】使`, `造成的${stateName}${ret.value}%`);
-                            if(ret2)self.Manger.Record.pushActionRecord(self, e, `【${this.name}】使`, `造成的${stateName2}${ret2.value}%`);
+                            if (ret) self.Manger.Record.pushActionRecord(self, e, `【${this.name}】使`, `造成的${stateName}${ret.value}%`);
+                            if (ret2) self.Manger.Record.pushActionRecord(self, e, `【${this.name}】使`, `造成的${stateName2}${ret2.value}%`);
                             e.addHook("攻击后", makeSkillTag(self, this, "攻击后移除增伤"), delAddRate);
                         }
                     })
@@ -564,27 +562,68 @@ export const __SKILLS__ = [
         rate: 35,
         callskill: function (self) {
             // 准备型战法先创建子技能方法 然后提交在准备战法效果执行堆里
-            if(getRandomBool(this.rate / 100)){
+            if (getRandomBool(this.rate)) {
                 let subskill = () => {
                     // 先获取目标
-                    let targets = self.getTarget(this.limit,this.target);
-    
+                    let targets = self.getTarget(this.limit, this.target);
+
                     targets.forEach(target => {
                         if (!target.isConfusion()) {
                             target.State.confusion = {
                                 rounds: 2,
                                 from: this
                             }
-                            self.Manger.Record.pushRecord(target, `陷入混乱2回合`,1);
+                            self.Manger.Record.pushRecord(target, `陷入混乱2回合`, 1);
                         } else {
-                            self.Manger.Record.pushRecord(target, '已存在混乱效果',1);
+                            self.Manger.Record.pushRecord(target, '已存在混乱效果', 1);
                         }
                     })
                 }
-    
-                self.addReadySkill(this,1,subskill);
+
+                self.addReadySkill(this, 1, subskill);
                 return true;
             }
         }
     },
+
+    {
+        id: 1015,
+        name: "垒实迎击",
+        desc: "受到普通攻击伤害时，有50.0%几率使自身恢复一定兵力（恢复率200.0%）；有50.0%几率移除自身由主动及追击战法带来的负面效果；使自身进入规避状态，有50.0%几率免疫下1次受到的伤害。同时当自身位于中军及前锋时，每回合开始时有50.0%几率援护友军全体，持续1回合",
+        level: "S",
+        type: 4,
+        target: 1,
+        target_type: "self",
+        limit: 1,
+        rate: "--",
+        callskill: function (self) {
+            self.Manger.Record.pushRecord(self,`发动【${this.name}】`);
+            let subskill = (attacker, damageInfo, skill) => {
+                if (damageInfo.type == 1 && skill == null) {
+                    // 恢复一定兵力
+                    if (getRandomBool(50)) {
+                        self.revocer(calcRecover(self, 200, 0),self,this.name);
+                    }
+
+                    // 移除负面效果
+                    if (getRandomBool(50)) {
+                        self.clearDebuff(this,self);
+                    }
+
+                    // 添加一个在受伤前触发的 50%规避效果的子技能 触发后移除该子技能
+                    
+                }
+            }
+
+            let subskill2 = () => {
+                // 援护友军
+                if (getRandomBool(50)){
+
+                }
+            }
+
+            self.addHook("受伤时",makeSkillTag(self,this,"受伤时"),subskill);
+            self.addHook("回合开始时",makeSkillTag(self,this,"回合开始时"),subskill2);
+        }
+    }
 ]

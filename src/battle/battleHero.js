@@ -528,6 +528,35 @@ export class BattleHero {
         this.StateFlag.attackLimit = true;
     }
 
+    // (镇静)清除所有控制与恐慌 妖术 燃烧 动摇 围困 
+    clearDebuff(skill,hero) {
+        this.Manger.Record.pushActionRecord(this,hero,"受到了",`【${skill.name}】的镇静`);
+
+        let clear = false;
+        if(this.State.confusion.rounds > 0){
+            this.State.confusion.rounds = 0;
+            this.Manger.Record.pushRecord(this,"的混乱效果被消除了",1)
+            clear = true;
+        }
+
+        if(this.State.activeLimit.rounds > 0){
+            this.State.activeLimit.rounds = 0;
+            this.Manger.Record.pushRecord(this,"的犹豫效果被消除了",1)
+            clear = true;
+        }
+
+        if(this.State.attackLimit.rounds > 0){
+            this.State.attackLimit.rounds = 0;
+            this.Manger.Record.pushRecord(this,"的怯战效果被消除了",1)
+            clear = true;
+        }
+
+        if(!clear)this.Manger.Record.pushRecord(this,"没有效果可消除",1);
+        
+        
+        // TODO 后续添加 暴走 恐慌 妖术 燃烧 动摇 围困 时添加清除
+    }
+
     // 获取效果对象
     getHookObj(on) {
         let obj;

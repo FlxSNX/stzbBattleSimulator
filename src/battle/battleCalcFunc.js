@@ -113,7 +113,7 @@ function shuffleArray(array) {
 export function getRandomBool(probability) {
     let results = [];
     for (let i = 0; i < 100; i++) {
-        results.push(i < probability * 100);
+        results.push(i < probability);
     }
     results = shuffleArray(results);
     return results[Math.floor(Math.random() * 100)];

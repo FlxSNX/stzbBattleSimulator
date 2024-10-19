@@ -105,7 +105,7 @@ const team = ref({
 				int: 90,
 				spd: 0
 			},
-			equipskill: [1014, 0]
+			equipskill: [0, 0]
 		},
 		{
 			id: 1006,//武将Id
@@ -116,7 +116,7 @@ const team = ref({
 				int: 0,
 				spd: 0
 			},
-			equipskill: [0, 0]
+			equipskill: [1014, 1015]
 		}
 	],
 
@@ -141,7 +141,7 @@ const team = ref({
 				int: 0,
 				spd: 0
 			},
-			equipskill: [0, 0]
+			equipskill: [1014, 0]
 		},
 		{
 			id: 1005,//武将Id
@@ -152,7 +152,7 @@ const team = ref({
 				int: 0,
 				spd: 90
 			},
-			equipskill: [0, 0]
+			equipskill: [1015, 0]
 		},
 	]
 })
