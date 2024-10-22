@@ -803,7 +803,7 @@ export class BattleHero {
 
     //减少准备技能回合数
     subReadySkillRound(skill) {
-        this.IN_READY_SKILL.forEach(e => {
+        this.IN_READY_SKILL.forEach((e,i) => {
             if (skill == e.from) {
                 if (e.round > 0) {
                     e.round -= 1;
@@ -812,6 +812,7 @@ export class BattleHero {
                 if (e.round <= 0) {
                     this.Manger.Record.pushRecord(this, `发动【${skill.name}】`);
                     e.func();
+                    delete this.IN_READY_SKILL[i];
                 }
             }
         });

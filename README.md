@@ -8,8 +8,10 @@
 * ...
 
 目前主要更新`战法`,同时会对`对局机制`进行更新,`队伍配置功能`等等UI相关的内容暂时搁置。 尽量每天更新，早日完善本项目 \^o^/~
+
 ## 预览(Preview)
 [Preview](https://stzb-battle-simulator.vercel.app/?_blank)
+
 ## 更新计划(按先后排序)
 - 对局机制
 - 队伍配置
