@@ -47,7 +47,7 @@ export const __SKILLS__ = [
             target.beHurt(self, {
                 type: 2,
                 rate: 200,
-            },this);
+            }, this);
         }
     },
 
@@ -97,7 +97,7 @@ export const __SKILLS__ = [
             target.beHurt(self, {
                 type: 2,
                 rate: 200,
-            },this);
+            }, this);
 
             if (!target.isConfusion()) {
                 target.State.confusion = {
@@ -213,7 +213,7 @@ export const __SKILLS__ = [
                     }
                 }
                 // e.ON_HURT.push(subskill);
-                e.addHook("受伤时", `${self.BattleCamp}${self.Camp} - ${self.Id}${self.Name}皇裔流离急救效果`, subskill)
+                e.addHook("受伤时", `${self.BattleCamp}${self.Camp} - ${self.Id}${self.Name}皇裔流离急救效果`, subskill, this, self)
                 self.Manger.Record.pushRecord(e, '的急救效果已施加', 1)
             });
         },
@@ -294,7 +294,7 @@ export const __SKILLS__ = [
                         e.beHurt(self, {
                             type: 1,
                             rate: damageRate
-                        },this);
+                        }, this);
                         e.Attrs.spd = keepTwoDecimal(e.Attrs.spd - 20);
                         if (e.Attrs.spd < 0) e.Attrs.spd = 0;
                         self.Manger.Record.pushActionRecord(self, e, '【奋疾先登】的效果使', `的速度属性降低了20(${e.Attrs.spd})`, 1);
@@ -363,7 +363,7 @@ export const __SKILLS__ = [
                             e.beHurt(self, {
                                 type: 1,
                                 rate: damageRate
-                            },this);
+                            }, this);
                         }
                     })
                     let spdhero = null;
@@ -383,7 +383,7 @@ export const __SKILLS__ = [
                             e.beHurt(self, {
                                 type: 1,
                                 rate: getRandomInt(teamMinDamageRate, teamMaxDamageRate)
-                            },this);
+                            }, this);
                         }
                     })
 
@@ -421,7 +421,7 @@ export const __SKILLS__ = [
             if (getRandomBool(this.rate)) {
                 self.Manger.Record.pushRecord(self, '发动【忠克猛烈】')
                 // 战法攻击效果
-                let target = self.getTarget(5, 1);
+                let target = self.getTarget(4, 1);
                 target[0].beHurt(self, {
                     type: 1,
                     rate: 280,
@@ -457,7 +457,7 @@ export const __SKILLS__ = [
 
                 }
 
-                target[0].addHook("受伤时", tag, subskill)
+                target[0].addHook("受伤时", tag, subskill, this, self, 'debuff')
                 // 陈到行动前 清除所有人的 【忠克猛烈】施加的 "受到伤害时陈到对其发动攻击" 的效果
                 let clear = () => {
                     self.Manger.SortSpdHeros.forEach(e => {
@@ -465,7 +465,7 @@ export const __SKILLS__ = [
                     });
                     self.countRest(tag + "次数");
                 }
-                self.addHook("行动前", tag + "清除", clear);
+                self.addHook("行动前", tag + "清除", clear, this, self, 'other');
                 return true;
             }
         },
@@ -496,7 +496,7 @@ export const __SKILLS__ = [
                     self.Manger.Record.pushActionRecord(self, self, '的【愈战愈勇】使', '造成的攻击伤害提高' + self.State.attackDamageAdd.passive.value + '%');
                 }
 
-                self.addHook("回合开始时", makeSkillTag(self, this, "回合开始时添加攻击伤害提高"), subskill);
+                self.addHook("回合开始时", makeSkillTag(self, this, "回合开始时添加攻击伤害提高"), subskill, this, self);
             }
         }
     },
@@ -540,11 +540,11 @@ export const __SKILLS__ = [
                             let ret2 = e.addState("inteDamageAdd", addRate, 1, this, self, 2);
                             if (ret) self.Manger.Record.pushActionRecord(self, e, `【${this.name}】使`, `造成的${stateName}${ret.value}%`);
                             if (ret2) self.Manger.Record.pushActionRecord(self, e, `【${this.name}】使`, `造成的${stateName2}${ret2.value}%`);
-                            e.addHook("攻击后", makeSkillTag(self, this, "攻击后移除增伤"), delAddRate);
+                            e.addHook("攻击后", makeSkillTag(self, this, "攻击后移除增伤"), delAddRate, this, self, "other");
                         }
                     })
                 }
-                self.addHook("行动前", makeSkillTag(self, this, "行动前添加攻击伤害增加"), subskill);
+                self.addHook("行动前", makeSkillTag(self, this, "行动前添加攻击伤害增加"), subskill, this, self);
                 // TODO 敌方最高兵力施加造成伤害降低 & 自身受到攻击后洞察
             }
         }
@@ -597,33 +597,33 @@ export const __SKILLS__ = [
         limit: 1,
         rate: "--",
         callskill: function (self) {
-            self.Manger.Record.pushRecord(self,`发动【${this.name}】`);
+            self.Manger.Record.pushRecord(self, `发动【${this.name}】`);
             let subskill = (attacker, damageInfo, skill) => {
                 if (damageInfo.type == 1 && skill == null) {
                     // 恢复一定兵力
                     if (getRandomBool(50)) {
-                        self.revocer(calcRecover(self, 200, 0),self,this.name);
+                        self.revocer(calcRecover(self, 200, 0), self, this.name);
                     }
 
                     // 移除负面效果
                     if (getRandomBool(50)) {
-                        self.clearDebuff(this,self);
+                        self.clearDebuff(this, self);
                     }
 
                     // 添加一个在受伤前触发的 50%规避效果的子技能 触发后移除该子技能
-                    
+
                 }
             }
 
             let subskill2 = () => {
                 // 援护友军
-                if (getRandomBool(50)){
+                if (getRandomBool(50)) {
 
                 }
             }
 
-            self.addHook("受伤时",makeSkillTag(self,this,"受伤时"),subskill);
-            self.addHook("回合开始时",makeSkillTag(self,this,"回合开始时"),subskill2);
+            self.addHook("受伤时", makeSkillTag(self, this, "受伤时"), subskill, this, self);
+            self.addHook("回合开始时", makeSkillTag(self, this, "回合开始时"), subskill2, this, self);
         }
     }
 ]

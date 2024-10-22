@@ -580,10 +580,21 @@ export class BattleHero {
         return obj;
     }
     // 添加技能效果
-    addHook(on, tag, func) {
+    /* 
+        type:
+            buff 有益效果&普通效果
+            debuff 负面效果
+            other 其他 (用于在某个时机清除效果用)
+    */
+    addHook(on, tag, func, skill, hero, type="buff") {
         let obj = this.getHookObj(on);
 
-        obj[tag] = func
+        obj[tag] = {
+            call: func,
+            type: type,
+            skill: skill,
+            hero: hero
+        }
     }
     // 移除技能效果
     clearHook(on, tag) {
@@ -595,7 +606,9 @@ export class BattleHero {
         let obj = this.getHookObj(on);
         // console.log(obj);
         for (let key in obj) {
-            obj[key](...args)
+            // obj[key](...args)
+            // console.log(obj[key]);
+            obj[key].call(...args);
         }
     }
 
