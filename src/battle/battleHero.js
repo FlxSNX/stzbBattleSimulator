@@ -5,7 +5,7 @@
 import { __HEROS__ as HEROS } from "./heros";
 import { __ARMS__ as ARMS } from "./arms";
 import { __SKILLS__ } from "./skills"
-import { keepTwoDecimal } from "../uilts"
+import { keepTwoDecimal, makeSkillTag } from "../uilts"
 import { clacAttackDamage, getRandomBool } from "./battleCalcFunc"
 
 const CanAddAttrsKey = ['atk', 'def', 'int', 'spd'];
@@ -26,34 +26,31 @@ export class BattleHero {
 
     */
     constructor(config, battlecamp, Manger) {
-        // 受击时执行堆
-        this.ON_HURT = {};
-        // 普通攻击前执行堆
-        this.BEFORE_BASEATK = [];
-        // 行动时执行堆
-        this.ON_ACTION = [];
-        // 行动前执行堆
-        this.BEFORE_ACTION = {};
-        // 回合开始时执行堆
-        this.ROUND_START = {};
-        // 攻击前
-        this.BEFORE_ATK = {}
-        // 攻击后
-        this.AFTER_ATK = {}
-        // 准备中的战法
+
+        this.HOOKS = {
+            ON_HURT: {}, //受击时执行堆
+            BEFORE_BASEATK: {}, //普通攻击前执行堆
+            ON_ACTION: {}, //行动时
+            BEFORE_ACTION: {}, //行动前
+            ROUND_START: {}, //回合开始时
+            BEFORE_ATK: {}, //攻击前
+            AFTER_ATK: {} //攻击后
+        }
+
+        //准备中的战法
         this.IN_READY_SKILL = []
 
-        // 计数器
+        //计数器
         this.Counter = {};
-        // 发动率增加效果
+        //发动率增加效果
         this.RATE_ADD = {};
 
-        // 一些效果已执行的标记
+        //一些效果已执行的标记
         this.StateFlag = {
             confusion: false,
             attackLimit: false
         }
-        // 战斗时状态
+        //战斗时状态
         this.State = {
             attackNum: 0,//已攻击次数
 
@@ -129,9 +126,9 @@ export class BattleHero {
             this.Manger = Manger;
         this.BattleCamp = battlecamp;
 
-        // 初始化属性值
+        //初始化属性值
         this.initAttrs(config);
-        // 初始化技能
+        //初始化技能
         this.initSkills(config);
     }
 
@@ -226,7 +223,7 @@ export class BattleHero {
         }
         // console.log(SKILLS, this.Skills);
     }
-    // 执行被动技能
+    //执行被动技能
     callPassiveSkill() {
         this.SkillsOrder.forEach(e => {
             if (!e) return;
@@ -240,7 +237,7 @@ export class BattleHero {
             }
         });
     }
-    // 执行指挥技能
+    //执行指挥技能
     callCommandSkill() {
         this.SkillsOrder.forEach(e => {
             if (!e) return;
@@ -250,7 +247,7 @@ export class BattleHero {
             }
         });
     }
-    // 执行主动技能
+    //执行主动技能
     callActiveSkill() {
         this.SkillsOrder.forEach(e => {
             if (!e) return;
@@ -258,17 +255,17 @@ export class BattleHero {
             if (skill.type == 2) {
                 let currentRate = skill.rate + (this.RATE_ADD[skill.id] ? self.RATE_ADD[skill.id].value : 0);
                 console.log(this.canAddReadySkill(skill));
-                if(this.canAddReadySkill(skill)){
+                if (this.canAddReadySkill(skill)) {
                     this.Manger.Record.pushRecord(this, `的【${skill.name}】发动率为${currentRate}%`)
                     let ret = skill.callskill(this);
-                    if(ret !== true)this.Manger.Record.pushRecord(this, `的【${skill.name}】未发动`);
-                }else{
+                    if (ret !== true) this.Manger.Record.pushRecord(this, `的【${skill.name}】未发动`);
+                } else {
                     this.subReadySkillRound(skill);
                 }
             }
         });
     }
-    // 执行追击技能
+    //执行追击技能
     callPursuitSkill(target) {
         this.SkillsOrder.forEach(e => {
             if (!e) return;
@@ -281,7 +278,7 @@ export class BattleHero {
         });
     }
 
-    // 获取一个攻击目标
+    //获取一个攻击目标
     // TODO: 考虑暴走时的情况
     getAttackTarget() {
         let canAtk = [];
@@ -322,7 +319,7 @@ export class BattleHero {
         }
     }
 
-    // 获取目标
+    //获取目标
     getTarget(range, num) {
         let canAtk = [];
 
@@ -380,7 +377,7 @@ export class BattleHero {
         }
     }
 
-    // 普通攻击
+    //普通攻击
     basicAttack(target) {
         this.Manger.Record.pushActionRecord(this, target, '对', '发动普通攻击');
         target.beHurt(this, {
@@ -391,7 +388,7 @@ export class BattleHero {
         this.callPursuitSkill(target);
     }
 
-    // 受到伤害
+    //受到伤害
     /*
         damageInfo {
             rate //伤害率
@@ -429,7 +426,7 @@ export class BattleHero {
         this.callHook('受伤时', attacker, damageInfo, skill);
     }
 
-    // 受到恢复
+    //受到恢复
     revocer(recoverNum, source, name) {
         if (this.Arms == 0) return;
         if (this.HurtArms == 0) recoverNum = 0;
@@ -439,7 +436,7 @@ export class BattleHero {
         this.Manger.Record.pushActionRecord(source, this, `【${name}】的效果使`, `恢复了${recoverNum}兵力(${this.Arms})`, 1);
     }
 
-    // 获取 "造成的攻击伤害提高"
+    //获取 "造成的攻击伤害提高"
     getAttackDamageAdd() {
         let add = 0;
         add += this.getState("attackDamageAdd", 1);
@@ -449,7 +446,7 @@ export class BattleHero {
         return add;
     }
 
-    // 获取 "造成的策略伤害提高"
+    //获取 "造成的策略伤害提高"
     getInteDamageAdd() {
         let add = 0;
         add += this.getState("inteDamageAdd", 1);
@@ -459,7 +456,7 @@ export class BattleHero {
         return add;
     }
 
-    // 回合开始时清除一些效果
+    //回合开始时清除一些效果
     clearStateRounds() {
         // 清除混乱
         this.claerSingleActionedStateRounds('confusion');
@@ -474,7 +471,8 @@ export class BattleHero {
         this.claerSingleSimpleStateRounds('attackDamageAdd');
     }
 
-    // 清除已执行的效果 如混乱,怯战等
+    //清除已执行的效果 如混乱,怯战等 
+    //差点忘记为什么这样写了备注一下：如果设计成行动前减1回合，一个慢速武将放了浑水，但被浑水的武将已经行动过了 这样会使效果少1回合。所以弄了个已执行标记 --- TODO 好像可以设计成行动结束时减少1回合 后续优化
     claerSingleActionedStateRounds(name) {
         if (this.StateFlag[name] == true) {
             this.StateFlag[name] = false;
@@ -487,7 +485,7 @@ export class BattleHero {
         }
     }
 
-    // 清除一些不需要确保执行的效果 如连击 妖术等
+    //清除一些不需要确保执行的效果 如连击 妖术等
     claerSingleSimpleStateRounds(name) {
         if (this.State[name].rounds > 0) {
             this.State[name].rounds--;
@@ -498,7 +496,7 @@ export class BattleHero {
         }
     }
 
-    // 是否处于混乱状态
+    //是否处于混乱状态
     isConfusion() {
         if (this.State.confusion.rounds > 0) {
             return true
@@ -506,14 +504,14 @@ export class BattleHero {
         return false
     }
 
-    // 由于处于混乱跳过1个回合()
+    //由于处于混乱跳过1个回合()
     skipRoundByConfusion() {
         // this.Manger.pushRecord(`[${this.Name}] 由于受到 [${this.State.confusion.from.hero.Name}] [${SKILLS[this.State.confusion.from.skill].name}]的混乱效果影响 无法行动`);
         this.Manger.Record.pushRecord(this, '陷入混乱无法行动');
         this.StateFlag.confusion = true;
     }
 
-    // 是否处于怯战状态
+    //是否处于怯战状态
     isAttackLimit() {
         if (this.State.attackLimit.rounds > 0) {
             return true
@@ -521,74 +519,115 @@ export class BattleHero {
         return false
     }
 
-    // 由于处于怯战跳过1个回合()
+    //由于处于怯战跳过1个回合()
     skipAttackByAttackLimit() {
         // this.Manger.pushRecord(`[${this.Name}] 由于受到 [${this.State.attackLimit.from.hero.Name}] [${SKILLS[this.State.attackLimit.from.skill].name}]的怯战效果影响 无法进行攻击`);
         this.Manger.Record.pushRecord(this, '陷入怯战无法进行攻击');
         this.StateFlag.attackLimit = true;
     }
 
-    // (镇静)清除所有控制与恐慌 妖术 燃烧 动摇 围困 
-    clearDebuff(skill,hero) {
-        this.Manger.Record.pushActionRecord(this,hero,"受到了",`【${skill.name}】的镇静`);
+    //(镇静)清除所有控制与恐慌 妖术 燃烧 动摇 围困 
+    clearDebuff(skill, hero, types = ["主动", "追击"]) {
+        this.Manger.Record.pushActionRecord(this, hero, "受到了", `【${skill.name}】的镇静`);
 
         let clear = false;
-        if(this.State.confusion.rounds > 0){
+        if (this.State.confusion.rounds > 0) {
             this.State.confusion.rounds = 0;
-            this.Manger.Record.pushRecord(this,"的混乱效果被消除了",1)
+            this.Manger.Record.pushRecord(this, "的混乱效果被消除了", 1)
             clear = true;
         }
 
-        if(this.State.activeLimit.rounds > 0){
+        if (this.State.activeLimit.rounds > 0) {
             this.State.activeLimit.rounds = 0;
-            this.Manger.Record.pushRecord(this,"的犹豫效果被消除了",1)
+            this.Manger.Record.pushRecord(this, "的犹豫效果被消除了", 1)
             clear = true;
         }
 
-        if(this.State.attackLimit.rounds > 0){
+        if (this.State.attackLimit.rounds > 0) {
             this.State.attackLimit.rounds = 0;
-            this.Manger.Record.pushRecord(this,"的怯战效果被消除了",1)
+            this.Manger.Record.pushRecord(this, "的怯战效果被消除了", 1)
             clear = true;
         }
 
-        if(!clear)this.Manger.Record.pushRecord(this,"没有效果可消除",1);
-        
-        
+        if (!clear) this.Manger.Record.pushRecord(this, "没有效果可消除", 1);
+
+        let skillTypeName2Id = {
+            "主动": 2,
+            "指挥": 1,
+            "追击": 3,
+            "被动": 4
+        }
+        let claerType = [];
+        types.forEach(e => {
+            claerType.push(skillTypeName2Id[e])
+        });
+
+        // 清除执行堆里的负面效果
+        for (const key in this.HOOKS) {
+            const element = this.HOOKS[key];
+
+            for (const key2 in element) {
+                const hook = element[key2];
+                console.log(hook);
+                //如果类型是需要清除的类型且是负面效果
+                if(claerType.includes(hook.skill.type) && hook.type == "debuff"){
+                    delete this.HOOKS[key][key2];
+                    this.Manger.Record.pushActionRecord(this, hook.hero, "消除了来自",`【${hook.skill.name}】的负面效果`,1);
+                }
+            }
+        }
+
+        // 战法类型优先级
+        // let skillTypeLevel = {
+        //     2: 1, // 主动
+        //     3: 1, // 追击
+        //     1: 2, // 指挥
+        //     4: 3 // 被动
+        // }
+
+
         // TODO 后续添加 暴走 恐慌 妖术 燃烧 动摇 围困 时添加清除
     }
 
-    // 获取效果对象
+    //获取效果对象
     getHookObj(on) {
         let obj;
         switch (on) {
             case "受伤时":
-                obj = this.ON_HURT;
+                obj = this.HOOKS.ON_HURT;
+                break;
+            case "普攻前":
+                obj = this.HOOKS.BEFORE_BASEATK;
                 break;
             case "行动前":
-                obj = this.BEFORE_ACTION;
+                obj = this.HOOKS.BEFORE_ACTION;
+                break;
+            case "行动时":
+                obj = this.HOOKS.ON_ACTION;
                 break;
             case "回合开始时":
-                obj = this.ROUND_START;
+                obj = this.HOOKS.ROUND_START;
                 break;
             case "攻击前":
-                obj = this.BEFORE_ATK;
+                obj = this.HOOKS.BEFORE_ATK;
                 break;
             case "攻击后":
-                obj = this.AFTER_ATK;
+                obj = this.HOOKS.AFTER_ATK;
                 break;
         }
         return obj;
     }
-    // 添加技能效果
+    //添加技能效果
     /* 
         type:
             buff 有益效果&普通效果
             debuff 负面效果
             other 其他 (用于在某个时机清除效果用)
     */
-    addHook(on, tag, func, skill, hero, type="buff") {
+    addHook(on, name, func, skill, hero, type = "buff") {
         let obj = this.getHookObj(on);
 
+        let tag = makeSkillTag(hero, skill, name)
         obj[tag] = {
             call: func,
             type: type,
@@ -596,12 +635,12 @@ export class BattleHero {
             hero: hero
         }
     }
-    // 移除技能效果
+    //移除技能效果
     clearHook(on, tag) {
         let obj = this.getHookObj(on);
         delete obj[tag]
     }
-    // 执行技能效果
+    //执行技能效果
     callHook(on, ...args) {
         let obj = this.getHookObj(on);
         // console.log(obj);
@@ -612,7 +651,7 @@ export class BattleHero {
         }
     }
 
-    // 计数器增加
+    //计数器增加
     countAdd(tag, num = 1) {
         if (this.Counter[tag]) {
             this.Counter[tag]++;
@@ -620,19 +659,19 @@ export class BattleHero {
             this.Counter[tag] = 1;
         }
     }
-    // 计数器减少
+    //计数器减少
     countSub(tag, num = 1) {
         if (this.Counter[tag]) {
             this.Counter[tag]--;
         }
     }
-    // 计数器重置
+    //计数器重置
     countRest(tag) {
         if (this.Counter[tag]) {
             this.Counter[tag] = 0;
         }
     }
-    // 计数器获取
+    //计数器获取
     countGet(tag) {
         return this.Counter[tag] ? this.Counter[tag] : 0;
     }
@@ -669,7 +708,7 @@ export class BattleHero {
         return name;
     }
 
-    // 获取效果冲突类型
+    //获取效果冲突类型
     /* 
         1 = 同类型不叠加
         2 = 数值替换 取最高效果
@@ -688,7 +727,7 @@ export class BattleHero {
         return ret;
     }
 
-    // 添加状态
+    //添加状态
     /* 
         name 类型名称
         value 数值
@@ -707,12 +746,12 @@ export class BattleHero {
                         this.State[name][typename].value += value;
                         this.State[name][typename].round = round;
                         return this.State[name][typename];
-                    }else{
-                        this.Manger.Record.pushRecord(this,`已存在来自【${this.State[name][typename].from.name}】的${this.getStateName(name)}效果`);
+                    } else {
+                        this.Manger.Record.pushRecord(this, `已存在来自【${this.State[name][typename].from.name}】的${this.getStateName(name)}效果`);
                     }
                     break;
             }
-            
+
         } else {
             this.State[name][typename] = {
                 type: type, //类型
@@ -732,7 +771,7 @@ export class BattleHero {
         }
         return 0;
     }
-    // 移除状态
+    //移除状态
     /* 
         name 类型名称
         from 来源技能
@@ -745,44 +784,44 @@ export class BattleHero {
             // this.Manger.Record.pushActionRecord(this, hero, `的来自`, `【${from.name}】的${this.getStateName(name)}效果消失了`);
         }
     }
-    // 准备技能需被 混乱 犹豫所打断
-    // TODO 需要考虑 法正 和 胜兵的准备回合跳过如何处理
-    // 添加准备技能
-    addReadySkill(from,round,func){
-        if(this.canAddReadySkill(from)){
+    //准备技能需被 混乱 犹豫所打断
+    //TODO 需要考虑 法正 和 胜兵的准备回合跳过如何处理
+    //添加准备技能
+    addReadySkill(from, round, func) {
+        if (this.canAddReadySkill(from)) {
             let ready = {
                 from,
                 round,
                 func
             }
             this.IN_READY_SKILL.push(ready);
-            this.Manger.Record.pushRecord(this,`的战法【${from.name}】开始准备`);
+            this.Manger.Record.pushRecord(this, `的战法【${from.name}】开始准备`);
             return true;
         }
         return false;
     }
 
-    // 减少准备技能回合数
-    subReadySkillRound(skill){
+    //减少准备技能回合数
+    subReadySkillRound(skill) {
         this.IN_READY_SKILL.forEach(e => {
-            if(skill == e.from){
-                if(e.round > 0){
+            if (skill == e.from) {
+                if (e.round > 0) {
                     e.round -= 1;
                 }
 
-                if(e.round <= 0){
-                    this.Manger.Record.pushRecord(this,`发动【${skill.name}】`);
+                if (e.round <= 0) {
+                    this.Manger.Record.pushRecord(this, `发动【${skill.name}】`);
                     e.func();
                 }
             }
         });
     }
 
-    // 获取是否可添加准备战法 因为当同一战法正在准备中 不可再次进行准备
-    canAddReadySkill(skill){
+    //获取是否可添加准备战法 因为当同一战法正在准备中 不可再次进行准备
+    canAddReadySkill(skill) {
         let ret = true;
         this.IN_READY_SKILL.forEach(e => {
-            if(e.from == skill)ret = false;
+            if (e.from == skill) ret = false;
         });
         return ret;
     }

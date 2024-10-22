@@ -213,7 +213,7 @@ export const __SKILLS__ = [
                     }
                 }
                 // e.ON_HURT.push(subskill);
-                e.addHook("受伤时", `${self.BattleCamp}${self.Camp} - ${self.Id}${self.Name}皇裔流离急救效果`, subskill, this, self)
+                e.addHook("受伤时", "急救效果", subskill, this, self)
                 self.Manger.Record.pushRecord(e, '的急救效果已施加', 1)
             });
         },
@@ -245,7 +245,25 @@ export const __SKILLS__ = [
                 e.Attrs.spd = keepTwoDecimal(spdadd + e.Attrs.spd);
                 self.Manger.Record.pushRecord(e, `的速度属性提高了${spdadd}(${e.Attrs.spd})`, 1);
 
-                e.BEFORE_BASEATK.push(() => {
+                /*  e.BEFORE_BASEATK.push(() => {
+                     if (self.Manger.Round >= 1 && self.Manger.Round <= 3) {
+                         if (getRandomBool(70)) {
+                             if (e.State.doubleAttack.rounds <= 0) {
+                                 e.State.doubleAttack = {
+                                     rounds: 1,
+                                     from: {
+                                         hero: self,
+                                         skill: 1008
+                                     }
+                                 }
+                             }
+                         } else {
+                             self.Manger.Record.pushRecord(e, '的其疾如风未生效', 0)
+                         }
+                     }
+                 }); */
+
+                e.addHook("普攻前", "连击效果", () => {
                     if (self.Manger.Round >= 1 && self.Manger.Round <= 3) {
                         if (getRandomBool(70)) {
                             if (e.State.doubleAttack.rounds <= 0) {
@@ -253,7 +271,7 @@ export const __SKILLS__ = [
                                     rounds: 1,
                                     from: {
                                         hero: self,
-                                        skill: 1008
+                                        skill: skill
                                     }
                                 }
                             }
@@ -261,7 +279,7 @@ export const __SKILLS__ = [
                             self.Manger.Record.pushRecord(e, '的其疾如风未生效', 0)
                         }
                     }
-                });
+                }, this, self);
 
                 self.Manger.Record.pushRecord(e, '的连击(预备)效果已施加', 1)
             });
@@ -319,7 +337,8 @@ export const __SKILLS__ = [
                 })
             }
 
-            self.ON_ACTION.push(subskill)
+            // self.ON_ACTION.push(subskill)
+            self.addHook("行动时", "增伤效果", subskill, this, self)
         },
     },
 
@@ -403,7 +422,8 @@ export const __SKILLS__ = [
                 }
             }
 
-            self.ON_ACTION.push(subskill)
+            // self.ON_ACTION.push(subskill)
+            self.addHook("行动时", "攻击效果", subskill, this, self)
         },
     },
 
@@ -440,15 +460,13 @@ export const __SKILLS__ = [
                     self.Manger.Record.pushRecord(target[0], '已存在混乱效果', 1);
                 }
 
-                let tag = `${self.BattleCamp}${self.Camp} - ${self.Id}${self.Name}忠克猛烈目标受伤效果`;
-
                 // 施加受到伤害时陈到对其发动攻击
                 let subskill = (attacker, damageInfo, skill) => {
                     // 需判处此伤害不是自己的【忠克猛烈】触发的,避免死循环
                     if (skill == this && attacker == self) return;
                     // 期间最多触发3次
-                    if (self.countGet(tag + "次数") >= 3) return;
-                    self.countAdd(tag + "次数");
+                    if (self.countGet(makeSkillTag(self, this, "受伤效果计次")) >= 3) return;
+                    self.countAdd(makeSkillTag(self, this, "受伤效果计次"));
                     self.Manger.Record.pushActionRecord(self, self, '执行来自', '的【忠克猛烈】效果');
                     target[0].beHurt(self, {
                         type: 1,
@@ -457,15 +475,15 @@ export const __SKILLS__ = [
 
                 }
 
-                target[0].addHook("受伤时", tag, subskill, this, self, 'debuff')
+                target[0].addHook("受伤时", "目标受伤时效果", subskill, this, self, 'debuff')
                 // 陈到行动前 清除所有人的 【忠克猛烈】施加的 "受到伤害时陈到对其发动攻击" 的效果
                 let clear = () => {
                     self.Manger.SortSpdHeros.forEach(e => {
-                        e.clearHook("受伤时", tag);
+                        e.clearHook("受伤时", makeSkillTag(self, this, "目标受伤时效果"));
                     });
-                    self.countRest(tag + "次数");
+                    self.countRest(makeSkillTag(self, this, "受伤效果计次"));
                 }
-                self.addHook("行动前", tag + "清除", clear, this, self, 'other');
+                self.addHook("行动前", makeSkillTag(self, this, "清除"), clear, this, self, 'other');
                 return true;
             }
         },
@@ -496,7 +514,7 @@ export const __SKILLS__ = [
                     self.Manger.Record.pushActionRecord(self, self, '的【愈战愈勇】使', '造成的攻击伤害提高' + self.State.attackDamageAdd.passive.value + '%');
                 }
 
-                self.addHook("回合开始时", makeSkillTag(self, this, "回合开始时添加攻击伤害提高"), subskill, this, self);
+                self.addHook("回合开始时", "回合开始时添加攻击伤害提高", subskill, this, self);
             }
         }
     },
@@ -533,6 +551,7 @@ export const __SKILLS__ = [
                 }
 
                 let subskill = () => {
+                    if(manger.Round > 4)return;
                     self.Manger.SortSpdHeros.forEach(e => {
                         // TODO 考虑暴走
                         if (e.BattleCamp == self.BattleCamp && e.Posname == '大营') {
@@ -540,11 +559,11 @@ export const __SKILLS__ = [
                             let ret2 = e.addState("inteDamageAdd", addRate, 1, this, self, 2);
                             if (ret) self.Manger.Record.pushActionRecord(self, e, `【${this.name}】使`, `造成的${stateName}${ret.value}%`);
                             if (ret2) self.Manger.Record.pushActionRecord(self, e, `【${this.name}】使`, `造成的${stateName2}${ret2.value}%`);
-                            e.addHook("攻击后", makeSkillTag(self, this, "攻击后移除增伤"), delAddRate, this, self, "other");
+                            e.addHook("攻击后", "攻击后移除增伤", delAddRate, this, self, "other");
                         }
                     })
                 }
-                self.addHook("行动前", makeSkillTag(self, this, "行动前添加攻击伤害增加"), subskill, this, self);
+                self.addHook("行动前", "行动前添加攻击伤害增加", subskill, this, self);
                 // TODO 敌方最高兵力施加造成伤害降低 & 自身受到攻击后洞察
             }
         }
@@ -622,8 +641,8 @@ export const __SKILLS__ = [
                 }
             }
 
-            self.addHook("受伤时", makeSkillTag(self, this, "受伤时"), subskill, this, self);
-            self.addHook("回合开始时", makeSkillTag(self, this, "回合开始时"), subskill2, this, self);
+            self.addHook("受伤时", "受伤时效果", subskill, this, self);
+            self.addHook("回合开始时", "回合开始时效果", subskill2, this, self);
         }
     }
 ]

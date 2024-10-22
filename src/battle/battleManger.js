@@ -161,9 +161,7 @@ export class BattleManger {
                         e.Manger.Record.pushHeroRoundStart(e);
                         e.callHook("行动前");
                         this.Record.pushRecord(e,"行动开始");
-                        e.ON_ACTION.forEach(call => {
-                            call();
-                        })
+                        e.callHook("行动时");
                         // 判断混乱
                         if(e.isConfusion()){
                             e.skipRoundByConfusion();
@@ -178,9 +176,7 @@ export class BattleManger {
                             e.skipAttackByAttackLimit();
                         }else{
                             // 执行普攻
-                            e.BEFORE_BASEATK.forEach(f => {
-                                f();
-                            })
+                            e.callHook("普攻前");
                             e.callAttack();
                             if(this.Over)return;
                         }
