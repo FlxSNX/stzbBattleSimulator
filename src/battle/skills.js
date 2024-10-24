@@ -672,7 +672,7 @@ export const __SKILLS__ = [
 
             team.forEach(e => {
                 let subskill = () => {
-                    if (getRandomBool(100)) {
+                    if (getRandomBool(50)) {
                         let revocer = calcRecover(self, revocerRate, revocerRateAdd)
                         e.revocer(revocer, self, '金匮要略');
                     }
