@@ -157,8 +157,8 @@ export class BattleManger {
                         e.callCommandSkill()
                     }else{
                         if(this.Over)return;
-                        e.clearStateRounds();
                         e.Manger.Record.pushHeroRoundStart(e);
+                        e.clearStateRounds();
                         e.callHook("行动前");
                         this.Record.pushRecord(e,"行动开始");
                         e.callHook("行动时");

@@ -191,7 +191,7 @@ export const __SKILLS__ = [
         desc: "本场战斗中，使我军全体受到伤害时，有50.0%的几率能恢复一定兵力(恢复率68.0%，受谋略属性影响)",
         level: "S",
         type: 1,
-        target: 1,
+        target: 3,
         target_type: "team",
         limit: 0,
         rata: "--",
@@ -213,7 +213,7 @@ export const __SKILLS__ = [
                     }
                 }
                 // e.ON_HURT.push(subskill);
-                e.addHook("受伤时", "急救效果", subskill, this, self)
+                e.addHook("受伤时", "急救", subskill, this, self)
                 self.Manger.Record.pushRecord(e, '的急救效果已施加', 1)
             });
         },
@@ -318,11 +318,11 @@ export const __SKILLS__ = [
                         self.Manger.Record.pushActionRecord(self, e, '【奋疾先登】的效果使', `的速度属性降低了20(${e.Attrs.spd})`, 1);
                     });
                     self.delState("attackDamageAdd", this);
-                    self.Manger.Record.pushActionRecord(self, self, `来自`, `【${this.name}】的${stateName}效果消失了`, 1);
+                    // self.Manger.Record.pushActionRecord(self, self, `来自`, `【${this.name}】的${stateName}效果消失了`, 1);
                 }
 
                 self.addState("attackDamageAdd", addDamageRate, -1, this, self)
-                self.Manger.Record.pushActionRecord(self, self, `【${this.name}】使`, `造成的${stateName}${self.getState("attackDamageAdd", this.type)}%`);
+                // self.Manger.Record.pushActionRecord(self, self, `【${this.name}】使`, `造成的${stateName}${self.getState("attackDamageAdd", this.type)}%`);
                 if (self.State.attackDamageAdd.command.value >= maxAddDamageRate) attack()
 
                 self.Manger.SortSpdHeros.forEach((e, i) => {
@@ -330,7 +330,7 @@ export const __SKILLS__ = [
                         if (self.Attrs.spd > e.Attrs.spd) {
                             self.addState("attackDamageAdd", addDamageRate, -1, this, self);
                             self.Manger.Record.pushActionRecord(e, self, '执行来自', '的【奋疾先登】效果');
-                            self.Manger.Record.pushActionRecord(self, self, `【${this.name}】使`, `造成的${stateName}${self.getState("attackDamageAdd", this.type)}%`);
+                            // self.Manger.Record.pushActionRecord(self, self, `【${this.name}】使`, `造成的${stateName}${self.getState("attackDamageAdd", this.type)}%`);
                             if (self.getState("attackDamageAdd", this.type) >= maxAddDamageRate) attack()
                         }
                     }
@@ -544,8 +544,8 @@ export const __SKILLS__ = [
                     if (obj.from == this && obj.hero == self) {
                         attacker.delState("attackDamageAdd", this);
                         attacker.delState("inteDamageAdd", this);
-                        self.Manger.Record.pushActionRecord(attacker, self, `来自`, `【${this.name}】的${stateName}效果消失了`, 1);
-                        self.Manger.Record.pushActionRecord(attacker, self, `来自`, `【${this.name}】的${stateName2}效果消失了`, 1);
+                        // self.Manger.Record.pushActionRecord(attacker, self, `来自`, `【${this.name}】的${stateName}效果消失了`, 1);
+                        // self.Manger.Record.pushActionRecord(attacker, self, `来自`, `【${this.name}】的${stateName2}效果消失了`, 1);
                     }
                     attacker.clearHook("攻击后", makeSkillTag(self, this, "攻击后移除增伤"));
                 }
@@ -557,8 +557,8 @@ export const __SKILLS__ = [
                         if (e.BattleCamp == self.BattleCamp && e.Posname == '大营') {
                             let ret = e.addState("attackDamageAdd", addRate, 1, this, self, 2);
                             let ret2 = e.addState("inteDamageAdd", addRate, 1, this, self, 2);
-                            if (ret) self.Manger.Record.pushActionRecord(self, e, `【${this.name}】使`, `造成的${stateName}${ret.value}%`);
-                            if (ret2) self.Manger.Record.pushActionRecord(self, e, `【${this.name}】使`, `造成的${stateName2}${ret2.value}%`);
+                            // if (ret) self.Manger.Record.pushActionRecord(self, e, `【${this.name}】使`, `造成的${stateName}${ret.value}%`);
+                            // if (ret2) self.Manger.Record.pushActionRecord(self, e, `【${this.name}】使`, `造成的${stateName2}${ret2.value}%`);
                             e.addHook("攻击后", "攻击后移除增伤", delAddRate, this, self, "other");
                         }
                     })
@@ -644,5 +644,101 @@ export const __SKILLS__ = [
             self.addHook("受伤时", "受伤时效果", subskill, this, self);
             self.addHook("回合开始时", "回合开始时效果", subskill2, this, self);
         }
-    }
+    },
+
+    {
+        id: 1016,
+        name: "金匮要略",
+        desc: "战斗开始后前3回合，使我军全体受到的所有伤害降低20.4%（受谋略属性影响），同时使我军全体受到伤害时，有50.0%的几率能恢复一定兵力（恢复率80.0%，受谋略属性影响）",
+        level: "S",
+        type: 1,
+        target: 3,
+        target_type: "team",
+        limit: 3,
+        rata: "--",
+        callskill: function (self) {
+            self.Manger.Record.pushRecord(self, '发动【金匮要略】')
+            let team;
+            if (self.BattleCamp == 'red') {
+                team = self.Manger.RedTeam.hero;
+            } else {
+                team = self.Manger.BlueTeam.hero;
+            }
+            let revocerRate = 80;
+            let revocerRateAdd = 0.75;
+            let damageSubRate = 20.4;
+            let damageSubRateAdd = 0.13;
+
+
+            team.forEach(e => {
+                let subskill = () => {
+                    if (getRandomBool(100)) {
+                        let revocer = calcRecover(self, revocerRate, revocerRateAdd)
+                        e.revocer(revocer, self, '金匮要略');
+                    }
+                }
+                e.addHook("受伤时", "急救", subskill, this, self);
+                e.addHook("行动前", "移除急救", () => {
+                    if (e.Manger.Round >= 4) {
+                        e.clearHook("受伤时", makeSkillTag(self, this, "急救"))
+                    }
+                },this,self);
+                let value = clacSkillAdditionRate(damageSubRate, damageSubRateAdd, self.Attrs.int);
+                console.log("debug",value);
+                e.addState("beAttackDamageSub", value, 3, this, self)
+                e.addState("beInteDamageSub", value, 3, this, self)
+                self.Manger.Record.pushRecord(e, '的急救效果已施加', 1);
+            });
+        },
+    },
+
+    {
+        id: 1017,
+        name: "神兵天降",
+        desc: "战斗开始后前3回合，使敌军群体受到攻击和策略攻击时的伤害提高30.0%（受谋略属性影响）",
+        level: "S",
+        type: 1,
+        target: 2,
+        target_type: "team",
+        limit: 4,
+        rata: "--",
+        callskill: function (self) {
+            self.Manger.Record.pushRecord(self, '发动【神兵天降】')
+            let damageAddRate = 30;
+            let damageAddRateAdd = 0.15;
+
+            let enemy = self.getTarget(3,2);
+
+            enemy.forEach(e => {
+                let value = clacSkillAdditionRate(damageAddRate, damageAddRateAdd, self.Attrs.int);
+                e.addState("beAttackDamageAdd", value, 3, this, self)
+                e.addState("beInteDamageAdd", value, 3, this, self)
+            });
+        },
+    },
+
+    {
+        id: 1018,
+        name: "大赏三军",
+        desc: "战斗开始后前3回合，使我军全体受到的所有伤害降低20.4%（受谋略属性影响），同时使我军全体受到伤害时，有50.0%的几率能恢复一定兵力（恢复率80.0%，受谋略属性影响）",
+        level: "S",
+        type: 1,
+        target: 2,
+        target_type: "team",
+        limit: 3,
+        rata: "--",
+        callskill: function (self) {
+            self.Manger.Record.pushRecord(self, '发动【大赏三军】')
+            let damageAddRate = 30;
+            let damageAddRateAdd = 0.15;
+
+            let team = self.getTarget(3,2,2);
+
+            team.forEach(e => {
+                let value = clacSkillAdditionRate(damageAddRate, damageAddRateAdd, self.Attrs.int);
+                e.addState("attackDamageAdd", value, 3, this, self)
+                e.addState("inteDamageAdd", value, 3, this, self)
+            });
+        },
+    },
 ]
