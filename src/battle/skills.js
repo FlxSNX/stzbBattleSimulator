@@ -475,7 +475,7 @@ export const __SKILLS__ = [
 
                 }
 
-                target[0].addHook("受伤时", "目标受伤时效果", subskill, this, self, 'debuff')
+                target[0].addHook("受伤时", "目标受伤时效果", subskill, this, self, 'debuff', false)
                 // 陈到行动前 清除所有人的 【忠克猛烈】施加的 "受到伤害时陈到对其发动攻击" 的效果
                 let clear = () => {
                     self.Manger.SortSpdHeros.forEach(e => {
@@ -551,7 +551,7 @@ export const __SKILLS__ = [
                 }
 
                 let subskill = () => {
-                    if(manger.Round > 4)return;
+                    if (manger.Round > 4) return;
                     self.Manger.SortSpdHeros.forEach(e => {
                         // TODO 考虑暴走
                         if (e.BattleCamp == self.BattleCamp && e.Posname == '大营') {

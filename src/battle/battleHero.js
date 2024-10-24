@@ -570,7 +570,7 @@ export class BattleHero {
                 const hook = element[key2];
                 console.log(hook);
                 //如果类型是需要清除的类型且是负面效果
-                if(claerType.includes(hook.skill.type) && hook.type == "debuff"){
+                if(claerType.includes(hook.skill.type) && hook.type == "debuff" && hook.canClear == true){
                     delete this.HOOKS[key][key2];
                     this.Manger.Record.pushActionRecord(this, hook.hero, "消除了来自",`【${hook.skill.name}】的负面效果`,1);
                 }
@@ -624,7 +624,7 @@ export class BattleHero {
             debuff 负面效果
             other 其他 (用于在某个时机清除效果用)
     */
-    addHook(on, name, func, skill, hero, type = "buff") {
+    addHook(on, name, func, skill, hero, type = "buff", canClear = true) {
         let obj = this.getHookObj(on);
 
         let tag = makeSkillTag(hero, skill, name)
