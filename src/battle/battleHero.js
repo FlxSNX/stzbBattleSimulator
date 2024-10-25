@@ -6,7 +6,7 @@ import { __HEROS__ as HEROS } from "./heros";
 import { __ARMS__ as ARMS } from "./arms";
 import { __SKILLS__ } from "./skills"
 import { keepTwoDecimal, makeSkillTag } from "../uilts"
-import { clacAttackDamage, getRandomBool } from "./battleCalcFunc"
+import { clacAttackDamage, getRandomBool, clacInteDamage } from "./battleCalcFunc"
 
 const CanAddAttrsKey = ['atk', 'def', 'int', 'spd'];
 export class BattleHero {
@@ -459,11 +459,20 @@ export class BattleHero {
             type //伤害类型 暂定 1物理 2谋略
         }
     */
-    beHurt(attacker, damageInfo, skill = null) {
+    beHurt(attacker, damageInfo, skill = null,num = null) {
         attacker.callHook("攻击前");
         let realDamage = 0;
-        let damage = clacAttackDamage(attacker, this, damageInfo, skill);
-
+        let damage;
+        if(num != null){
+            damage = num;
+        }else{
+            if(damageInfo.type == 1){
+                damage = clacAttackDamage(attacker, this, damageInfo, skill);
+            }else if(damageInfo.type == 2){
+                damage = clacInteDamage(attacker, this, damageInfo, skill);
+            }
+        }
+        
         if (damage >= this.Arms) {
             // 如果伤害大于剩余的兵力 将兵力改为0
             realDamage = this.Arms
@@ -488,6 +497,11 @@ export class BattleHero {
         }
 
         this.callHook('受伤时', attacker, damageInfo, skill);
+    }
+
+    //受到伤害,不计算伤害,使用传入的值作为伤害值。 给类似【白衣渡江】这种指挥阶段就确定伤害的战法使用
+    beHurtByNum(attacker,damageInfo,skill,num){
+        this.beHurt(attacker,damageInfo,skill,num);
     }
 
     //受到恢复

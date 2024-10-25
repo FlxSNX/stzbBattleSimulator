@@ -31,6 +31,28 @@ export const clacAttackDamage = (attacker, target, damageInfo, skill) => {
     return Math.round(armsDamage + basicDamage + mainDamage);
 }
 
+// 计算策略伤害
+export const clacInteDamage = (attacker, target, damageInfo, skill) => {
+    let damageAddition = getDamageAddition(attacker, target, damageInfo.type);
+
+    if (damageAddition != 1) {
+        attacker.Manger.Record.pushRecord(attacker, `该次造成伤害共计${getDamageAddition(attacker, target, damageInfo.type) > 1 ? "提升" : "降低"}${Math.abs(roundEightNine(getDamageAddition(attacker, target, damageInfo.type) * 100 - 100))}%`, 1)
+    }
+    let DamageRate = damageInfo.rate;
+    let inteEffect = calcInteEffect(target.Attrs.int);;
+
+    //兵力基础伤害
+    let armsDamage = (attacker.Arms * 178) / (6459 + attacker.Arms);
+    //策略基础伤害
+    let basicDamage = attacker.Attrs.int * 0.5 * damageAddition * inteEffect;
+    //主要伤害
+    let mainDamage = (((300 * attacker.Arms) / (3500 + attacker.Arms)) * (DamageRate / 100) * damageAddition) * inteEffect;
+
+    console.log(attacker.Name, "兵力基础伤害:", armsDamage, "兵力:", attacker.Arms, "策略基础伤害:", basicDamage, "主要伤害:", mainDamage, "总伤害:", Math.round(armsDamage + basicDamage + mainDamage));
+
+    return Math.round(armsDamage + basicDamage + mainDamage);
+}
+
 // 计算受属性影响的战法的倍率
 /*
     base 基础值
@@ -54,19 +76,19 @@ const getRandNum = () => {
 // 计算伤害增减
 const getDamageAddition = (attacker, target, type) => {
     let value = 100;
-    if(type == 1){
+    if (type == 1) {
         value += attacker.getDamageStateValue("attackDamageAdd"); //攻击者造成伤害提高
         value -= attacker.getDamageStateValue("attackDamageSub"); //攻击者造成伤害降低
         value += target.getDamageStateValue("beAttackDamageAdd"); //目标受到伤害提高
         value -= target.getDamageStateValue("beAttackDamageSub"); //目标受到伤害降低
-    }else if(type == 2){
+    } else if (type == 2) {
         value += attacker.getDamageStateValue("inteDamageAdd");
         value -= attacker.getDamageStateValue("inteDamageSub");
         value += target.getDamageStateValue("beInteDamageAdd");
         value -= target.getDamageStateValue("beInteDamageSub");
     }
-    
-    if(value < 10)value = 10;
+
+    if (value < 10) value = 10;
     return value / 100;
 }
 
@@ -77,6 +99,16 @@ const calcAtkDefDiff = (atk, def) => {
         return keepTwoDecimal(3 - (500 / (250 + diff)))
     } else {
         return keepTwoDecimal(100 / (100 - diff))
+    }
+}
+
+//计算谋略影响
+const calcInteEffect = (inte) => {
+    inte = Math.floor(inte)
+    if (inte <= 50) {
+        return 1;
+    } else {
+        return Math.ceil(100 - (75 - (9375 / (75 + inte)))) / 100;
     }
 }
 

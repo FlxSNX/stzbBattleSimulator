@@ -108,12 +108,12 @@ const team = ref({
 			equipskill: [1018, 1017]
 		},
 		{
-			id: 1006,//武将Id
+			id: 1009,//武将Id
 			level: 40,//武将等级
 			extraAttrsAlloc: {//属性分配
 				atk: 0,
-				def: 90,
-				int: 0,
+				def: 0,
+				int: 90,
 				spd: 0
 			},
 			equipskill: [1014, 1015]

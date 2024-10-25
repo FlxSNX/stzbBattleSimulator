@@ -11,7 +11,7 @@
  * Rate: 发动率 %
  */
 
-import { clacAttackDamage, getRandomBool, calcRecover, getRandomInt, clacSkillAdditionRate } from "./battleCalcFunc"
+import { clacAttackDamage, getRandomBool, calcRecover, getRandomInt, clacSkillAdditionRate, clacInteDamage } from "./battleCalcFunc"
 import { keepTwoDecimal, makeSkillTag } from "../uilts";
 import { BattleHero } from "./battleHero";
 
@@ -682,9 +682,9 @@ export const __SKILLS__ = [
                     if (e.Manger.Round >= 4) {
                         e.clearHook("受伤时", makeSkillTag(self, this, "急救"))
                     }
-                },this,self);
+                }, this, self);
                 let value = clacSkillAdditionRate(damageSubRate, damageSubRateAdd, self.Attrs.int);
-                console.log("debug",value);
+                console.log("debug", value);
                 e.addState("beAttackDamageSub", value, 3, this, self)
                 e.addState("beInteDamageSub", value, 3, this, self)
                 self.Manger.Record.pushRecord(e, '的急救效果已施加', 1);
@@ -707,7 +707,7 @@ export const __SKILLS__ = [
             let damageAddRate = 30;
             let damageAddRateAdd = 0.15;
 
-            let enemy = self.getTarget(4,2);
+            let enemy = self.getTarget(4, 2);
 
             enemy.forEach(e => {
                 let value = clacSkillAdditionRate(damageAddRate, damageAddRateAdd, self.Attrs.int);
@@ -732,7 +732,7 @@ export const __SKILLS__ = [
             let damageAddRate = 30;
             let damageAddRateAdd = 0.15;
 
-            let team = self.getTarget(3,2,2);
+            let team = self.getTarget(3, 2, 2);
 
             team.forEach(e => {
                 let value = clacSkillAdditionRate(damageAddRate, damageAddRateAdd, self.Attrs.int);
@@ -756,7 +756,7 @@ export const __SKILLS__ = [
             let damageSubRate = 30;
             let damageSubRateAdd = 0.15;
 
-            let enemy = self.getTarget(4,2);
+            let enemy = self.getTarget(4, 2);
 
             enemy.forEach(e => {
                 let value = clacSkillAdditionRate(damageSubRate, damageSubRateAdd, self.Attrs.int);
@@ -781,12 +781,53 @@ export const __SKILLS__ = [
             let damageSubRate = 30;
             let damageSubRateAdd = 0.15;
 
-            let team = self.getTarget(3,2,2);
+            let team = self.getTarget(3, 2, 2);
 
             team.forEach(e => {
                 let value = clacSkillAdditionRate(damageSubRate, damageSubRateAdd, self.Attrs.int);
                 e.addState("beAttackDamageSub", value, 3, this, self)
                 e.addState("beInteDamageSub", value, 3, this, self)
+            });
+        },
+    },
+
+    {
+        id: 1021,
+        name: "白衣渡江",
+        desc: "战斗开始后前2回合，使敌军群体无法进行普通攻击，在此效果结束后，将对敌军全体发动一次强力策略攻击（伤害率215.0%，受谋略属性影响），造成的伤害无视规避",
+        level: "S",
+        type: 1,
+        target: 2,
+        target_type: "enemy",
+        limit: 5,
+        rata: "--",
+        callskill: function (self) {
+            self.Manger.Record.pushRecord(self, '发动【白衣渡江】')
+
+            let enemy = self.getTarget(5, 2);
+
+            enemy.forEach(e => {
+                e.State.attackLimit = {
+                    rounds: 2,
+                    from: {
+                        hero: self,
+                        skill: this
+                    }
+                }
+                let value = clacSkillAdditionRate(215, 2.25, self.Attrs.int);
+                self.Manger.Record.pushActionRecord(self, e, `的【${this.name}】使`, '陷入怯战2回合', 1);
+                let damageInfo = {
+                    type: 2,
+                    rate: value
+                };
+                let damage = clacInteDamage(self, e, damageInfo, this);
+                e.addHook("行动时", "策略攻击伤害", () => {
+                    if (e.Manger.Round == 3) {
+                        self.Manger.Record.pushActionRecord(self, e, `的【${this.name}】使`, '受到策略攻击伤害');
+                        e.beHurtByNum(self, damageInfo, this, damage);
+                    }
+                }, this, self, "debuff");
+                self.Manger.Record.pushRecord(e,"的受到策略攻击伤害效果已施加",1);
             });
         },
     },
