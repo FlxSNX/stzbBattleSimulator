@@ -328,8 +328,8 @@ export const __SKILLS__ = [
                 self.Manger.SortSpdHeros.forEach((e, i) => {
                     if (e != self && e.Arms > 0) {
                         if (self.Attrs.spd > e.Attrs.spd) {
-                            self.addState("attackDamageAdd", addDamageRate, -1, this, self);
                             self.Manger.Record.pushActionRecord(e, self, '执行来自', '的【奋疾先登】效果');
+                            self.addState("attackDamageAdd", addDamageRate, -1, this, self);
                             // self.Manger.Record.pushActionRecord(self, self, `【${this.name}】使`, `造成的${stateName}${self.getState("attackDamageAdd", this.type)}%`);
                             if (self.getState("attackDamageAdd", this.type) >= maxAddDamageRate) attack()
                         }
@@ -435,7 +435,7 @@ export const __SKILLS__ = [
         type: 2,
         target: 1,
         target_type: "enemy",
-        limit: 0,
+        limit: 4,
         rate: 50,
         callskill: function (self) {
             if (getRandomBool(this.rate)) {
@@ -707,7 +707,7 @@ export const __SKILLS__ = [
             let damageAddRate = 30;
             let damageAddRateAdd = 0.15;
 
-            let enemy = self.getTarget(3,2);
+            let enemy = self.getTarget(4,2);
 
             enemy.forEach(e => {
                 let value = clacSkillAdditionRate(damageAddRate, damageAddRateAdd, self.Attrs.int);
@@ -738,6 +738,55 @@ export const __SKILLS__ = [
                 let value = clacSkillAdditionRate(damageAddRate, damageAddRateAdd, self.Attrs.int);
                 e.addState("attackDamageAdd", value, 3, this, self)
                 e.addState("inteDamageAdd", value, 3, this, self)
+            });
+        },
+    },
+    {
+        id: 1019,
+        name: "无心恋战",
+        desc: "战斗开始后前3回合，使敌军群体进行攻击和策略攻击时的伤害降低30.0%（受谋略属性影响）",
+        level: "S",
+        type: 1,
+        target: 2,
+        target_type: "team",
+        limit: 4,
+        rata: "--",
+        callskill: function (self) {
+            self.Manger.Record.pushRecord(self, '发动【无心恋战】')
+            let damageSubRate = 30;
+            let damageSubRateAdd = 0.15;
+
+            let enemy = self.getTarget(4,2);
+
+            enemy.forEach(e => {
+                let value = clacSkillAdditionRate(damageSubRate, damageSubRateAdd, self.Attrs.int);
+                e.addState("attackDamageSub", value, 3, this, self)
+                e.addState("inteDamageSub", value, 3, this, self)
+            });
+        },
+    },
+
+    {
+        id: 1020,
+        name: "避其锋芒",
+        desc: "战斗开始后前3回合，使我军群体受到攻击和策略攻击时的伤害降低30.0%（受谋略属性影响）",
+        level: "S",
+        type: 1,
+        target: 2,
+        target_type: "team",
+        limit: 3,
+        rata: "--",
+        callskill: function (self) {
+            self.Manger.Record.pushRecord(self, '发动【避其锋芒】')
+            let damageSubRate = 30;
+            let damageSubRateAdd = 0.15;
+
+            let team = self.getTarget(3,2,2);
+
+            team.forEach(e => {
+                let value = clacSkillAdditionRate(damageSubRate, damageSubRateAdd, self.Attrs.int);
+                e.addState("beAttackDamageSub", value, 3, this, self)
+                e.addState("beInteDamageSub", value, 3, this, self)
             });
         },
     },

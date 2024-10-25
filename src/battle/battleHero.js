@@ -572,6 +572,7 @@ export class BattleHero {
     //是否处于混乱状态
     isConfusion() {
         if (this.State.confusion.rounds > 0) {
+            this.IN_READY_SKILL = [];
             return true
         }
         return false
