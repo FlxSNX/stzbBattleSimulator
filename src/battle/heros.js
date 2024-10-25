@@ -203,7 +203,7 @@ export const __HEROS__ = {
         star: 5, //星级
         cost: 35, //统率
         arm: 101, //兵种
-        limit: 3, //攻击距离
+        limit: 4, //攻击距离
         skill: 1021, //初始技能
         attrs: { //初始属性
             atk: 86.00,
@@ -218,6 +218,29 @@ export const __HEROS__ = {
             int: 1.64,
             spd: 0.87,
             des: 0.87
+        }
+    },
+    1010:{
+        name: "袁绍", //名称
+        camp: 5, //阵营 1=蜀 2=魏 3=吴 4=汉 5=群 6=晋
+        star: 5, //星级
+        cost: 3, //统率
+        arm: 101, //兵种
+        limit: 3, //攻击距离
+        skill: 1022, //初始技能
+        attrs: { //初始属性
+            atk: 88.00,
+            def: 79.00,
+            int: 83.00,
+            spd: 67.00,
+            des: 11.00
+        },
+        attrs_grow: { //属性成长率
+            atk: 1.79,
+            def: 1.15,
+            int: 1.53,
+            spd: 1.23,
+            des: 0.97
         }
     }
 }

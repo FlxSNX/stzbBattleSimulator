@@ -60,7 +60,7 @@ export const __SKILLS__ = [
         target: 1,
         target_type: "self",
         limit: 0,
-        rata: "--",
+        rate: "--",
         callskill: function (self) {
             let manger = self.Manger;
             if (manger.Round == "-1") {
@@ -123,7 +123,7 @@ export const __SKILLS__ = [
         target: 1,
         target_type: "self",
         limit: 1,
-        rata: "--",
+        rate: "--",
         callskill: function (self) {
             let manger = self.Manger;
             if (manger.Round == 0) {
@@ -194,7 +194,7 @@ export const __SKILLS__ = [
         target: 3,
         target_type: "team",
         limit: 0,
-        rata: "--",
+        rate: "--",
         callskill: function (self) {
             self.Manger.Record.pushRecord(self, '发动【皇裔流离】')
             let team;
@@ -228,7 +228,7 @@ export const __SKILLS__ = [
         target: 1,
         target_type: "team",
         limit: 0,
-        rata: "--",
+        rate: "--",
         callskill: function (self) {
             self.Manger.Record.pushRecord(self, '发动【其疾如风】')
             let team;
@@ -295,7 +295,7 @@ export const __SKILLS__ = [
         target: 1,
         target_type: "self",
         limit: 0,
-        rata: "--",
+        rate: "--",
         callskill: function (self) {
             self.Manger.Record.pushRecord(self, '发动【奋疾先登】')
             let damageRate = 190;
@@ -351,7 +351,7 @@ export const __SKILLS__ = [
         target: 1,
         target_type: "self",
         limit: 0,
-        rata: "--",
+        rate: "--",
         callskill: function (self) {
             self.Manger.Record.pushRecord(self, '发动【奇兵拒北】')
             let rate = 30;
@@ -446,18 +446,18 @@ export const __SKILLS__ = [
                     type: 1,
                     rate: 280,
                 }, this)
-                // 使其陷入混乱1回合
-                if (!target[0].isConfusion()) {
-                    target[0].State.confusion = {
+                // 使其陷入犹豫1回合
+                if (!target[0].isActiveLimit()) {
+                    target[0].State.activeLimit = {
                         rounds: 1,
                         from: {
                             hero: self,
-                            skill: 1011
+                            skill: this
                         }
                     }
-                    self.Manger.Record.pushActionRecord(self, target[0], '的【忠克猛烈】使', '陷入混乱1回合');
+                    self.Manger.Record.pushActionRecord(self, target[0], '的【忠克猛烈】使', '陷入犹豫1回合');
                 } else {
-                    self.Manger.Record.pushRecord(target[0], '已存在混乱效果', 1);
+                    self.Manger.Record.pushRecord(target[0], '已存在犹豫效果', 1);
                 }
 
                 // 施加受到伤害时陈到对其发动攻击
@@ -498,7 +498,7 @@ export const __SKILLS__ = [
         target: 1,
         target_type: "self",
         limit: 0,
-        rata: "--",
+        rate: "--",
         callskill: function (self) {
             let manger = self.Manger;
             if (manger.Round == "-1") {
@@ -528,7 +528,7 @@ export const __SKILLS__ = [
         target: 1,
         target_type: "self",
         limit: 0,
-        rata: "--",
+        rate: "--",
         callskill: function (self) {
             let manger = self.Manger;
             if (manger.Round == 0) {
@@ -655,7 +655,7 @@ export const __SKILLS__ = [
         target: 3,
         target_type: "team",
         limit: 3,
-        rata: "--",
+        rate: "--",
         callskill: function (self) {
             self.Manger.Record.pushRecord(self, '发动【金匮要略】')
             let team;
@@ -701,7 +701,7 @@ export const __SKILLS__ = [
         target: 2,
         target_type: "team",
         limit: 4,
-        rata: "--",
+        rate: "--",
         callskill: function (self) {
             self.Manger.Record.pushRecord(self, '发动【神兵天降】')
             let damageAddRate = 30;
@@ -726,7 +726,7 @@ export const __SKILLS__ = [
         target: 2,
         target_type: "team",
         limit: 3,
-        rata: "--",
+        rate: "--",
         callskill: function (self) {
             self.Manger.Record.pushRecord(self, '发动【大赏三军】')
             let damageAddRate = 30;
@@ -750,7 +750,7 @@ export const __SKILLS__ = [
         target: 2,
         target_type: "team",
         limit: 4,
-        rata: "--",
+        rate: "--",
         callskill: function (self) {
             self.Manger.Record.pushRecord(self, '发动【无心恋战】')
             let damageSubRate = 30;
@@ -775,7 +775,7 @@ export const __SKILLS__ = [
         target: 2,
         target_type: "team",
         limit: 3,
-        rata: "--",
+        rate: "--",
         callskill: function (self) {
             self.Manger.Record.pushRecord(self, '发动【避其锋芒】')
             let damageSubRate = 30;
@@ -800,22 +800,27 @@ export const __SKILLS__ = [
         target: 2,
         target_type: "enemy",
         limit: 5,
-        rata: "--",
+        rate: "--",
         callskill: function (self) {
             self.Manger.Record.pushRecord(self, '发动【白衣渡江】')
 
             let enemy = self.getTarget(5, 2);
 
             enemy.forEach(e => {
-                e.State.attackLimit = {
-                    rounds: 2,
-                    from: {
-                        hero: self,
-                        skill: this
-                    }
-                }
                 let value = clacSkillAdditionRate(215, 2.25, self.Attrs.int);
-                self.Manger.Record.pushActionRecord(self, e, `的【${this.name}】使`, '陷入怯战2回合', 1);
+                if (!e.isAttackLimit()) {
+                    e.State.attackLimit = {
+                        rounds: 2,
+                        from: {
+                            hero: self,
+                            skill: this
+                        }
+                    }
+                    self.Manger.Record.pushActionRecord(self, e, `的【${this.name}】使`, '陷入怯战2回合', 1);
+                } else {
+                    self.Manger.Record.pushRecord(e, '已存在怯战效果', 1);
+                }
+
                 let damageInfo = {
                     type: 2,
                     rate: value
@@ -827,8 +832,102 @@ export const __SKILLS__ = [
                         e.beHurtByNum(self, damageInfo, this, damage);
                     }
                 }, this, self, "debuff");
-                self.Manger.Record.pushRecord(e,"的受到策略攻击伤害效果已施加",1);
+                self.Manger.Record.pushRecord(e, "的受到策略攻击伤害效果已施加", 1);
             });
+        },
+    },
+
+    {
+        id: 1022,
+        name: "威震河朔",
+        desc: "对敌军群体发动一次攻击（伤害率200.0%），使自身与友军单体主动战法伤害提升20.0%（受攻击属性影响），持续2回合。此战法每发动一次，其发动率降低10.0%",
+        level: "A",
+        type: 2,
+        target: 2,
+        target_type: "enemy",
+        limit: 5,
+        rate: 70,
+        callskill: function (self) {
+            let tag = makeSkillTag(self, this, "发动次数");
+            let currentRate = this.rate + (self.RATE_ADD[this.id] ? self.RATE_ADD[this.id].value : 0);
+            if (getRandomBool(currentRate)) {
+                self.Manger.Record.pushRecord(self, '发动【威震河朔】')
+                self.countAdd(tag, 1);
+                self.RATE_ADD[this.id] = {
+                    value: -10 * self.countGet(tag),
+                    rounds: -1
+                }
+                let enemy = self.getTarget(5, 2);
+                enemy.forEach(e => {
+                    e.beHurt(self, {
+                        type: 1,
+                        rate: 200
+                    }, this);
+                });
+                //没找到成长率 先用【银龙冲阵】的成长值
+                let value = clacSkillAdditionRate(20, 0.075, self.Attrs.atk);
+                self.addState("activeDamageAdd", value, 2, this, self, false);
+                let targets = self.getTarget(5, 1, 3);
+                if (targets.length > 0) {
+                    targets[0].addState("activeDamageAdd", value, 2, this, self), false;
+                }
+                return true;
+            }
+        },
+    },
+
+    {
+        id: 1023,
+        name: "反计之策",
+        desc: "战斗开始后前3回合，使敌军群体发动主动战法时造成的伤害大幅下降，并在首回合有100.0%的几率使其陷入犹豫状态，无法发动主动战法",
+        level: "S",
+        type: 1,
+        target: 2,
+        target_type: "enemy",
+        limit: 4,
+        rate: "--",
+        callskill: function (self) {
+            self.Manger.Record.pushRecord(self, '发动【反计之策】')
+            let enemy = self.getTarget(4, 2);
+
+            enemy.forEach(e => {
+                e.addState("activeDamageSub", 9999, 3, this, self)
+                if (!e.isActiveLimit()) {
+                    e.State.activeLimit = {
+                        rounds: 1,
+                        from: {
+                            hero: self,
+                            skill: this
+                        }
+                    }
+                    self.Manger.Record.pushActionRecord(self, e, `的【${this.name}】使`, '陷入犹豫1回合', 1);
+                } else {
+                    self.Manger.Record.pushRecord(e, '已存在犹豫效果', 1);
+                }
+            });
+        },
+    },
+
+    {
+        id: 1024,
+        name: "百战精兵",
+        desc: "使自身攻击属性、防御属性、谋略属性、速度属性全部提高32.0",
+        level: "B",
+        type: 1,
+        target: 1,
+        target_type: "self",
+        limit: 1,
+        rate: "--",
+        callskill: function (self) {
+            self.Manger.Record.pushRecord(self, `发动【${this.name}】`);
+            self.Attrs.atk += 32;
+            self.Attrs.int += 32;
+            self.Attrs.def += 32;
+            self.Attrs.spd += 32;
+            self.Manger.Record.pushActionRecord(self, self, `【${this.name}】的效果使`, `的攻击属性提高了32(${self.Attrs.atk})`, 1);
+            self.Manger.Record.pushActionRecord(self, self, `【${this.name}】的效果使`, `的防御属性提高了32(${self.Attrs.def})`, 1);
+            self.Manger.Record.pushActionRecord(self, self, `【${this.name}】的效果使`, `的谋略属性提高了32(${self.Attrs.int})`, 1);
+            self.Manger.Record.pushActionRecord(self, self, `【${this.name}】的效果使`, `的速度属性提高了32(${self.Attrs.spd})`, 1);
         },
     },
 ]

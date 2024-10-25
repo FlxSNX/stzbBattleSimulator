@@ -169,10 +169,43 @@ export class BattleHero {
                 command: null,
                 active: null,
                 passive: null
-            }
+            },
+
+            // 造成的主动战法伤害加成
+            activeDamageAdd: {
+                passive: null,
+                command: null,
+                active: null,
+                passive: null
+            },
+
+            // 造成的主动战法伤害减少
+            activeDamageSub: {
+                passive: null,
+                command: null,
+                active: null,
+                passive: null
+            },
+
+            // 受到的主动战法伤害加成
+            beActiveDamageAdd: {
+                passive: null,
+                command: null,
+                active: null,
+                passive: null
+            },
+
+            // 受到的主动战法伤害减少
+            beActiveDamageSub: {
+                passive: null,
+                command: null,
+                active: null,
+                passive: null
+            },
+
         },
 
-        this.Manger = Manger;
+            this.Manger = Manger;
         this.BattleCamp = battlecamp;
 
         //初始化属性值
@@ -298,21 +331,26 @@ export class BattleHero {
     }
     //执行主动技能
     callActiveSkill() {
-        this.SkillsOrder.forEach(e => {
-            if (!e) return;
-            let skill = this.Skills[e];
-            if (skill.type == 2) {
-                let currentRate = skill.rate + (this.RATE_ADD[skill.id] ? self.RATE_ADD[skill.id].value : 0);
-                console.log(this.canAddReadySkill(skill));
-                if (this.canAddReadySkill(skill)) {
-                    this.Manger.Record.pushRecord(this, `的【${skill.name}】发动率为${currentRate}%`)
-                    let ret = skill.callskill(this);
-                    if (ret !== true) this.Manger.Record.pushRecord(this, `的【${skill.name}】未发动`);
-                } else {
-                    this.subReadySkillRound(skill);
+        if (!this.isActiveLimit()) {
+            this.SkillsOrder.forEach(e => {
+                if (!e) return;
+                let skill = this.Skills[e];
+                if (skill.type == 2) {
+                    console.log(this.RATE_ADD);
+                    let currentRate = skill.rate + (this.RATE_ADD[skill.id] ? this.RATE_ADD[skill.id].value : 0);
+                    console.log(this.canAddReadySkill(skill));
+                    if (this.canAddReadySkill(skill)) {
+                        this.Manger.Record.pushRecord(this, `的【${skill.name}】发动率为${currentRate}%`)
+                        let ret = skill.callskill(this);
+                        if (ret !== true) this.Manger.Record.pushRecord(this, `的【${skill.name}】未发动`);
+                    } else {
+                        this.subReadySkillRound(skill);
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            this.skipAttackByActiveLimit();
+        }
     }
     //执行追击技能
     callPursuitSkill(target) {
@@ -374,7 +412,7 @@ export class BattleHero {
         type 2 选我军
         type 3 选友军
     */
-    getTarget(range, num, type=1) {
+    getTarget(range, num, type = 1) {
         let canAtk = [];
 
         // 先按距离顺序排列武将 这里需要颠倒红队顺序来排列 因为红队大营是RedTeam的第一个武将
@@ -393,17 +431,17 @@ export class BattleHero {
         // 获取可攻击目标
         heros.forEach((e, i) => {
             // 判断距离是否足够 且目标没有阵亡
-            if(type == 1){
+            if (type == 1) {
                 //距离够且不是同一阵营
                 if (e != this && Math.abs(selfindex - (i + 1)) <= range && e.Arms > 0 && e.BattleCamp != this.BattleCamp) {
                     canAtk.push(e);
                 }
-            }else if(type == 2){
+            } else if (type == 2) {
                 //距离感且是同一个阵营
                 if (Math.abs(selfindex - (i + 1)) <= range && e.Arms > 0 && e.BattleCamp == this.BattleCamp) {
                     canAtk.push(e);
                 }
-            }else{
+            } else {
                 //距离够且是同一个阵营但不是自己
                 if (e != this && Math.abs(selfindex - (i + 1)) <= range && e.Arms > 0 && e.BattleCamp == this.BattleCamp) {
                     canAtk.push(e);
@@ -459,20 +497,20 @@ export class BattleHero {
             type //伤害类型 暂定 1物理 2谋略
         }
     */
-    beHurt(attacker, damageInfo, skill = null,num = null) {
+    beHurt(attacker, damageInfo, skill = null, num = null) {
         attacker.callHook("攻击前");
         let realDamage = 0;
         let damage;
-        if(num != null){
+        if (num != null) {
             damage = num;
-        }else{
-            if(damageInfo.type == 1){
+        } else {
+            if (damageInfo.type == 1) {
                 damage = clacAttackDamage(attacker, this, damageInfo, skill);
-            }else if(damageInfo.type == 2){
+            } else if (damageInfo.type == 2) {
                 damage = clacInteDamage(attacker, this, damageInfo, skill);
             }
         }
-        
+
         if (damage >= this.Arms) {
             // 如果伤害大于剩余的兵力 将兵力改为0
             realDamage = this.Arms
@@ -500,8 +538,8 @@ export class BattleHero {
     }
 
     //受到伤害,不计算伤害,使用传入的值作为伤害值。 给类似【白衣渡江】这种指挥阶段就确定伤害的战法使用
-    beHurtByNum(attacker,damageInfo,skill,num){
-        this.beHurt(attacker,damageInfo,skill,num);
+    beHurtByNum(attacker, damageInfo, skill, num) {
+        this.beHurt(attacker, damageInfo, skill, num);
     }
 
     //受到恢复
@@ -514,7 +552,7 @@ export class BattleHero {
         this.Manger.Record.pushActionRecord(source, this, `【${name}】的效果使`, `恢复了${recoverNum}兵力(${this.Arms})`, 1);
     }
 
-    getDamageStateValue(name){
+    getDamageStateValue(name) {
         let value = 0;
         value += this.getState(name, 1);
         value += this.getState(name, 2);
@@ -534,15 +572,22 @@ export class BattleHero {
         // 清除连击
         this.claerSingleSimpleStateRounds('doubleAttack');
 
+        // 清除犹豫
+        this.claerSingleActionedStateRounds('activeLimit');
+
         // 减少增减伤类型状态回合数
         this.claerDamageStateRounds('attackDamageAdd');
         this.claerDamageStateRounds('inteDamageAdd');
+        this.claerDamageStateRounds('activeDamageAdd');
         this.claerDamageStateRounds('attackDamageSub');
         this.claerDamageStateRounds('inteDamageSub');
+        this.claerDamageStateRounds('activeDamageSub');
         this.claerDamageStateRounds('beAttackDamageAdd');
         this.claerDamageStateRounds('beInteDamageAdd');
+        this.claerDamageStateRounds('beActiveDamageAdd');
         this.claerDamageStateRounds('beAttackDamageSub');
         this.claerDamageStateRounds('beInteDamageSub');
+        this.claerDamageStateRounds('beActiveDamageSub');
     }
 
     //减少已执行的效果回合数 如混乱,怯战等 
@@ -573,12 +618,12 @@ export class BattleHero {
     //减少增减伤类型状态回合数
     claerDamageStateRounds(name) {
         for (const key in this.State[name]) {
-            if(this.State[name][key] == undefined || !this.State[name][key])continue;
+            if (this.State[name][key] == undefined || !this.State[name][key]) continue;
             // console.log('debug',this.State[name][key]);
-            if(this.State[name][key].rounds != -1 && this.State[name][key].rounds > 0 && this.State[name][key].type == 1){
+            if (this.State[name][key].rounds != -1 && this.State[name][key].rounds > 0 && this.State[name][key].type == 1) {
                 this.State[name][key].rounds--;
-            }else if(this.State[name][key].rounds == 0){
-                this.delState(name,this.State[name][key].from)
+            } else if (this.State[name][key].rounds == 0) {
+                this.delState(name, this.State[name][key].from)
             }
         }
     }
@@ -607,9 +652,23 @@ export class BattleHero {
         return false
     }
 
-    //由于处于怯战跳过1个回合()
+    //是否处于犹豫状态
+    isActiveLimit() {
+        if (this.State.activeLimit.rounds > 0) {
+            this.IN_READY_SKILL = [];
+            return true
+        }
+        return false
+    }
+
+    //由于处于犹豫跳过发动战法()
+    skipAttackByActiveLimit() {
+        this.Manger.Record.pushRecord(this, '陷入犹豫无法发动战法');
+        this.StateFlag.attackLimit = true;
+    }
+
+    //由于处于怯战跳过普攻()
     skipAttackByAttackLimit() {
-        // this.Manger.pushRecord(`[${this.Name}] 由于受到 [${this.State.attackLimit.from.hero.Name}] [${SKILLS[this.State.attackLimit.from.skill].name}]的怯战效果影响 无法进行攻击`);
         this.Manger.Record.pushRecord(this, '陷入怯战无法进行攻击');
         this.StateFlag.attackLimit = true;
     }
@@ -658,9 +717,9 @@ export class BattleHero {
                 const hook = element[key2];
                 console.log(hook);
                 //如果类型是需要清除的类型且是负面效果
-                if(claerType.includes(hook.skill.type) && hook.type == "debuff" && hook.canClear == true){
+                if (claerType.includes(hook.skill.type) && hook.type == "debuff" && hook.canClear == true) {
                     delete this.HOOKS[key][key2];
-                    this.Manger.Record.pushActionRecord(this, hook.hero, "消除了来自",`【${hook.skill.name}】的负面效果`,1);
+                    this.Manger.Record.pushActionRecord(this, hook.hero, "消除了来自", `【${hook.skill.name}】的负面效果`, 1);
                 }
             }
         }
@@ -810,6 +869,18 @@ export class BattleHero {
             case "beInteDamageSub":
                 name = "受到策略攻击伤害降低"
                 break;
+            case "activeDamageAdd":
+                name = "造成主动战法伤害提高"
+                break;
+            case "activeDamageSub":
+                name = "造成主动战法伤害降低"
+                break;
+            case "beActiveDamageAdd":
+                name = "受到主动战法伤害降低"
+                break;
+            case "beActiveDamageSub":
+                name = "受到主动战法伤害降低"
+                break;
         }
         return name;
     }
@@ -847,6 +918,18 @@ export class BattleHero {
             case "beInteDamageSub":
                 ret = 1;
                 break;
+            case "activeDamageAdd":
+                ret = 1;
+                break;
+            case "activeDamageSub":
+                ret = 1;
+                break;
+            case "beActiveDamageAdd":
+                ret = 1;
+                break;
+            case "beActiveDamageSub":
+                ret = 1;
+                break;
         }
         return ret;
     }
@@ -860,19 +943,19 @@ export class BattleHero {
         hero 来源武将
         type 类型 为2时 回合改为次数
     */
-    addState(name, value, round, from, hero, type = 1) {
+    addState(name, value, round, from, hero, stack = true, type = 1) {
         let typename = this.getSkillTypeName(from.type);
         if (this.State[name][typename]) {
             let limit = this.getStateLimit(name);
             switch (limit) {
                 case 1:
-                    if (from == this.State[name][typename].from && this.State[name][typename].type == 1) {
+                    if (from == this.State[name][typename].from && this.State[name][typename].type == 1 && hero == this.State[name][typename].hero && stack) {
                         this.State[name][typename].value += value;
                         this.State[name][typename].round = round;
-                        if(this.Manger.Round < 1){
-                            this.Manger.Record.pushRecord(this, `${this.getStateName(name)}${this.State[name][typename].value}%`,1);
-                        }else{
-                            this.Manger.Record.pushActionRecord(this, hero, `【${from.name}】使`, `${this.getStateName(name)}${this.State[name][typename].value}%`);
+                        if (this.Manger.Round < 1) {
+                            this.Manger.Record.pushRecord(this, `${this.getStateName(name)}${this.State[name][typename].value}%`, 1);
+                        } else {
+                            this.Manger.Record.pushActionRecord(hero, this, `【${from.name}】使`, `${this.getStateName(name)}${this.State[name][typename].value}%`);
                         }
                         return this.State[name][typename];
                     } else {
@@ -889,10 +972,10 @@ export class BattleHero {
                 from: from, //效果来源技能
                 hero: hero
             }
-            if(this.Manger.Round < 1){
-                this.Manger.Record.pushRecord(this, `${this.getStateName(name)}${this.State[name][typename].value}%`,1);
-            }else{
-                this.Manger.Record.pushActionRecord(this, hero, `【${from.name}】使`, `${this.getStateName(name)}${this.State[name][typename].value}%`);
+            if (this.Manger.Round < 1) {
+                this.Manger.Record.pushRecord(this, `${this.getStateName(name)}${this.State[name][typename].value}%`, 1);
+            } else {
+                this.Manger.Record.pushActionRecord(hero, this, `【${from.name}】使`, `${this.getStateName(name)}${this.State[name][typename].value}%`);
             }
             return this.State[name][typename];
         }
@@ -940,7 +1023,7 @@ export class BattleHero {
 
     //减少准备技能回合数
     subReadySkillRound(skill) {
-        this.IN_READY_SKILL.forEach((e,i) => {
+        this.IN_READY_SKILL.forEach((e, i) => {
             if (skill == e.from) {
                 if (e.round > 0) {
                     e.round -= 1;

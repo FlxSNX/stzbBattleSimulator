@@ -6,10 +6,10 @@ import { keepTwoDecimal, roundEightNine } from "../uilts";
 
 // 计算物理伤害
 export const clacAttackDamage = (attacker, target, damageInfo, skill) => {
-    let damageAddition = getDamageAddition(attacker, target, damageInfo.type);
+    let damageAddition = getDamageAddition(attacker, target, damageInfo.type, skill);
 
     if (damageAddition != 1) {
-        attacker.Manger.Record.pushRecord(attacker, `该次造成伤害共计${getDamageAddition(attacker, target, damageInfo.type) > 1 ? "提升" : "降低"}${Math.abs(roundEightNine(getDamageAddition(attacker, target, damageInfo.type) * 100 - 100))}%`, 1)
+        attacker.Manger.Record.pushRecord(attacker, `该次造成伤害共计${getDamageAddition(attacker, target, damageInfo.type, skill) > 1 ? "提升" : "降低"}${Math.abs(roundEightNine(getDamageAddition(attacker, target, damageInfo.type, skill) * 100 - 100))}%`, 1)
     }
 
     let DamageRate = damageInfo.rate;
@@ -33,10 +33,10 @@ export const clacAttackDamage = (attacker, target, damageInfo, skill) => {
 
 // 计算策略伤害
 export const clacInteDamage = (attacker, target, damageInfo, skill) => {
-    let damageAddition = getDamageAddition(attacker, target, damageInfo.type);
+    let damageAddition = getDamageAddition(attacker, target, damageInfo.type, skill);
 
     if (damageAddition != 1) {
-        attacker.Manger.Record.pushRecord(attacker, `该次造成伤害共计${getDamageAddition(attacker, target, damageInfo.type) > 1 ? "提升" : "降低"}${Math.abs(roundEightNine(getDamageAddition(attacker, target, damageInfo.type) * 100 - 100))}%`, 1)
+        attacker.Manger.Record.pushRecord(attacker, `该次造成伤害共计${getDamageAddition(attacker, target, damageInfo.type, skill) > 1 ? "提升" : "降低"}${Math.abs(roundEightNine(getDamageAddition(attacker, target, damageInfo.type, skill) * 100 - 100))}%`, 1)
     }
     let DamageRate = damageInfo.rate;
     let inteEffect = calcInteEffect(target.Attrs.int);;
@@ -74,7 +74,7 @@ const getRandNum = () => {
 }
 
 // 计算伤害增减
-const getDamageAddition = (attacker, target, type) => {
+const getDamageAddition = (attacker, target, type, skill) => {
     let value = 100;
     if (type == 1) {
         value += attacker.getDamageStateValue("attackDamageAdd"); //攻击者造成伤害提高
@@ -86,6 +86,13 @@ const getDamageAddition = (attacker, target, type) => {
         value -= attacker.getDamageStateValue("inteDamageSub");
         value += target.getDamageStateValue("beInteDamageAdd");
         value -= target.getDamageStateValue("beInteDamageSub");
+    }
+
+    if (skill && skill.type == 2){
+        value += attacker.getDamageStateValue("activeDamageAdd");
+        value -= attacker.getDamageStateValue("activeDamageSub");
+        value += target.getDamageStateValue("beActiveDamageAdd");
+        value -= target.getDamageStateValue("beActiveDamageSub");
     }
 
     if (value < 10) value = 10;
