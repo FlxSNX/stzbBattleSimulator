@@ -5,20 +5,21 @@
  * Camp: 阵营 1=蜀 2=魏 3=吴 4=汉 5=群 6=晋
  * Star: 星级
  * Cost: 统率
- * Arm: 兵种
+ * army: 兵种
  * Limit: 攻击距离
  * Skill: 初始技能
  * Attrs: 初始属性
  * AttrsGrow: 属性成长率
  */
 
-export const __HEROS__ = {
-    1001:{
+export const __HEROS__ = [
+    {   
+        id:1001,
         name: "太史慈",
         camp: 3,
         star: 5,
         cost: 25,
-        arm: 101,
+        army: 1,
         limit: 5,
         skill: 1004,
         attrs: {
@@ -36,12 +37,13 @@ export const __HEROS__ = {
             des: 0.57
         }
     },
-    1002:{
+    {
+        id:1002,
         name: "马超",
         camp: 5,
         star: 5,
         cost: 30,
-        arm: 102,
+        army: 3,
         limit: 3,
         skill: 1003,
         attrs: {
@@ -59,12 +61,13 @@ export const __HEROS__ = {
             des: 0.41
         }
     },
-    1003:{
+    {
+        id:1003,
         name: "刘备",
         camp: 1,
         star: 5,
         cost: 35,
-        arm: 103,
+        army: 2,
         limit: 3,
         skill: 1007,
         attrs: {
@@ -82,12 +85,13 @@ export const __HEROS__ = {
             des: 1.73
         }
     },
-    1004:{
+    {
+        id:1004,
         name: "张辽", //名称
         camp: 2, //阵营 1=蜀 2=魏 3=吴 4=汉 5=群 6=晋
         star: 5, //星级
         cost: 35, //统率
-        arm: 102, //兵种
+        army: 3, //兵种
         limit: 3, //攻击距离
         skill: 1008, //初始技能
         attrs: { //初始属性
@@ -105,12 +109,13 @@ export const __HEROS__ = {
             des: 0.29
         }
     },
-    1005:{
+    {
+        id:1005,
         name: "乐进", //名称
         camp: 2, //阵营 1=蜀 2=魏 3=吴 4=汉 5=群 6=晋
         star: 5, //星级
         cost: 30, //统率
-        arm: 103, //兵种
+        army: 2, //兵种
         limit: 2, //攻击距离
         skill: 1009, //初始技能
         attrs: { //初始属性
@@ -128,12 +133,13 @@ export const __HEROS__ = {
             des: 1.21
         }
     },
-    1006:{
+    {
+        id:1006,
         name: "魏延", //名称
         camp: 1, //阵营 1=蜀 2=魏 3=吴 4=汉 5=群 6=晋
         star: 5, //星级
         cost: 30, //统率
-        arm: 103, //兵种
+        army: 2, //兵种
         limit: 2, //攻击距离
         skill: 1010, //初始技能
         attrs: { //初始属性
@@ -151,12 +157,13 @@ export const __HEROS__ = {
             des: 1.21
         }
     },
-    1007:{
+    {
+        id:1007,
         name: "陈到", //名称
         camp: 1, //阵营 1=蜀 2=魏 3=吴 4=汉 5=群 6=晋
         star: 5, //星级
         cost: 30, //统率
-        arm: 103, //兵种
+        army: 2, //兵种
         limit: 2, //攻击距离
         skill: 1011, //初始技能
         attrs: { //初始属性
@@ -174,12 +181,13 @@ export const __HEROS__ = {
             des: 1.12
         }
     },
-    1008:{
+    {
+        id:1008,
         name: "张机", //名称
         camp: 4, //阵营 1=蜀 2=魏 3=吴 4=汉 5=群 6=晋
         star: 5, //星级
         cost: 30, //统率
-        arm: 101, //兵种
+        army: 1, //兵种
         limit: 3, //攻击距离
         skill: 1016, //初始技能
         attrs: { //初始属性
@@ -197,12 +205,13 @@ export const __HEROS__ = {
             des: 0.85
         }
     },
-    1009:{
+    {
+        id:1009,
         name: "吕蒙", //名称
         camp: 3, //阵营 1=蜀 2=魏 3=吴 4=汉 5=群 6=晋
         star: 5, //星级
         cost: 35, //统率
-        arm: 101, //兵种
+        army: 1, //兵种
         limit: 4, //攻击距离
         skill: 1021, //初始技能
         attrs: { //初始属性
@@ -220,12 +229,13 @@ export const __HEROS__ = {
             des: 0.87
         }
     },
-    1010:{
+    {
+        id:1010,
         name: "袁绍", //名称
         camp: 5, //阵营 1=蜀 2=魏 3=吴 4=汉 5=群 6=晋
         star: 5, //星级
-        cost: 3, //统率
-        arm: 101, //兵种
+        cost: 35, //统率
+        army: 1, //兵种
         limit: 3, //攻击距离
         skill: 1022, //初始技能
         attrs: { //初始属性
@@ -243,4 +253,4 @@ export const __HEROS__ = {
             des: 0.97
         }
     }
-}
+]

@@ -2,8 +2,8 @@
  * 战斗时的武将对象
  */
 
-import { __HEROS__ as HEROS } from "./heros";
-import { __ARMS__ as ARMS } from "./arms";
+import { __HEROS__ } from "./heros";
+import { __ARMS__ as ARMS } from "./armys";
 import { __SKILLS__ } from "./skills"
 import { keepTwoDecimal, makeSkillTag } from "../uilts"
 import { clacAttackDamage, getRandomBool, clacInteDamage } from "./battleCalcFunc"
@@ -217,6 +217,10 @@ export class BattleHero {
     initAttrs(config) {
         let id = config.id;
         let level = config.level;
+        let HEROS = {};
+        __HEROS__.forEach(e => {
+            HEROS[e.id] = e;
+        });
 
         let hero = HEROS[id];
 

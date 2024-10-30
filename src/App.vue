@@ -625,6 +625,7 @@ const battleStart = () => {
 						width: 100%;
 						height: 100%;
 						object-fit: cover;
+						object-position: left;
 					}
 
 					.card-border {

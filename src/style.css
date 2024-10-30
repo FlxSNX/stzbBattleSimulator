@@ -34,6 +34,7 @@ body {
 	background-repeat: no-repeat;
 	overflow: hidden auto;
 	font-family: "FZLanTingHei_L_GBK";
+	user-select: none;
 }
 
 #app::-webkit-scrollbar{
