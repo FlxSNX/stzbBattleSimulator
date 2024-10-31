@@ -166,7 +166,7 @@ const changeConfig = (type,act) => {
             <div class="close" @click="showHeroList = false"></div>
         </div>
         <div class="herolist-box">
-            <div class="card" v-for="hero in [...__HEROS__,...__HEROS__]" @click="ConfigHeroInfo(hero.id)">
+            <div class="card" v-for="hero in [...__HEROS__]" @click="ConfigHeroInfo(hero.id)">
                 <img :src="`/assets/card/${hero.id}.png`" class="card-img">
                 <img src="/assets/ui/card.png" class="card-border">
                 <div class="camp">
@@ -244,11 +244,11 @@ const changeConfig = (type,act) => {
                     <div class="left"><div class="attr-icon atk"></div>攻击</div>
                     <div class="right">
                         <!-- <div class="stbtn" style="margin-right: .2vw;">MIN</div> -->
-                        <div class="sub-btn" @mousedown="addAttrChange('atk',2)" @mouseup="clearAttrChange('atk')"></div>
+                        <div class="sub-btn" @mousedown="addAttrChange('atk',2)" @mouseup="clearAttrChange('atk')" @touchstart="addAttrChange('atk',2)" @touchend="clearAttrChange('atk')"></div>
                         <div class="attr-num">
                             {{ keepTwoDecimal(HEROS[HeroConfig.id].attrs.atk + HEROS[HeroConfig.id].attrs_grow.atk * (HeroConfig.level - 1)).toFixed(2) }} + {{ HeroConfig.extraAttrsAlloc.atk }}
                         </div>
-                        <div class="add-btn" @mousedown="addAttrChange('atk',1)" @mouseup="clearAttrChange('atk')"></div>
+                        <div class="add-btn" @mousedown="addAttrChange('atk',1)" @mouseup="clearAttrChange('atk')" @touchstart="addAttrChange('atk',1)" @touchend="clearAttrChange('atk')"></div>
                         <!-- <div class="stbtn" style="margin-left: .2vw;">MAX</div> -->
                     </div>
                 </div>
@@ -256,11 +256,11 @@ const changeConfig = (type,act) => {
                     <div class="left"><div class="attr-icon def"></div>防御</div>
                     <div class="right">
                         <!-- <div class="stbtn" style="margin-right: .2vw;">MIN</div> -->
-                        <div class="sub-btn" @mousedown="addAttrChange('def',2)" @mouseup="clearAttrChange('def')"></div>
+                        <div class="sub-btn" @mousedown="addAttrChange('def',2)" @mouseup="clearAttrChange('def')" @touchstart="addAttrChange('def',2)" @touchend="clearAttrChange('def')"></div>
                         <div class="attr-num">
                             {{ keepTwoDecimal(HEROS[HeroConfig.id].attrs.def + HEROS[HeroConfig.id].attrs_grow.def * (HeroConfig.level - 1)).toFixed(2) }} + {{ HeroConfig.extraAttrsAlloc.def }}
                         </div>
-                        <div class="add-btn" @mousedown="addAttrChange('def',1)" @mouseup="clearAttrChange('def')"></div>
+                        <div class="add-btn" @mousedown="addAttrChange('def',1)" @mouseup="clearAttrChange('def')" @touchstart="addAttrChange('def',1)" @touchend="clearAttrChange('def')"></div>
                         <!-- <div class="stbtn" style="margin-left: .2vw;">MAX</div> -->
                     </div>
                 </div>
@@ -268,11 +268,11 @@ const changeConfig = (type,act) => {
                     <div class="left"><div class="attr-icon int"></div>谋略</div>
                     <div class="right">
                         <!-- <div class="stbtn" style="margin-right: .2vw;">MIN</div> -->
-                        <div class="sub-btn" @mousedown="addAttrChange('int',2)" @mouseup="clearAttrChange('int')"></div>
+                        <div class="sub-btn" @mousedown="addAttrChange('int',2)" @mouseup="clearAttrChange('int')" @touchstart="addAttrChange('int',2)" @touchend="clearAttrChange('int')"></div>
                         <div class="attr-num">
                             {{ keepTwoDecimal(HEROS[HeroConfig.id].attrs.int + HEROS[HeroConfig.id].attrs_grow.int * (HeroConfig.level - 1)).toFixed(2) }} + {{ HeroConfig.extraAttrsAlloc.int }}
                         </div>
-                        <div class="add-btn" @mousedown="addAttrChange('int',1)" @mouseup="clearAttrChange('int')"></div>
+                        <div class="add-btn" @mousedown="addAttrChange('int',1)" @mouseup="clearAttrChange('int')" @touchstart="addAttrChange('int',1)" @touchend="clearAttrChange('int')"></div>
                         <!-- <div class="stbtn" style="margin-left: .2vw;">MAX</div> -->
                     </div>
                 </div>
@@ -280,11 +280,11 @@ const changeConfig = (type,act) => {
                     <div class="left"><div class="attr-icon spd"></div>速度</div>
                     <div class="right">
                         <!-- <div class="stbtn" style="margin-right: .2vw;">MIN</div> -->
-                        <div class="sub-btn" @mousedown="addAttrChange('spd',2)" @mouseup="clearAttrChange('spd')"></div>
+                        <div class="sub-btn" @mousedown="addAttrChange('spd',2)" @mouseup="clearAttrChange('spd')" @touchstart="addAttrChange('spd',2)" @touchend="clearAttrChange('spd')"></div>
                         <div class="attr-num">
                             {{ keepTwoDecimal(HEROS[HeroConfig.id].attrs.spd + HEROS[HeroConfig.id].attrs_grow.spd * (HeroConfig.level - 1)).toFixed(2) }} + {{ HeroConfig.extraAttrsAlloc.spd }}
                         </div>
-                        <div class="add-btn" @mousedown="addAttrChange('spd',1)" @mouseup="clearAttrChange('spd')"></div>
+                        <div class="add-btn" @mousedown="addAttrChange('spd',1)" @mouseup="clearAttrChange('spd')" @touchstart="addAttrChange('spd',1)" @touchend="clearAttrChange('spd')"></div>
                         <!-- <div class="stbtn" style="margin-left: .2vw;">MAX</div> -->
                     </div>
                 </div>
