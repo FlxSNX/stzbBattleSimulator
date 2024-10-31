@@ -76,6 +76,7 @@ const saveConfig = () =>{
     team.value[c_camp][c_hindex].extraAttrsAlloc.def = HeroConfig.value.extraAttrsAlloc.def;
     team.value[c_camp][c_hindex].extraAttrsAlloc.int = HeroConfig.value.extraAttrsAlloc.int;
     team.value[c_camp][c_hindex].extraAttrsAlloc.spd = HeroConfig.value.extraAttrsAlloc.spd;
+    team.value[c_camp][c_hindex].up = HeroConfig.value.up;
     console.log(team.value[c_camp][c_hindex],"save");
     // alert("保存成功");
     showHeroInfo.value = false;

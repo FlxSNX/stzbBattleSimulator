@@ -1,9 +1,14 @@
 <script setup>
 import { BattleManger } from './battle/battleManger'
 import { __SKILLS__ as SKILLS } from './battle/skills';
-import { __HEROS__ as HEROS } from './battle/heros';
+import { __HEROS__ } from './battle/heros';
 import { ref } from 'vue'
 import TeamConfig from './components/TeamConfg.vue';
+
+let HEROS = {};
+__HEROS__.forEach(e => {
+	HEROS[e.id] = e;
+});
 
 const record = ref([]);
 const battleinfo = ref({});
@@ -21,6 +26,7 @@ const team = ref({
 				int: 0,
 				spd: 0
 			},
+			up: 5,
 			equipskill: [1012, 1024]
 		},
 		{
@@ -32,6 +38,7 @@ const team = ref({
 				int: 70,
 				spd: 20
 			},
+			up: 5,
 			equipskill: [1018, 1017]
 		},
 		{
@@ -43,6 +50,7 @@ const team = ref({
 				int: 90,
 				spd: 0
 			},
+			up: 5,
 			equipskill: [1023, 1015]
 		}
 	],
@@ -57,6 +65,7 @@ const team = ref({
 				int: 90,
 				spd: 0
 			},
+			up: 5,
 			equipskill: [1019, 1020]
 		},
 		{
@@ -68,6 +77,7 @@ const team = ref({
 				int: 0,
 				spd: 90
 			},
+			up: 5,
 			equipskill: [1012, 1024]
 		},
 		{
@@ -79,6 +89,7 @@ const team = ref({
 				int: 0,
 				spd: 0
 			},
+			up: 5,
 			equipskill: [1015, 1014]
 		},
 	]
@@ -94,9 +105,6 @@ const battleStart = () => {
 
 <template>
 	<TeamConfig v-model:show="showTeamConfig" v-model:team="team" />
-	<!-- <div class="header">
-		<div class="logo"></div>
-	</div> -->
 	<div class="main">
 		<div class="battle" v-if="battleinfo.BattleHeros != undefined">
 			<div class="header-area">
@@ -157,10 +165,22 @@ const battleStart = () => {
 						<div class="juexing"></div>
 						<div class="arms">{{ item.Arms }}</div>
 						<div class="hurtarms">{{ item.HurtArms }}</div>
+						<div class="stars">
+							<div class="star" :class="{'up': item.Up >= (i+1)}" v-for="(s,i) in HEROS[item.Id].star"></div>
+						</div>
+						<div class="range">
+							<div class="army">
+								<img :src="`https://cbg-stzb.res.netease.com/mvvm/rc6f73b651ed47551555446b20/images/bz/${HEROS[item.Id].army}.png`">
+							</div>
+							<span class="icon-text">{{ HEROS[item.Id].limit }}</span>
+						</div>
+						<div class="cost">
+							<div class="cost-icon"></div>
+							<div>{{ HEROS[item.Id].cost / 10 }}</div>
+						</div>
 						<div class="skills">
 							<div class="skill" v-for="e in item.SkillsOrder">
-								<div class="level" v-if="e">{{ item.Skills[e].level }}</div>{{ e ? item.Skills[e].name :
-		' - ' }}
+								<div class="level" v-if="e">{{ item.Skills[e].level }}</div>{{ e ? item.Skills[e].name : ' - ' }}
 							</div>
 						</div>
 					</div>
@@ -182,10 +202,22 @@ const battleStart = () => {
 						<div class="juexing"></div>
 						<div class="arms">{{ item.Arms }}</div>
 						<div class="hurtarms">{{ item.HurtArms }}</div>
+						<div class="stars">
+							<div class="star up" v-for="s in HEROS[item.Id].star"></div>
+						</div>
+						<div class="range">
+							<div class="army">
+								<img :src="`https://cbg-stzb.res.netease.com/mvvm/rc6f73b651ed47551555446b20/images/bz/${HEROS[item.Id].army}.png`">
+							</div>
+							<span class="icon-text">{{ HEROS[item.Id].limit }}</span>
+						</div>
+						<div class="cost">
+							<div class="cost-icon"></div>
+							<div>{{ HEROS[item.Id].cost / 10 }}</div>
+						</div>
 						<div class="skills">
 							<div class="skill" v-for="e in item.SkillsOrder">
-								<div class="level" v-if="e">{{ item.Skills[e].level }}</div>{{ e ? item.Skills[e].name :
-		' - ' }}
+								<div class="level" v-if="e">{{ item.Skills[e].level }}</div>{{ e ? item.Skills[e].name : ' - ' }}
 							</div>
 						</div>
 					</div>
@@ -256,17 +288,22 @@ const battleStart = () => {
 			<div class="stbtn-1" @click="battleStart">开始战斗</div>
 			<div class="stbtn-1">统计</div>
 			<div class="stbtn-1" @click="showTeamConfig = true">配置队伍</div>
-			<div class="stbtn-1" @click="showBattleRecord = !showBattleRecord">{{ showBattleRecord ? '隐藏战报' : '显示战报' }}</div>
+			<div class="stbtn-1" @click="showBattleRecord = !showBattleRecord">{{ showBattleRecord ? '隐藏战报' : '显示战报' }}
+			</div>
 		</div>
-		<div class="record" v-show="showBattleRecord">
+		<div class="record" v-if="showBattleRecord">
 			<div class="record-item" v-for="e in battleinfo.Record?.Records"
 				:class="{ 'round-title': e.roundTitle == 1, 'hero-round-start': e.heroRoundStart == 1 }"
 				:style="{ 'background-image': (e.heroRoundStart == 1 ? `url(/assets/card/${e.hero1.Id}_long.png)` : '') }">
 
 				<div class="sub" v-if="e.level == 1"></div>
-				<span v-if="e.hero1" :style="{ 'color': (e.hero1?.BattleCamp == 'blue' ? 'rgb(154,213,137)' : 'rgb(255,72,71)') }">【{{ e.hero1?.Name}}】</span>
+				<span v-if="e.hero1"
+					:style="{ 'color': (e.hero1?.BattleCamp == 'blue' ? 'rgb(154,213,137)' : 'rgb(255,72,71)') }">【{{
+		e.hero1?.Name }}】</span>
 				<span v-if="e.predicate">{{ e.predicate }}</span>
-				<span v-if="e.hero2" :style="{ 'color': (e.hero2?.BattleCamp == 'blue' ? 'rgb(154,213,137)' : 'rgb(255,72,71)') }">【{{ e.hero2?.Name}}】</span>
+				<span v-if="e.hero2"
+					:style="{ 'color': (e.hero2?.BattleCamp == 'blue' ? 'rgb(154,213,137)' : 'rgb(255,72,71)') }">【{{
+		e.hero2?.Name }}】</span>
 				{{ e.msg }}
 				<span v-if="e.heroRoundStart == 1" style="flex-grow: 2;text-align: right;">兵力 {{ e.arms }}</span>
 			</div>
@@ -586,6 +623,78 @@ const battleStart = () => {
 							&:last-child {
 								border-bottom: none;
 							}
+						}
+					}
+
+					.stars {
+						display: flex;
+						position: absolute;
+						top: 3%;
+						right: 10%;
+						transform: scale(1.1);
+
+						&>.star {
+							width: 1vw;
+							height: 1vw;
+							background: url(data:image/png;base64,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) no-repeat;
+							background-size: 100% 100%;
+
+							&.up {
+								background-image: url(data:image/png;base64,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);
+							}
+						}
+					}
+
+					.range {
+						display: flex;
+						position: absolute;
+						bottom: 1.3%;
+						right: 2%;
+						color: #fff;
+						text-shadow: 0 .2vw .2vw #000;
+						white-space: nowrap;
+						height: 16%;
+
+						&>span {
+							display: block;
+							position: absolute;
+							right: 10%;
+							bottom: 1%;
+							font-size: 110%;
+						}
+
+						&>.army {
+							position: relative;
+							background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAApVBMVEUAAAAREREICAgVFRUTExMREREZGRkXFxcNDQ0SEhIQEBAUFBQgICAeHh4QEBAVFRUWFhYfHx8VFRUcHBwLCwsWFhYWFhYKCgoODg4UFBQdHR0RERENDQ0MDAwICAgHBwciIiIgICAfHx8eHh4hISEMDAwSEhIeHh4hISEiIiIUFBQPDw8XFxcbGxsfHx8JCQkwMDAlJSU0NDQrKys3NzcoKCg6OjoMbVbWAAAAKnRSTlMAFuaKIhzj2dAoCgb28MWqnnEt692YkmUPtoSAd29cVEpDPDX52Lx6Z2EQI/wwAAABrElEQVRYw93N6VLCMBSG4aCggiiIggsuuGu2Nl24/0vzNJPMmdKmhtM/jt9h+AHzvGF/fpOefnHw1NMnSZ/CGDwWaF7rJHns440hF4bWC4EFkk8SW7je3185TyyM0FMK1psSvC8YKNA9FEqTiId4/+69sLdvYeA9OFxpRGRhcCIEeLd64T7W57wZ4DkWCB4LNI+Fdae/QR8ukD13hcOwPxeirDxvO5uQeYmFkA/N/iPTYGHS+b7l8O0KIZ9KERxgO1tYhT3vOMGryTTnfLXrPzhvvs8bw8Ky4fNUBsDvhdNb9PGFOdVjgeixsHaBGTFwPGAxBdk2laay8liQ8Evs0ONmEgqK7LEQ70dsZ/Pogsq8bxYyFeePwEcW1O5ZP2StW9pCDdUbMPRdBUTO2bn3FfjgVkqlmVbBaecJBfRj1rlDWwj7S/ThQlboVl9k1hMK6BcsYneuUH3w0EcXwNffP0MfXfBn/SuL3qcvKG1nikyjjyponRUGKM3DLnzB+xfGqAWzzfQUPKWwNehJhWJrzLbQ02fGyAX0hH1BAT2xoN82rMe+DXpiYcP+/X4AX3AhFMcnM/MAAAAASUVORK5CYII=) no-repeat;
+							background-size: 100% 100%;
+							height: 100%;
+							width: 100%;
+
+							img {
+								width: 100%;
+								height: 100%;
+								transform: scale(.85);
+							}
+						}
+					}
+
+					.cost {
+						display: flex;
+						position: absolute;
+						bottom: 1%;
+						left: 35%;
+						color: #fff;
+						text-shadow: 0 .2vw .2vw #000;
+						white-space: nowrap;
+						font-size: .8vw;
+						align-items: center;
+
+						.cost-icon {
+							background: url(data:image/png;base64,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) no-repeat;
+							background-size: 100% 100%;
+							width: 2.8vw;
+							height: 1.3vw;
+							margin-bottom: 0.2vw;
 						}
 					}
 				}
