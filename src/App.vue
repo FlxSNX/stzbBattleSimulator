@@ -8,80 +8,7 @@ import TeamConfig from './components/TeamConfg.vue';
 const record = ref([]);
 const battleinfo = ref({});
 const showTeamConfig = ref(false);
-
-// const team = {
-// 	blue: [
-// 		{
-// 			id: 0,//武将Id
-// 			level: 1,//武将等级
-// 			extraAttrsAlloc: {//属性分配
-// 				atk: 0,
-// 				def: 0,
-// 				int: 0,
-// 				spd: 0
-// 			},
-// 			equipskill: [0, 0]
-// 		},
-// 		{
-// 			id: 0,//武将Id
-// 			level: 1,//武将等级
-// 			extraAttrsAlloc: {//属性分配
-// 				atk: 0,
-// 				def: 0,
-// 				int: 0,
-// 				spd: 0
-// 			},
-// 			equipskill: [0, 0]
-// 		},
-// 		{
-// 			id: 0,//武将Id
-// 			level: 40,//武将等级
-// 			extraAttrsAlloc: {//属性分配
-// 				atk: 0,
-// 				def: 0,
-// 				int: 0,
-// 				spd: 0
-// 			},
-// 			equipskill: [0, 0]
-// 		}
-// 	],
-
-// 	red: [
-// 		{
-// 			id: 0,//武将Id
-// 			level: 1,//武将等级
-// 			extraAttrsAlloc: {//属性分配
-// 				atk: 0,
-// 				def: 0,
-// 				int: 0,
-// 				spd: 0
-// 			},
-// 			equipskill: [0, 0]
-// 		},
-// 		{
-// 			id: 0,//武将Id
-// 			level: 1,//武将等级
-// 			extraAttrsAlloc: {//属性分配
-// 				atk: 0,
-// 				def: 0,
-// 				int: 0,
-// 				spd: 0
-// 			},
-// 			equipskill: [0, 0]
-// 		},
-// 		{
-// 			id: 0,//武将Id
-// 			level: 1,//武将等级
-// 			extraAttrsAlloc: {//属性分配
-// 				atk: 0,
-// 				def: 0,
-// 				int: 0,
-// 				spd: 0
-// 			},
-// 			equipskill: [0, 0]
-// 		}
-// 	]
-// }
+const showBattleRecord = ref(false);
 
 const team = ref({
 	blue: [
@@ -157,94 +84,9 @@ const team = ref({
 	]
 })
 
-const testfunc = () => {
-	const team = {
-		blue: [
-			{
-				id: 1005,//武将Id
-				level: 40,//武将等级
-				extraAttrsAlloc: {//属性分配
-					atk: 90,
-					def: 0,
-					int: 0,
-					spd: 0
-				},
-				equipskill: []
-			},
-			{
-				id: 1004,//武将Id
-				level: 40,//武将等级
-				extraAttrsAlloc: {//属性分配
-					atk: 0,
-					def: 0,
-					int: 90,
-					spd: 0
-				},
-				equipskill: []
-			},
-			{
-				id: 1001,//武将Id
-				level: 40,//武将等级
-				extraAttrsAlloc: {//属性分配
-					atk: 90,
-					def: 0,
-					int: 0,
-					spd: 0
-				},
-				equipskill: [1002, 1006]
-			},
-		],
-
-		red: [
-			{
-				id: 1002,//武将Id
-				level: 40,//武将等级
-				extraAttrsAlloc: {//属性分配
-					atk: 90,
-					def: 0,
-					int: 0,
-					spd: 0
-				},
-				equipskill: [1002, 1006]
-			},
-			{
-				id: 1002,//武将Id
-				level: 40,//武将等级
-				extraAttrsAlloc: {//属性分配
-					atk: 90,
-					def: 0,
-					int: 0,
-					spd: 0
-				},
-				equipskill: [1002, 1006]
-			},
-			{
-				id: 1002,//武将Id
-				level: 40,//武将等级
-				extraAttrsAlloc: {//属性分配
-					atk: 90,
-					def: 0,
-					int: 0,
-					spd: 0
-				},
-				equipskill: [1002, 1006]
-			},
-		]
-	}
-	team.blue.reverse();
-	team.red.reverse();
-	const bm = new BattleManger(team);
-	record.value = bm.Record.Records;
-	battleinfo.value = bm;
-	console.log(bm);
-}
-
 const battleStart = () => {
-	// team.value.blue.reverse();
-	// team.value.red.reverse();
-	// const bm = new BattleManger({blue:[...team.value.blue].reverse(),red:[...team.value.red].reverse()});
 	const bm = new BattleManger(team.value);
-	record.value = bm.Record.Records;
+	// record.value = bm.Record.Records;
 	battleinfo.value = bm;
 	console.log(bm);
 }
@@ -414,19 +256,17 @@ const battleStart = () => {
 			<div class="stbtn-1" @click="battleStart">开始战斗</div>
 			<div class="stbtn-1">统计</div>
 			<div class="stbtn-1" @click="showTeamConfig = true">配置队伍</div>
+			<div class="stbtn-1" @click="showBattleRecord = !showBattleRecord">{{ showBattleRecord ? '隐藏战报' : '显示战报' }}</div>
 		</div>
-		<div class="record">
-			<div class="record-item" v-for="e in record" :class="{ 'round-title': e.roundTitle == 1,'hero-round-start': e.heroRoundStart == 1 }" :style="{'background-image':(e.heroRoundStart == 1 ? `url(/assets/card/${e.hero1.Id}_long.png)` : '')}">
+		<div class="record" v-show="showBattleRecord">
+			<div class="record-item" v-for="e in battleinfo.Record?.Records"
+				:class="{ 'round-title': e.roundTitle == 1, 'hero-round-start': e.heroRoundStart == 1 }"
+				:style="{ 'background-image': (e.heroRoundStart == 1 ? `url(/assets/card/${e.hero1.Id}_long.png)` : '') }">
+
 				<div class="sub" v-if="e.level == 1"></div>
-				<span v-if="e.hero1 && e.hero1.BattleCamp == 'blue'" style="color: rgb(154,213,137);">【{{ e.hero1.Name
-					}}】</span>
-				<span v-if="e.hero1 && e.hero1.BattleCamp == 'red'" style="color: rgb(255,72,71);">【{{ e.hero1.Name
-					}}】</span>
+				<span v-if="e.hero1" :style="{ 'color': (e.hero1?.BattleCamp == 'blue' ? 'rgb(154,213,137)' : 'rgb(255,72,71)') }">【{{ e.hero1?.Name}}】</span>
 				<span v-if="e.predicate">{{ e.predicate }}</span>
-				<span v-if="e.hero2 && e.hero2.BattleCamp == 'blue'" style="color: rgb(154,213,137);">【{{ e.hero2.Name
-					}}】</span>
-				<span v-if="e.hero2 && e.hero2.BattleCamp == 'red'" style="color: rgb(255,72,71);">【{{ e.hero2.Name
-					}}】</span>
+				<span v-if="e.hero2" :style="{ 'color': (e.hero2?.BattleCamp == 'blue' ? 'rgb(154,213,137)' : 'rgb(255,72,71)') }">【{{ e.hero2?.Name}}】</span>
 				{{ e.msg }}
 				<span v-if="e.heroRoundStart == 1" style="flex-grow: 2;text-align: right;">兵力 {{ e.arms }}</span>
 			</div>
