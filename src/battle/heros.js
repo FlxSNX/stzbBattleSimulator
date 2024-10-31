@@ -150,11 +150,11 @@ export const __HEROS__ = [
             des: 14.00
         },
         attrs_grow: { //属性成长率
-            atk: 2.13,
-            def: 1.95,
-            int: 0.73,
-            spd: 0.64,
-            des: 1.21
+            atk: 1.91,
+            def: 1.71,
+            int: 1.11,
+            spd: 0.80,
+            des: 1.10
         }
     },
     {
