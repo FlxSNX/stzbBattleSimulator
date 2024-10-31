@@ -69,7 +69,7 @@ export const __SKILLS__ = [
                 self.State.activeLimit.rounds = -1
                 self.State.activeLimit.from = {
                     hero: self,
-                    skille: self.Skills[1003]
+                    skille: this
                 }
                 self.Manger.Record.pushRecord(self, '的无法发动主动战法效果已施加', 1);
                 // 增加攻击伤害120%
@@ -104,7 +104,7 @@ export const __SKILLS__ = [
                     rounds: 1,
                     from: {
                         hero: self,
-                        skill: 1004
+                        skill: this
                     }
                 }
                 self.Manger.Record.pushActionRecord(self, target, '的【方阵突击】使', '陷入混乱1回合', 1);
@@ -133,7 +133,7 @@ export const __SKILLS__ = [
                     rounds: 3, //因为效果的持续回合数在行动前递减+是指挥技能 所以给4回合才能实际生效3次 || ... 突然又正常了 不用给4回合了 ？？？ 有点懵逼 貌似是之前把先手效果改成持续到多少回合 而不是每回合开始减少持续回合了 ... 
                     from: {
                         hero: self,
-                        skill: 1005
+                        skill: this
                     }
                 }
                 manger.Record.pushRecord(self, '的先手(预备)效果已施加', 1);
@@ -145,7 +145,7 @@ export const __SKILLS__ = [
                     rounds: 3,
                     from: {
                         hero: self,
-                        skill: 1005
+                        skill: this
                     }
                 }
                 manger.Record.pushRecord(self, '的连击(预备)效果已施加', 1);
@@ -175,7 +175,7 @@ export const __SKILLS__ = [
                     rounds: 1,
                     from: {
                         hero: self,
-                        skill: 1006
+                        skill: this
                     }
                 }
                 self.Manger.Record.pushActionRecord(self, target, '的【钝兵挫锐】使', '陷入怯战1回合', 1);
@@ -271,7 +271,7 @@ export const __SKILLS__ = [
                                     rounds: 1,
                                     from: {
                                         hero: self,
-                                        skill: skill
+                                        skill: this
                                     }
                                 }
                             }
