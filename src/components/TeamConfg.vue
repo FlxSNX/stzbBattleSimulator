@@ -665,6 +665,7 @@ const changeConfig = (type,act) => {
         display: flex;
         flex-wrap: wrap;
         position: relative;
+        align-content: flex-start;
         width: 85%;
         height: 80%;
         overflow-y: auto;
