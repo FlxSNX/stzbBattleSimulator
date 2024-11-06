@@ -9,6 +9,7 @@
  * TargetType: 目标类型 self=自身 enemy=敌军 friend=友军(除了自己) 当类型为self时 数量强制为1
  * Limit: 距离 追击战法距离填写0,实际距离按武将攻击距离计算
  * Rate: 发动率 %
+ * Study: 是否可学习
  */
 
 import { clacAttackDamage, getRandomBool, calcRecover, getRandomInt, clacSkillAdditionRate, clacInteDamage } from "./battleCalcFunc"
@@ -27,6 +28,7 @@ export const __SKILLS__ = [
         target_type: "self",
         limit: 1,
         rate: 35,
+        study: true,
         callskill: function (self) {
 
         }
@@ -42,6 +44,7 @@ export const __SKILLS__ = [
         target_type: "enemy",
         limit: 0,
         rate: 35,
+        study: true,
         callskill: function (self, target) {
             self.Manger.Record.pushRecord(self, '的攻击发动【温酒斩将】');
             target.beHurt(self, {
@@ -61,6 +64,7 @@ export const __SKILLS__ = [
         target_type: "self",
         limit: 0,
         rate: "--",
+        study: false,
         callskill: function (self) {
             let manger = self.Manger;
             if (manger.Round == "-1") {
@@ -92,6 +96,7 @@ export const __SKILLS__ = [
         target_type: "enemy",
         limit: 0,
         rate: 30,
+        study: false,
         callskill: function (self, target) {
             self.Manger.Record.pushRecord(self, '的攻击发动【方阵突击】');
             target.beHurt(self, {
@@ -124,6 +129,7 @@ export const __SKILLS__ = [
         target_type: "self",
         limit: 1,
         rate: "--",
+        study: true,
         callskill: function (self) {
             let manger = self.Manger;
             if (manger.Round == 0) {
@@ -163,6 +169,7 @@ export const __SKILLS__ = [
         target_type: "enemy",
         limit: 0,
         rate: 30,
+        study: true,
         callskill: function (self, target) {
             self.Manger.Record.pushRecord(self, '的攻击发动【钝兵挫锐】');
             target.beHurt(self, {
@@ -195,6 +202,7 @@ export const __SKILLS__ = [
         target_type: "team",
         limit: 0,
         rate: "--",
+        study: false,
         callskill: function (self) {
             self.Manger.Record.pushRecord(self, '发动【皇裔流离】')
             let team;
@@ -229,6 +237,7 @@ export const __SKILLS__ = [
         target_type: "team",
         limit: 0,
         rate: "--",
+        study: false,
         callskill: function (self) {
             self.Manger.Record.pushRecord(self, '发动【其疾如风】')
             let team;
@@ -296,6 +305,7 @@ export const __SKILLS__ = [
         target_type: "self",
         limit: 0,
         rate: "--",
+        study: false,
         callskill: function (self) {
             self.Manger.Record.pushRecord(self, '发动【奋疾先登】')
             let damageRate = 190;
@@ -352,6 +362,7 @@ export const __SKILLS__ = [
         target_type: "self",
         limit: 0,
         rate: "--",
+        study: false,
         callskill: function (self) {
             self.Manger.Record.pushRecord(self, '发动【奇兵拒北】')
             let rate = 30;
@@ -437,6 +448,7 @@ export const __SKILLS__ = [
         target_type: "enemy",
         limit: 4,
         rate: 50,
+        study: false,
         callskill: function (self) {
             if (getRandomBool(this.rate)) {
                 self.Manger.Record.pushRecord(self, '发动【忠克猛烈】')
@@ -499,6 +511,7 @@ export const __SKILLS__ = [
         target_type: "self",
         limit: 0,
         rate: "--",
+        study: true,
         callskill: function (self) {
             let manger = self.Manger;
             if (manger.Round == "-1") {
@@ -529,6 +542,7 @@ export const __SKILLS__ = [
         target_type: "self",
         limit: 0,
         rate: "--",
+        study: true,
         callskill: function (self) {
             let manger = self.Manger;
             if (manger.Round == 0) {
@@ -579,6 +593,7 @@ export const __SKILLS__ = [
         target_type: "enemy",
         limit: 4,
         rate: 35,
+        study: true,
         callskill: function (self) {
             // 准备型战法先创建子技能方法 然后提交在准备战法效果执行堆里
             if (getRandomBool(this.rate)) {
@@ -615,6 +630,7 @@ export const __SKILLS__ = [
         target_type: "self",
         limit: 1,
         rate: "--",
+        study: true,
         callskill: function (self) {
             self.Manger.Record.pushRecord(self, `发动【${this.name}】`);
             let subskill = (attacker, damageInfo, skill) => {
@@ -656,6 +672,7 @@ export const __SKILLS__ = [
         target_type: "team",
         limit: 3,
         rate: "--",
+        study: false,
         callskill: function (self) {
             self.Manger.Record.pushRecord(self, '发动【金匮要略】')
             let team;
@@ -702,6 +719,7 @@ export const __SKILLS__ = [
         target_type: "team",
         limit: 4,
         rate: "--",
+        study: true,
         callskill: function (self) {
             self.Manger.Record.pushRecord(self, '发动【神兵天降】')
             let damageAddRate = 30;
@@ -727,6 +745,7 @@ export const __SKILLS__ = [
         target_type: "team",
         limit: 3,
         rate: "--",
+        study: true,
         callskill: function (self) {
             self.Manger.Record.pushRecord(self, '发动【大赏三军】')
             let damageAddRate = 30;
@@ -751,6 +770,7 @@ export const __SKILLS__ = [
         target_type: "team",
         limit: 4,
         rate: "--",
+        study: true,
         callskill: function (self) {
             self.Manger.Record.pushRecord(self, '发动【无心恋战】')
             let damageSubRate = 30;
@@ -776,6 +796,7 @@ export const __SKILLS__ = [
         target_type: "team",
         limit: 3,
         rate: "--",
+        study: true,
         callskill: function (self) {
             self.Manger.Record.pushRecord(self, '发动【避其锋芒】')
             let damageSubRate = 30;
@@ -801,6 +822,7 @@ export const __SKILLS__ = [
         target_type: "enemy",
         limit: 5,
         rate: "--",
+        study: false,
         callskill: function (self) {
             self.Manger.Record.pushRecord(self, '发动【白衣渡江】')
 
@@ -847,6 +869,7 @@ export const __SKILLS__ = [
         target_type: "enemy",
         limit: 5,
         rate: 70,
+        study: false,
         callskill: function (self) {
             let tag = makeSkillTag(self, this, "发动次数");
             let currentRate = this.rate + (self.RATE_ADD[this.id] ? self.RATE_ADD[this.id].value : 0);
@@ -886,6 +909,7 @@ export const __SKILLS__ = [
         target_type: "enemy",
         limit: 4,
         rate: "--",
+        study: true,
         callskill: function (self) {
             self.Manger.Record.pushRecord(self, '发动【反计之策】')
             let enemy = self.getTarget(4, 2);
@@ -918,6 +942,7 @@ export const __SKILLS__ = [
         target_type: "self",
         limit: 1,
         rate: "--",
+        study: true,
         callskill: function (self) {
             self.Manger.Record.pushRecord(self, `发动【${this.name}】`);
             self.Attrs.atk += 32;

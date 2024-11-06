@@ -5,9 +5,18 @@ import { __SKILLS__ } from '../battle/skills';
 import { keepTwoDecimal } from "../uilts"
 
 let SKILLS = {};
+let SKILL_LIST = {1:[],2:[],3:[],4:[]};
 __SKILLS__.forEach(e => {
     SKILLS[e.id] = e;
+    if(e.study == true)SKILL_LIST[e.type].push(e);
 });
+// 定义 level 的排序顺序
+const levelOrder = { "S": 1, "A": 2, "B": 3, "C": 4 };
+
+// 对每个数组进行排序
+for (let key in SKILL_LIST) {
+    SKILL_LIST[key].sort((a, b) => levelOrder[a.level] - levelOrder[b.level]);
+}
 let HEROS = {};
 __HEROS__.forEach(e => {
     HEROS[e.id] = e;
@@ -27,6 +36,7 @@ const testt = ref({
     },
 })
 const showHeroList = ref(false);
+const showSkillList = ref(false);
 const showHeroInfo = ref(false);
 console.log(team.value[camp.value][0]);
 
@@ -34,10 +44,23 @@ const heroCampclass = ['shu', 'wei', 'wu', 'han', 'qun', 'jin'];
 const skilltypeclass = ['zh', 'zd', 'zj', 'bd'];
 const posname = ['大营', '中军', '前锋'];
 
+var s_camp;
+var s_hindex;
+var s_sindex;
+
 const selectSkill = (camp, hindex, sindex) => {
     if (sindex == 0) return;
-    console.log(camp, hindex, sindex);
-    team.value[camp][hindex].equipskill[sindex - 1] = 1002
+    s_camp = camp;
+    s_hindex = hindex;
+    s_sindex = sindex;
+    // console.log(camp, hindex, sindex);
+    // team.value[camp][hindex].equipskill[sindex - 1] = 1002
+    showSkillList.value = true;
+}
+
+const saveSkill = (id) => {
+    team.value[s_camp][s_hindex].equipskill[s_sindex - 1] = id;
+    showSkillList.value = false;
 }
 
 const selectHero = (camp, hindex) => {
@@ -294,6 +317,34 @@ const changeConfig = (type,act) => {
                     <div class="right">
                         <div class="stbtn" @click="saveConfig">保存上阵</div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="skilllist-warp" v-if="showSkillList">
+        <div class="skilllist-header">
+            <div class="title">学习战法</div>
+            <div class="close" @click="showSkillList = false"></div>
+        </div>
+        <div class="skilllist-box">
+            <div class="skill-group" v-for="g in 4">
+                <div class="title">指挥</div>
+                <div class="content">
+                    <div class="skill" v-for="s in SKILL_LIST[g]" @click="saveSkill(s.id)">
+                        <div class="skill-container">
+                            <img :src="`/assets/ui/skill_${s.level.toLowerCase()}.png`" alt="" class="skill-border">
+                            <img :src="`/assets/ui/skill_${skilltypeclass[s.type - 1]}.png`" alt="" class="skill-type">
+                            <div :class="`skill-name ${s.level.toLowerCase()}`">
+                                {{ s.name }}
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="skill-group">
+                <div class="title">主动</div>
+                <div class="content">
+
                 </div>
             </div>
         </div>
@@ -1194,6 +1245,173 @@ const changeConfig = (type,act) => {
 
                 &:active {
                     transform: scale(.95)
+                }
+            }
+        }
+    }
+}
+
+.skilllist-warp {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    background-image: url(/assets/ui/bg.png);
+    background-position: right;
+    background-size: cover;
+    background-repeat: no-repeat;
+    z-index: 100;
+
+    &>.skilllist-header {
+        display: flex;
+        justify-content: space-between;
+        /* align-items: center; */
+        position: relative;
+        width: 100%;
+        height: 11vh;
+        /* background-color: #505050; */
+
+        &>.title {
+            display: flex;
+            width: 30%;
+            // height: 80%;
+            font-family: "FZLBJW";
+            font-size: 2.2vw;
+            color: #d9c721;
+            background-image: url(/assets/ui/title_bg.png);
+            background-position: left;
+            background-size: contain;
+            background-repeat: no-repeat;
+            /* justify-content: center; */
+            align-items: center;
+            padding-left: 5%;
+            box-sizing: border-box;
+            /* align-self: flex-start; */
+        }
+
+        &>.close {
+            width: 5%;
+            height: 80%;
+            background-image: url(data:image/png;base64,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);
+            background-position: center;
+            background-size: contain;
+            background-repeat: no-repeat;
+            transform: scale(.6);
+            cursor: pointer;
+            margin-right: 3%;
+
+            &:active {
+                transform: scale(.55)
+            }
+        }
+    }
+
+    &>.skilllist-box {
+        display: flex;
+        // flex-wrap: wrap;
+        position: relative;
+        align-content: flex-start;
+        width: 85%;
+        height: 80%;
+        overflow-y: auto;
+        flex-direction: column;
+
+        &::-webkit-scrollbar{
+            display: none;
+        }
+
+        &>.skill-group{
+            position: relative;
+            width: 100%;
+            color: #fff;
+
+            &>.title{
+                position: relative;
+                margin-top: .5vw;
+                width: 100%;
+                border-bottom: 1px solid rgba(255,255,255,.2);
+            }
+
+            &>.content{
+                width: 100%;
+                position: relative;
+                display: flex;
+                flex-wrap: wrap;
+
+                &>.skill {
+                    display: flex;
+                    position: relative;
+                    width: 11.5vw;
+                    height: 11.5vw;
+                    padding: .5vw;
+                    box-sizing: border-box;
+                    cursor: pointer;
+                    background-color: rgba(0, 0, 0, .3);
+                    margin: .3vw;
+
+                    &>.skill-container{
+                        width: 100%;
+                        height: 100%;
+                        transform: scale(.8);
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        position: relative;
+                        top: -.6vw;
+
+                        &>.skill-border,&>.skill-type{
+                            position: absolute;
+                            background-size: 100% 100%;
+                            // transform: scale(.8);
+                        }
+
+                        &>.skill-border{
+                            z-index: 2;
+                            width: 75%;
+                            height: 75%;
+                        }
+
+                        &>.skill-type{
+                            // top:2%;
+                            // left: 3%;
+                            width: 70%;
+                            height: 70%;
+                        }
+
+                        &>.skill-name {
+                            width: 95%;
+                            height: 20%;
+                            display: none;
+                            background-size: contain;
+                            background-repeat: no-repeat;
+                            background-position: center;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 1.45vw;
+                            display: flex;
+                            color: #fff;
+                            position: absolute;
+                            z-index: 3;
+                            bottom: -6%;
+
+                            &.s{
+                                background-image: url(/assets/ui/skill_s_b.png);
+                            }
+
+                            &.a{
+                                background-image: url(/assets/ui/skill_a_b.png);
+                            }
+
+                            &.b{
+                                background-image: url(/assets/ui/skill_b_b.png);
+                            }
+                        }
+                 
+                    }
                 }
             }
         }
