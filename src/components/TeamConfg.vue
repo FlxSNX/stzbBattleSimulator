@@ -1391,12 +1391,13 @@ const changeConfig = (type,act) => {
                             background-position: center;
                             align-items: center;
                             justify-content: center;
-                            font-size: 1.45vw;
+                            font-size: 2vw;
                             display: flex;
                             color: #fff;
                             position: absolute;
                             z-index: 3;
                             bottom: -6%;
+                            font-family: "FZLBJW";
 
                             &.s{
                                 background-image: url(/assets/ui/skill_s_b.png);
