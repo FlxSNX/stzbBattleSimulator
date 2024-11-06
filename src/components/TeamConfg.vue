@@ -328,7 +328,7 @@ const changeConfig = (type,act) => {
         </div>
         <div class="skilllist-box">
             <div class="skill-group" v-for="g in 4">
-                <div class="title">指挥</div>
+                <div class="title">{{ ["","指挥","主动","追击","被动"][g] }}</div>
                 <div class="content">
                     <div class="skill" v-for="s in SKILL_LIST[g]" @click="saveSkill(s.id)">
                         <div class="skill-container">
@@ -339,12 +339,6 @@ const changeConfig = (type,act) => {
                             </div> 
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="skill-group">
-                <div class="title">主动</div>
-                <div class="content">
-
                 </div>
             </div>
         </div>
