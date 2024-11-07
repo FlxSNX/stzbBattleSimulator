@@ -673,8 +673,9 @@ export class BattleHero {
 
     //由于处于犹豫跳过发动战法()
     skipAttackByActiveLimit() {
+        console.log('debug',this.State.activeLimit);
         this.Manger.Record.pushRecord(this, '陷入犹豫无法发动战法');
-        this.StateFlag.attackLimit = true;
+        this.StateFlag.activeLimit = true;
     }
 
     //由于处于怯战跳过普攻()
@@ -958,7 +959,7 @@ export class BattleHero {
         hero 来源武将
         type 类型 为2时 回合改为次数
     */
-    addState(name, value, round, from, hero, stack = true, type = 1) {
+    addState(name, value, round, from, hero, stack = false, type = 1) {
         let typename = this.getSkillTypeName(from.type);
         if (this.State[name][typename]) {
             let limit = this.getStateLimit(name);

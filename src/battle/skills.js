@@ -331,7 +331,7 @@ export const __SKILLS__ = [
                     // self.Manger.Record.pushActionRecord(self, self, `来自`, `【${this.name}】的${stateName}效果消失了`, 1);
                 }
 
-                self.addState("attackDamageAdd", addDamageRate, -1, this, self)
+                self.addState("attackDamageAdd", addDamageRate, -1, this, self, true)
                 // self.Manger.Record.pushActionRecord(self, self, `【${this.name}】使`, `造成的${stateName}${self.getState("attackDamageAdd", this.type)}%`);
                 if (self.State.attackDamageAdd.command.value >= maxAddDamageRate) attack()
 
@@ -339,7 +339,7 @@ export const __SKILLS__ = [
                     if (e != self && e.Arms > 0) {
                         if (self.Attrs.spd > e.Attrs.spd) {
                             self.Manger.Record.pushActionRecord(e, self, '执行来自', '的【奋疾先登】效果');
-                            self.addState("attackDamageAdd", addDamageRate, -1, this, self);
+                            self.addState("attackDamageAdd", addDamageRate, -1, this, self, true);
                             // self.Manger.Record.pushActionRecord(self, self, `【${this.name}】使`, `造成的${stateName}${self.getState("attackDamageAdd", this.type)}%`);
                             if (self.getState("attackDamageAdd", this.type) >= maxAddDamageRate) attack()
                         }
@@ -569,8 +569,8 @@ export const __SKILLS__ = [
                     self.Manger.SortSpdHeros.forEach(e => {
                         // TODO 考虑暴走
                         if (e.BattleCamp == self.BattleCamp && e.Posname == '大营') {
-                            let ret = e.addState("attackDamageAdd", addRate, 1, this, self, 2);
-                            let ret2 = e.addState("inteDamageAdd", addRate, 1, this, self, 2);
+                            let ret = e.addState("attackDamageAdd", addRate, 1, this, self, false, 2);
+                            let ret2 = e.addState("inteDamageAdd", addRate, 1, this, self, false, 2);
                             // if (ret) self.Manger.Record.pushActionRecord(self, e, `【${this.name}】使`, `造成的${stateName}${ret.value}%`);
                             // if (ret2) self.Manger.Record.pushActionRecord(self, e, `【${this.name}】使`, `造成的${stateName2}${ret2.value}%`);
                             e.addHook("攻击后", "攻击后移除增伤", delAddRate, this, self, "other");
@@ -892,7 +892,7 @@ export const __SKILLS__ = [
                 self.addState("activeDamageAdd", value, 2, this, self, false);
                 let targets = self.getTarget(5, 1, 3);
                 if (targets.length > 0) {
-                    targets[0].addState("activeDamageAdd", value, 2, this, self), false;
+                    targets[0].addState("activeDamageAdd", value, 2, this, self);
                 }
                 return true;
             }
@@ -1026,5 +1026,37 @@ export const __SKILLS__ = [
 
             self.addHook("行动时","行动时概率造成伤害",subskill,this,self)
         },
+    },
+
+    {
+        id: 1026, //ID
+        name: "一骑当千", //名称
+        desc: "1回合准备，使敌军群体陷入混乱状态，持续2回合", //描述
+        level: "S", //战法级别
+        type: 2, //战法类型 1=指挥 2=主动 3=追击 4=被动
+        target: 3, //目标数量
+        target_type: "enemy", //作用目标
+        limit: 5, //战法距离
+        rate: 30, //战法发动率
+        study: true, //战法是否可学习
+        callskill: function (self) {
+            // 准备型战法先创建子技能方法 然后提交在准备战法效果执行堆里
+            if (getRandomBool(this.rate)) {
+                let subskill = () => {
+                    // 先获取目标
+                    let targets = self.getTarget(this.limit, this.target);
+
+                    targets.forEach(target => {
+                        target.beHurt(self,{
+                            type: 1,
+                            rate: 280
+                        },this);
+                    })
+                }
+
+                self.addReadySkill(this, 1, subskill);
+                return true;
+            }
+        }
     },
 ]
