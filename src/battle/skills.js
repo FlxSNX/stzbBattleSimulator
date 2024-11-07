@@ -887,8 +887,8 @@ export const __SKILLS__ = [
                         rate: 200
                     }, this);
                 });
-                //没找到成长率 先用【银龙冲阵】的成长值
-                let value = clacSkillAdditionRate(20, 0.075, self.Attrs.atk);
+                //该技能在攻略里没找到成长值 成长值大概为这个 可能有些许误差
+                let value = clacSkillAdditionRate(20, 0.125, self.Attrs.atk);
                 self.addState("activeDamageAdd", value, 2, this, self, false);
                 let targets = self.getTarget(5, 1, 3);
                 if (targets.length > 0) {
@@ -953,6 +953,78 @@ export const __SKILLS__ = [
             self.Manger.Record.pushActionRecord(self, self, `【${this.name}】的效果使`, `的防御属性提高了32(${self.Attrs.def})`, 1);
             self.Manger.Record.pushActionRecord(self, self, `【${this.name}】的效果使`, `的谋略属性提高了32(${self.Attrs.int})`, 1);
             self.Manger.Record.pushActionRecord(self, self, `【${this.name}】的效果使`, `的速度属性提高了32(${self.Attrs.spd})`, 1);
+        },
+    },
+
+    {
+        id: 1025, //ID
+        name: "持刀从武", //名称
+        desc: "自身每回合行动时，每次有50.0%概率对友军大营上次行动阶段造成伤害的目标发动一次攻击（伤害率120.0%），重复三次，每次目标独立判定。当该攻击目标未处于控制状态时，对同一目标的伤害率每次递减20.0%", //描述
+        level: "A", //战法级别
+        type: 4, //战法类型 1=指挥 2=主动 3=追击 4=被动
+        target: 1, //目标数量
+        target_type: "enemy", //作用目标
+        limit: 5, //战法距离
+        rate: "--", //战法发动率
+        study: false, //战法是否可学习
+        callskill: function (self) {
+            //给友军大营添加造成伤害时记录目标
+            let team = self.BattleCamp == "blue" ? self.Manger.BlueTeam.hero : self.Manger.RedTeam.hero;
+            team[0].Storage[this.id] = {
+                hero: [],
+                clear: false
+            };
+
+            team[0].addHook("造成伤害后","造成伤害后记录目标",(attacker, target) => {
+                if(team[0].Storage[this.id].clear == true){
+                    team[0].Storage[this.id].clear = false;
+                    team[0].Storage[this.id].hero = [];
+                }
+                let add = true;
+                team[0].Storage[this.id].hero.forEach(e => {
+                    if(e == target){
+                        console.log('debug',"已有目标",target,`第${self.Manger.Round}回合`);
+                        add = false;
+                        return
+                    }
+                });
+                if(add){
+                    console.log('debug',"添加目标",target,`第${self.Manger.Round}回合`);
+                    team[0].Storage[this.id].hero.push(target)
+                }
+            },this,self);
+            
+            team[0].addHook("回合开始时","设置清除标记",() => {
+                team[0].Storage[this.id].clear = true;
+            },this,self);
+
+            //周仓造成伤害
+            let subskill = () => {
+                let damageRate = 120;
+                for (let index = 0; index < 3; index++) {
+                    if(getRandomBool(50)){
+                        if(team[0].Storage[this.id].hero.length > 0){
+                            let atkTarget = team[0].Storage[this.id].hero[Math.floor(Math.random() * team[0].Storage[this.id].hero.length)];
+                            console.log('debug',team[0].Storage[this.id].hero,`第${self.Manger.Round}回合`);
+                            self.Manger.Record.pushActionRecord(self, self, '执行来自', `的【${this.name}】效果`);
+                            self.Manger.Record.pushRecord(self,`【${this.name}】当前伤害率${damageRate}%`)
+                            atkTarget.beHurt(self,{
+                                type: 1,
+                                rate: damageRate
+                            },this);
+                            //TODO 差一个暴走的控制判断
+                            //如果目标不处于控制状态 伤害率降低20%
+                            if(!atkTarget.isActiveLimit() && !atkTarget.isActiveLimit() && !atkTarget.isConfusion()){
+                                damageRate -= 20;
+                            }
+                        }
+                    }else{
+                        self.Manger.Record.pushRecord(self,`【${this.name}】的效果未生效`)
+                    }
+                }
+            }
+
+            self.addHook("行动时","行动时概率造成伤害",subskill,this,self)
         },
     },
 ]

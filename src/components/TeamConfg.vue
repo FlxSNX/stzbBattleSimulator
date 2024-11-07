@@ -61,6 +61,7 @@ const selectSkill = (camp, hindex, sindex) => {
 const saveSkill = (id) => {
     team.value[s_camp][s_hindex].equipskill[s_sindex - 1] = id;
     showSkillList.value = false;
+    console.log('team save',team.value);
 }
 
 const selectHero = (camp, hindex) => {
@@ -101,6 +102,7 @@ const saveConfig = () =>{
     team.value[c_camp][c_hindex].extraAttrsAlloc.spd = HeroConfig.value.extraAttrsAlloc.spd;
     team.value[c_camp][c_hindex].up = HeroConfig.value.up;
     console.log(team.value[c_camp][c_hindex],"save");
+    console.log('team save',team.value);
     // alert("保存成功");
     showHeroInfo.value = false;
     showHeroList.value = false;

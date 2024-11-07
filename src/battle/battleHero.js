@@ -34,7 +34,9 @@ export class BattleHero {
             BEFORE_ACTION: {}, //行动前
             ROUND_START: {}, //回合开始时
             BEFORE_ATK: {}, //攻击前
-            AFTER_ATK: {} //攻击后
+            AFTER_ATK: {}, //攻击后
+            ON_DAMAGE: {}, //造成伤害时
+            AFTER_DAMAGE: {} //造成伤害后
         }
 
         //准备中的战法
@@ -42,6 +44,8 @@ export class BattleHero {
 
         //计数器
         this.Counter = {};
+        //存储
+        this.Storage = {};
         //发动率增加效果
         this.RATE_ADD = {};
 
@@ -528,7 +532,8 @@ export class BattleHero {
 
         this.Manger.Record.pushRecord(this, `损失 ${realDamage} 兵力(${this.Arms})`, 1)
 
-        attacker.callHook("攻击后", attacker);
+        attacker.callHook("攻击后", attacker, this);
+        attacker.callHook("造成伤害后", attacker, this);
 
         // 受到伤害后 获得此次伤害95%的伤兵
         this.HurtArms += Math.floor(realDamage * 0.95);
@@ -765,6 +770,11 @@ export class BattleHero {
                 break;
             case "攻击后":
                 obj = this.HOOKS.AFTER_ATK;
+            case "造成伤害时":
+                obj = this.HOOKS.ON_DAMAGE;
+                break;
+            case "造成伤害后":
+                obj = this.HOOKS.AFTER_DAMAGE;
                 break;
         }
         return obj;

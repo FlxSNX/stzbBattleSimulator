@@ -18,7 +18,7 @@ const showBattleRecord = ref(false);
 const team = ref({
 	blue: [
 		{
-			id: 1010,//武将Id
+			id: 1007,//武将Id
 			level: 40,//武将等级
 			extraAttrsAlloc: {//属性分配
 				atk: 90,
@@ -30,19 +30,7 @@ const team = ref({
 			equipskill: [1012, 1024]
 		},
 		{
-			id: 1007,//武将Id
-			level: 40,//武将等级
-			extraAttrsAlloc: {//属性分配
-				atk: 0,
-				def: 0,
-				int: 70,
-				spd: 20
-			},
-			up: 5,
-			equipskill: [1018, 1017]
-		},
-		{
-			id: 1009,//武将Id
+			id: 1008,//武将Id
 			level: 40,//武将等级
 			extraAttrsAlloc: {//属性分配
 				atk: 0,
@@ -51,7 +39,19 @@ const team = ref({
 				spd: 0
 			},
 			up: 5,
-			equipskill: [1023, 1015]
+			equipskill: [1019, 1017]
+		},
+		{
+			id: 1011,//武将Id
+			level: 40,//武将等级
+			extraAttrsAlloc: {//属性分配
+				atk: 90,
+				def: 0,
+				int: 0,
+				spd: 0
+			},
+			up: 5,
+			equipskill: [1014, 1015]
 		}
 	],
 
