@@ -249,6 +249,7 @@ export class BattleHero {
         this.Id = id;
         this.Name = hero.name;
         this.Up = config.up;
+        this.Animation = config?.animation == true;
         // this.Camp = ['蜀', '魏', '吴', '汉', '群','晋'][hero.camp-1]
         this.Camp = hero.camp;
         this.BisicArm = hero.arm;

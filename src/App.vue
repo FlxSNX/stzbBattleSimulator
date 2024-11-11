@@ -27,7 +27,7 @@ const team = ref({
 				spd: 10
 			},
 			up: 5,
-			equipskill: [1012, 1024]
+			equipskill: [1012, 1026]
 		},
 		{
 			id: 1008,//武将Id
@@ -57,7 +57,19 @@ const team = ref({
 
 	red: [
 		{
-			id: 1003,//武将Id
+			id: 1010,//武将Id
+			level: 40,//武将等级
+			extraAttrsAlloc: {//属性分配
+				atk: 90,
+				def: 0,
+				int: 0,
+				spd: 0
+			},
+			up: 5,
+			equipskill: [1012, 1026]
+		},
+		{
+			id: 1009,//武将Id
 			level: 40,//武将等级
 			extraAttrsAlloc: {//属性分配
 				atk: 0,
@@ -66,22 +78,11 @@ const team = ref({
 				spd: 0
 			},
 			up: 5,
-			equipskill: [1019, 1020]
+			animation: true,
+			equipskill: [1023, 1024]
 		},
 		{
-			id: 1005,//武将Id
-			level: 40,//武将等级
-			extraAttrsAlloc: {//属性分配
-				atk: 0,
-				def: 0,
-				int: 0,
-				spd: 90
-			},
-			up: 5,
-			equipskill: [1012, 1024]
-		},
-		{
-			id: 1006,//武将Id
+			id: 1008,//武将Id
 			level: 40,//武将等级
 			extraAttrsAlloc: {//属性分配
 				atk: 0,
@@ -90,7 +91,7 @@ const team = ref({
 				spd: 0
 			},
 			up: 5,
-			equipskill: [1015, 1014]
+			equipskill: [1018, 1017]
 		},
 	]
 })
@@ -149,7 +150,7 @@ const battleStart = () => {
 			<div class="card-area">
 				<div class="card-box">
 					<div class="card" v-for="item in [...[...battleinfo.BlueTeam.hero].reverse()]">
-						<img :src="`/assets/card/${item.Id}.png`" class="card-img" v-if="item && item.Arms > 0">
+						<img :src="`/assets/card/${item.Id}.${item.Animation ? 'webp' : 'png'}`" class="card-img" v-if="item && item.Arms > 0">
 						<img :src="`/assets/card/${item.Id}.png`" class="card-img gray" v-else>
 
 						<img src="/assets/ui/card.png" class="card-border">
@@ -187,7 +188,7 @@ const battleStart = () => {
 				</div>
 				<div class="card-box">
 					<div class="card" v-for="item in [...[...battleinfo.RedTeam.hero].reverse()]">
-						<img :src="`/assets/card/${item.Id}.png`" class="card-img" v-if="item && item.Arms > 0">
+						<img :src="`/assets/card/${item.Id}.${item.Animation ? 'webp' : 'png'}`" class="card-img" v-if="item && item.Arms > 0">
 						<img :src="`/assets/card/${item.Id}.png`" class="card-img gray" v-else>
 						<img src="/assets/ui/card.png" class="card-border">
 						<div class="camp">
