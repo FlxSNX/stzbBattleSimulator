@@ -202,7 +202,7 @@ export class BattleManger {
                 // 每个正式回合结束递减伤兵
                 this.BattleHeros.forEach(e => {
                     if(e.Arms > 0 && e.HurtArms > 0){
-                        // console.log(e.Name,this.Round,'递减伤兵',Math.floor(e.HurtArms * 0.87));
+                        console.log(e.Name,this.Round,'递减伤兵',Math.floor(e.HurtArms * 0.87));
                         e.HurtArms = Math.floor(e.HurtArms * 0.87);
                     }
                 })

@@ -8,7 +8,7 @@
 * [部分战法受属性影响的成长率](https://ds.163.com/feed/60ba5ac4517f0f055ad52ce0)
 
 伤兵机制参考`GLavcc`发布的文章
-* [率土之滨回复机制攻略](https://zhuanlan.zhihu.com/p/72242489)
+* [率土之滨回复机制攻略](https://zhuanlan.zhihu.com/p/60175085)
 
 ## 预览(Preview)
 [Preview](https://stzb-battle-simulator.vercel.app/?_blank)

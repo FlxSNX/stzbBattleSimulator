@@ -255,7 +255,7 @@ export class BattleHero {
         this.BisicArm = hero.arm;
         this.Skill = hero.skill;
         this.Level = level;
-        this.Arms = 5000 + level * 100;
+        this.Arms = 5000 + level * 100 + config.up * 200;
         this.HurtArms = 0;
         this.Limit = hero.limit;
 
@@ -538,10 +538,10 @@ export class BattleHero {
 
         // 受到伤害后 获得此次伤害95%的伤兵
         this.HurtArms += Math.floor(realDamage * 0.95);
-        // console.log(this.Name, this.Manger.Round, `受伤获得伤兵${Math.floor(realDamage * 0.95)}`, this.HurtArms);
+        console.log(this.Name, this.Manger.Round, `受伤获得伤兵${Math.floor(realDamage * 0.95)}`, this.HurtArms);
         // 如果因此次伤害阵亡 伤兵数量减少到60%
         if (this.Arms == 0) {
-            // console.log(this.Name, this.Manger.Round, ` 因阵亡伤兵减少到60%`, Math.floor(this.HurtArms * 0.6));
+            console.log(this.Name, this.Manger.Round, ` 因阵亡伤兵减少到60%`, Math.floor(this.HurtArms * 0.6));
             this.HurtArms = Math.floor(this.HurtArms * 0.6);
         }
 
@@ -557,9 +557,13 @@ export class BattleHero {
     revocer(recoverNum, source, name) {
         if (this.Arms == 0) return;
         if (this.HurtArms == 0) recoverNum = 0;
-        if (recoverNum >= this.HurtArms) recoverNum = this.HurtArms;
+        if (recoverNum >= this.HurtArms){
+            recoverNum = this.HurtArms;
+            this.HurtArms = 0;
+        }else{
+            this.HurtArms -= recoverNum;
+        }
         this.Arms += recoverNum;
-        this.HurtArms -= recoverNum;
         this.Manger.Record.pushActionRecord(source, this, `【${name}】的效果使`, `恢复了${recoverNum}兵力(${this.Arms})`, 1);
     }
 

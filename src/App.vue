@@ -91,6 +91,7 @@ const team = ref({
 				spd: 0
 			},
 			up: 5,
+			animation: true,
 			equipskill: [1018, 1017]
 		},
 	]
@@ -150,8 +151,8 @@ const battleStart = () => {
 			<div class="card-area">
 				<div class="card-box">
 					<div class="card" v-for="item in [...[...battleinfo.BlueTeam.hero].reverse()]">
-						<img :src="`/assets/card/${item.Id}.${item.Animation ? 'webp' : 'png'}`" class="card-img" v-if="item && item.Arms > 0">
-						<img :src="`/assets/card/${item.Id}.png`" class="card-img gray" v-else>
+						<img :src="`/assets/card/${item.Id}.${item.Animation ? 'webp' : 'jpg'}`" class="card-img" v-if="item && item.Arms > 0">
+						<img :src="`/assets/card/${item.Id}.${item.Animation ? 'webp' : 'jpg'}`" class="card-img gray" v-else>
 
 						<img src="/assets/ui/card.png" class="card-border">
 						<div class="camp">
@@ -188,8 +189,8 @@ const battleStart = () => {
 				</div>
 				<div class="card-box">
 					<div class="card" v-for="item in [...[...battleinfo.RedTeam.hero].reverse()]">
-						<img :src="`/assets/card/${item.Id}.${item.Animation ? 'webp' : 'png'}`" class="card-img" v-if="item && item.Arms > 0">
-						<img :src="`/assets/card/${item.Id}.png`" class="card-img gray" v-else>
+						<img :src="`/assets/card/${item.Id}.${item.Animation ? 'webp' : 'jpg'}`" class="card-img" v-if="item && item.Arms > 0">
+						<img :src="`/assets/card/${item.Id}.${item.Animation ? 'webp' : 'jpg'}`" class="card-img gray" v-else>
 						<img src="/assets/ui/card.png" class="card-border">
 						<div class="camp">
 							<img :src="`/assets/ui/camp${item.Camp}.png`">
@@ -258,7 +259,7 @@ const battleStart = () => {
 			<div class="card-area">
 				<div class="card-box" v-for="e in 2">
 					<div class="card" v-for="item in 3">
-						<img :src="`/assets/card/0.png`" class="card-img">
+						<img :src="`/assets/card/0.jpg`" class="card-img">
 						<img src="/assets/ui/card.png" class="card-border">
 						<div class="camp">
 							<img :src="`/assets/ui/camp5.png`">
@@ -295,7 +296,7 @@ const battleStart = () => {
 		<div class="record" v-if="showBattleRecord">
 			<div class="record-item" v-for="e in battleinfo.Record?.Records"
 				:class="{ 'round-title': e.roundTitle == 1, 'hero-round-start': e.heroRoundStart == 1 }"
-				:style="{ 'background-image': (e.heroRoundStart == 1 ? `url(/assets/card/${e.hero1.Id}_long.png)` : '') }">
+				:style="{ 'background-image': (e.heroRoundStart == 1 ? `url(/assets/card/${e.hero1.Id}_long.jpg)` : '') }">
 
 				<div class="sub" v-if="e.level == 1"></div>
 				<span v-if="e.hero1"

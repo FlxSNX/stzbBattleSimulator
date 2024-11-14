@@ -120,12 +120,16 @@ const calcInteEffect = (inte) => {
 }
 
 // 计算恢复
-export const calcRecover = (self, rate, growRate) => {
-    return Math.floor(Math.round((self.OriginAttrs.arms * 300) / (3500 + self.OriginAttrs.arms)) * calcRecoverRate(self, rate, growRate) * 1); // 1为造成的恢复效果提升值 暂无实现计算提升值
+export const calcRecover = (self, rate, growRate, type = 1) => {
+    if(type == 1){
+        return Math.floor(Math.round((self.OriginAttrs.arms * 300) / (3500 + self.OriginAttrs.arms)) * calcRecoverRate(self.OriginAttrs.int, rate, growRate) * 1); // 1为造成的恢复效果提升值 暂无实现计算提升值
+    }else{
+        return Math.floor(Math.round((self.Arms * 300) / (3500 + self.Arms)) * calcRecoverRate(self.Attrs.int, rate, growRate) * 1); // 1为造成的恢复效果提升值 暂无实现计算提升值
+    }
 }
 
-const calcRecoverRate = (self, rate, growRate) => {
-    let int = self.OriginAttrs.int;
+const calcRecoverRate = (int, rate, growRate) => {
+    // let int = self.OriginAttrs.int;
     // 给定的恢复率为80谋略时的值 所以减去80
     int -= 80;
 

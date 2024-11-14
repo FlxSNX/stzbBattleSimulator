@@ -637,7 +637,7 @@ export const __SKILLS__ = [
                 if (damageInfo.type == 1 && skill == null) {
                     // 恢复一定兵力
                     if (getRandomBool(50)) {
-                        self.revocer(calcRecover(self, 200, 0), self, this.name);
+                        self.revocer(calcRecover(self, 200, 0, 2), self, this.name);
                     }
 
                     // 移除负面效果
@@ -889,7 +889,7 @@ export const __SKILLS__ = [
                 });
                 //该技能在攻略里没找到成长值 成长值大概为这个 可能有些许误差
                 let value = clacSkillAdditionRate(20, 0.125, self.Attrs.atk);
-                self.addState("activeDamageAdd", value, 2, this, self, false);
+                self.addState("activeDamageAdd", value, 2, this, self);
                 let targets = self.getTarget(5, 1, 3);
                 if (targets.length > 0) {
                     targets[0].addState("activeDamageAdd", value, 2, this, self);
@@ -1040,7 +1040,7 @@ export const __SKILLS__ = [
         rate: 30, //战法发动率
         study: true, //战法是否可学习
         callskill: function (self) {
-            // 准备型战法先创建子技能方法 然后提交在准备战法效果执行堆里
+            // 准备型战法先创建子技能方法 然后添加在准备战法效果执行堆里
             if (getRandomBool(this.rate)) {
                 let subskill = () => {
                     // 先获取目标
@@ -1052,6 +1052,39 @@ export const __SKILLS__ = [
                             rate: 280
                         },this);
                     })
+                }
+
+                self.addReadySkill(this, 1, subskill);
+                return true;
+            }
+        }
+    },
+
+    {
+        id: 1027, //ID
+        name: "三军之众", //名称
+        desc: "1回合准备，使我军单体恢复4次兵力（恢复率151.0%，受谋略属性影响），每次目标独立判定", //描述
+        level: "S", //战法级别
+        type: 2, //战法类型 1=指挥 2=主动 3=追击 4=被动
+        target: 1, //目标数量
+        target_type: "team", //作用目标
+        limit: 3, //战法距离
+        rate: 45, //战法发动率
+        study: true, //战法是否可学习
+        callskill: function (self) {
+            let revocerRate = 151;
+            let revocerRateAdd = 1.575;
+
+            if (getRandomBool(this.rate)) {
+                let subskill = () => {
+                    for (let index = 0; index < 4; index++) {
+                        let targets = self.getTarget(this.limit, this.target, 2);
+
+                        targets.forEach(target => {
+                            let revocer = calcRecover(self, revocerRate, revocerRateAdd, 2)
+                            target.revocer(revocer, self, '三军之众');
+                        });
+                    }
                 }
 
                 self.addReadySkill(this, 1, subskill);

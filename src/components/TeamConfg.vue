@@ -165,7 +165,7 @@ const changeConfig = (type,act) => {
                     <div class="posname">{{ posname[index] }}</div>
                     <div class="name" :class="heroCampclass[HEROS[hero.id].camp - 1]">{{ HEROS[hero.id].name }}</div>
                     <div class="image" @click="selectHero(camp, index)">
-                        <img :src="`/assets/card/${hero.id}_long.png`">
+                        <img :src="`/assets/card/${hero.id}_long.jpg`">
                     </div>
                     <div class="skills">
                         <div class="skill" v-for="(skill, skillIndex) in [HEROS[hero.id].skill, ...hero.equipskill]"
@@ -193,7 +193,7 @@ const changeConfig = (type,act) => {
         </div>
         <div class="herolist-box">
             <div class="card" v-for="hero in [...__HEROS__]" @click="ConfigHeroInfo(hero.id)">
-                <img :src="`/assets/card/${hero.id}.png`" class="card-img">
+                <img :src="`/assets/card/${hero.id}.jpg`" class="card-img">
                 <img src="/assets/ui/card.png" class="card-border">
                 <div class="camp">
                     <img :src="`/assets/ui/camp${hero.camp}.png`">
@@ -226,7 +226,7 @@ const changeConfig = (type,act) => {
         </div>
         <div class="heroinfo-box">
             <div class="card" v-for="hero in [HEROS[HeroConfig.id]]">
-                <img :src="`/assets/card/${hero.id}.png`" class="card-img">
+                <img :src="`/assets/card/${hero.id}.jpg`" class="card-img">
                 <img src="/assets/ui/card.png" class="card-border">
                 <div class="camp">
                     <img :src="`/assets/ui/camp${hero.camp}.png`">
