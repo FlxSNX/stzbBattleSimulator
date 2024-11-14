@@ -101,6 +101,7 @@ const saveConfig = () =>{
     team.value[c_camp][c_hindex].extraAttrsAlloc.int = HeroConfig.value.extraAttrsAlloc.int;
     team.value[c_camp][c_hindex].extraAttrsAlloc.spd = HeroConfig.value.extraAttrsAlloc.spd;
     team.value[c_camp][c_hindex].up = HeroConfig.value.up;
+    team.value[c_camp][c_hindex].animation = false;
     console.log(team.value[c_camp][c_hindex],"save");
     console.log('team save',team.value);
     // alert("保存成功");
