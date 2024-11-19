@@ -335,18 +335,18 @@ export const __HEROS__ = [
         limit: 2, //攻击距离
         skill: 1030, //初始技能
         attrs: { //初始属性
-            atk: 80.00,
-            def: 107.00,
-            int: 90.00,
-            spd: 88.00,
-            des: 6.00
+            atk: 67.00,
+            def: 86.00,
+            int: 107.00,
+            spd: 50.00,
+            des: 16.00
         },
         attrs_grow: { //属性成长率
-            atk: 1.28,
-            def: 2.95,
-            int: 1.59,
-            spd: 1.26,
-            des: .040
+            atk: 0.98,
+            def: 2.07,
+            int: 2.48,
+            spd: 0.44,
+            des: 1.70
         }
     }
 ]
