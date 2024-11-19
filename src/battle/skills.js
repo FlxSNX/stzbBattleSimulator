@@ -1193,7 +1193,7 @@ export const __SKILLS__ = [
         callskill: function (self) {
             self.Manger.Record.pushRecord(self, `发动【${this.name}】`);
             let enemy = self.BattleCamp == "blue" ? self.Manger.RedTeam.hero : self.Manger.BlueTeam.hero;
-
+            let value = clacSkillAdditionRate(140, 1.25, self.Attrs.int);
             self.Storage[this.id] = {
                 hero: {}
             };
@@ -1218,7 +1218,7 @@ export const __SKILLS__ = [
                             self.Manger.Record.pushActionRecord(self, self, '执行来自', `的【${this.name}】效果`,1);
                             e.beHurt(self,{
                                 type: 2,
-                                rate: 140 //TODO 伤害率成长值暂未添加
+                                rate: value
                             });
                             // console.log('debug',damageInfo,self.Storage[this.id].hero,e.BattleCamp+e.Posname+e.Name,222);
                         }else{
