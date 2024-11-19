@@ -517,6 +517,7 @@ export class BattleHero {
         }
     */
     beHurt(attacker, damageInfo, skill = null, num = null, record = false) {
+        if(this.Manger.Over == true)return;
         attacker.callHook("攻击前");
         let realDamage = 0;
         let damage;
@@ -841,7 +842,7 @@ export class BattleHero {
         for (let key in obj) {
             // obj[key](...args)
             // console.log(obj[key]);
-            obj[key].call(...args);
+            if(this.Manger.Over == false)obj[key].call(...args);
         }
     }
 
