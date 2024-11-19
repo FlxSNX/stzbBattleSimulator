@@ -541,7 +541,6 @@ export class BattleHero {
             // 如果伤害大于剩余的兵力 将兵力改为0
             realDamage = this.Arms
             this.Arms = 0;
-            if (this.Posname == '大营') this.Manger.Over = true;
         } else {
             realDamage = damage;
             this.Arms -= damage;
@@ -552,7 +551,7 @@ export class BattleHero {
         }else{
             this.Manger.Record.pushRecord(this, `损失 ${realDamage} 兵力(${this.Arms})`, 1)
         }
-
+        if (this.Posname == '大营' && this.Arms <= 0) this.Manger.Over = true;
         attacker.callHook("攻击后", attacker, this);
         attacker.callHook("造成伤害后", attacker, this);
 

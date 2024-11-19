@@ -11,7 +11,7 @@ export class BattleManger {
     constructor(heroBattleTeam){
         this.BattleHeros = [];
         //战报详情
-        this.Record = new Record();
+        this.Record = new Record(this);
 
         this.Round = null;
 

@@ -3,8 +3,9 @@
  */
 
 export class Record {
-    constructor(){
+    constructor(Manager){
         this.Records = [];
+        this.Manager = Manager;
     }
 
     // 加入一条有当事者和目标(来源)的记录
@@ -17,7 +18,7 @@ export class Record {
             msg
         }
 
-        this.Records.push(record);
+        if(this.Manager.Over == false)this.Records.push(record);
     }
 
     // 加入一条普通记录
@@ -28,7 +29,7 @@ export class Record {
             level
         }
 
-        this.Records.push(record);
+        if(this.Manager.Over == false)this.Records.push(record);
     }
 
     // 加入一套系统记录
@@ -38,7 +39,7 @@ export class Record {
             level
         }
 
-        this.Records.push(record);
+        if(this.Manager.Over == false)this.Records.push(record);
     }
 
     pushRoundRecord(msg){
@@ -48,7 +49,7 @@ export class Record {
             roundTitle: 1
         }
 
-        this.Records.push(record);
+        if(this.Manager.Over == false)this.Records.push(record);
     }
 
     pushHeroRoundStart(hero1){
@@ -60,6 +61,6 @@ export class Record {
             arms: hero1.Arms
         }
 
-        this.Records.push(record);
+        if(this.Manager.Over == false)this.Records.push(record);
     }
 }
