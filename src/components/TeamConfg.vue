@@ -59,7 +59,7 @@ const selectSkill = (camp, hindex, sindex) => {
 }
 
 const saveSkill = (id) => {
-    team.value[s_camp][s_hindex].equipskill[s_sindex - 1] = id;
+    team.value[s_camp].heros[s_hindex].equipskill[s_sindex - 1] = id;
     showSkillList.value = false;
     console.log('team save',team.value);
 }
@@ -93,16 +93,16 @@ const ConfigHeroInfo = (id) => {
 }
 
 const saveConfig = () =>{
-    console.log(team.value[c_camp][c_hindex]);
-    team.value[c_camp][c_hindex].id = HeroConfig.value.id;
-    team.value[c_camp][c_hindex].level = HeroConfig.value.level;
-    team.value[c_camp][c_hindex].extraAttrsAlloc.atk = HeroConfig.value.extraAttrsAlloc.atk;
-    team.value[c_camp][c_hindex].extraAttrsAlloc.def = HeroConfig.value.extraAttrsAlloc.def;
-    team.value[c_camp][c_hindex].extraAttrsAlloc.int = HeroConfig.value.extraAttrsAlloc.int;
-    team.value[c_camp][c_hindex].extraAttrsAlloc.spd = HeroConfig.value.extraAttrsAlloc.spd;
-    team.value[c_camp][c_hindex].up = HeroConfig.value.up;
-    team.value[c_camp][c_hindex].animation = false;
-    console.log(team.value[c_camp][c_hindex],"save");
+    console.log(team.value[c_camp].heros[c_hindex]);
+    team.value[c_camp].heros[c_hindex].id = HeroConfig.value.id;
+    team.value[c_camp].heros[c_hindex].level = HeroConfig.value.level;
+    team.value[c_camp].heros[c_hindex].extraAttrsAlloc.atk = HeroConfig.value.extraAttrsAlloc.atk;
+    team.value[c_camp].heros[c_hindex].extraAttrsAlloc.def = HeroConfig.value.extraAttrsAlloc.def;
+    team.value[c_camp].heros[c_hindex].extraAttrsAlloc.int = HeroConfig.value.extraAttrsAlloc.int;
+    team.value[c_camp].heros[c_hindex].extraAttrsAlloc.spd = HeroConfig.value.extraAttrsAlloc.spd;
+    team.value[c_camp].heros[c_hindex].up = HeroConfig.value.up;
+    team.value[c_camp].heros[c_hindex].animation = false;
+    console.log(team.value[c_camp].heros[c_hindex],"save");
     console.log('team save',team.value);
     // alert("保存成功");
     showHeroInfo.value = false;
@@ -162,7 +162,7 @@ const changeConfig = (type,act) => {
             </div>
             <div class="h"></div>
             <div class="cards">
-                <div class="card" v-for="(hero, index) in team[camp]">
+                <div class="card" v-for="(hero, index) in team[camp].heros">
                     <div class="posname">{{ posname[index] }}</div>
                     <div class="name" :class="heroCampclass[HEROS[hero.id].camp - 1]">{{ HEROS[hero.id].name }}</div>
                     <div class="image" @click="selectHero(camp, index)">

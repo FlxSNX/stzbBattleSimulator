@@ -53,6 +53,29 @@ export const clacInteDamage = (attacker, target, damageInfo, skill) => {
     return Math.round(armsDamage + basicDamage + mainDamage);
 }
 
+// 计算燃烧/恐慌/妖术伤害
+export const clacInte2Damage = (attacker, target, damageInfo, skill) => {
+    let damageAddition = getDamageAddition(attacker, target, damageInfo.type, skill);
+
+    if (damageAddition != 1) {
+        attacker.Manger.Record.pushRecord(attacker, `该次造成伤害共计${getDamageAddition(attacker, target, damageInfo.type, skill) > 1 ? "提升" : "降低"}${Math.abs(roundEightNine(getDamageAddition(attacker, target, damageInfo.type, skill) * 100 - 100))}%`, 1)
+    }
+    let DamageRate = damageInfo.rate;
+    let inteEffect = calcInteEffect(target.Attrs.int);;
+
+    //兵力基础伤害
+    let armsDamage = (attacker.Arms * 178) / (6459 + attacker.Arms);
+    armsDamage = armsDamage * (1 / 3);
+    //策略基础伤害
+    let basicDamage = attacker.Attrs.int * 0.25 * damageAddition * inteEffect;
+    //主要伤害
+    let mainDamage = (((300 * attacker.Arms) / (3500 + attacker.Arms)) * (DamageRate / 100) * damageAddition) * inteEffect;
+
+    console.log(attacker.Name, "兵力基础伤害:", armsDamage, "兵力:", attacker.Arms, "策略基础伤害:", basicDamage, "主要伤害:", mainDamage, "总伤害:", Math.round(armsDamage + basicDamage + mainDamage));
+
+    return Math.round(armsDamage + basicDamage + mainDamage);
+}
+
 // 计算受属性影响的战法的倍率
 /*
     base 基础值
@@ -76,12 +99,12 @@ const getRandNum = () => {
 // 计算伤害增减
 const getDamageAddition = (attacker, target, type, skill) => {
     let value = 100;
-    if (type == 1) {
+    if (type == 1 || type == 3) {
         value += attacker.getDamageStateValue("attackDamageAdd"); //攻击者造成伤害提高
         value -= attacker.getDamageStateValue("attackDamageSub"); //攻击者造成伤害降低
         value += target.getDamageStateValue("beAttackDamageAdd"); //目标受到伤害提高
         value -= target.getDamageStateValue("beAttackDamageSub"); //目标受到伤害降低
-    } else if (type == 2) {
+    } else if (type == 2 || type == 4) {
         value += attacker.getDamageStateValue("inteDamageAdd");
         value -= attacker.getDamageStateValue("inteDamageSub");
         value += target.getDamageStateValue("beInteDamageAdd");

@@ -33,11 +33,11 @@ export class BattleManger {
         };
 
         this.SortSpdHeros = [];
-        let redindex = heroBattleTeam.blue.length + heroBattleTeam.red.length;
+        let redindex = heroBattleTeam.blue.heros.length + heroBattleTeam.red.heros.length;
         let blueindex = 1;
-        heroBattleTeam.blue.forEach((e,i) => {
+        heroBattleTeam.blue.heros.forEach((e,i) => {
             let Posname = '';
-            if(heroBattleTeam.blue.length == 2){
+            if(heroBattleTeam.blue.heros.length == 2){
                 switch (i) {
                     case 0:
                         Posname = '大营';
@@ -46,7 +46,7 @@ export class BattleManger {
                         Posname = '中军';
                     break;
                 }
-            }else if(heroBattleTeam.blue.length == 3){
+            }else if(heroBattleTeam.blue.heros.length == 3){
                 switch (i) {
                     case 0:
                         Posname = '大营';
@@ -62,7 +62,7 @@ export class BattleManger {
                 Posname = '大营'
             }
 
-            let hero = new BattleHero(e,'blue',this);
+            let hero = new BattleHero(e,'blue',this,heroBattleTeam.blue.morale);
             hero.Posname = Posname;
             hero.Index = blueindex;
             // hero.Name = hero.Name+hero.Index;
@@ -73,9 +73,9 @@ export class BattleManger {
             this.BlueTeam.total += hero.Arms;
         });
 
-        heroBattleTeam.red.forEach((e,i) => {
+        heroBattleTeam.red.heros.forEach((e,i) => {
             let Posname = '';
-            if(heroBattleTeam.red.length == 2){
+            if(heroBattleTeam.red.heros.length == 2){
                 switch (i) {
                     case 0:
                         Posname = '大营';
@@ -84,7 +84,7 @@ export class BattleManger {
                         Posname = '中军';
                     break;
                 }
-            }else if(heroBattleTeam.red.length == 3){
+            }else if(heroBattleTeam.red.heros.length == 3){
                 switch (i) {
                     case 0:
                         Posname = '大营';
@@ -100,7 +100,7 @@ export class BattleManger {
                 Posname = '大营'
             }
 
-            let hero = new BattleHero(e,'red',this);
+            let hero = new BattleHero(e,'red',this,heroBattleTeam.red.morale);
             hero.Posname = Posname;
             hero.Index = redindex;
             // hero.Name = hero.Name+hero.Index;

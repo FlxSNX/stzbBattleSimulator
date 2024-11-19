@@ -16,85 +16,95 @@ const showTeamConfig = ref(false);
 const showBattleRecord = ref(false);
 
 const team = ref({
-	blue: [
-		{
-			id: 1007,//武将Id
-			level: 40,//武将等级
-			extraAttrsAlloc: {//属性分配
-				atk: 80,
-				def: 0,
-				int: 0,
-				spd: 10
+	blue: {
+		morale: 120,
+		heros: [
+			{
+				id: 1013,//武将Id
+				level: 40,//武将等级
+				extraAttrsAlloc: {//属性分配
+					atk: 0,
+					def: 0,
+					int: 90,
+					spd: 0
+				},
+				up: 5,
+				animation: true,
+				equipskill: [1032, 1031]
 			},
-			up: 5,
-			equipskill: [1012, 1026]
-		},
-		{
-			id: 1008,//武将Id
-			level: 40,//武将等级
-			extraAttrsAlloc: {//属性分配
-				atk: 0,
-				def: 0,
-				int: 90,
-				spd: 0
+			{
+				id: 1008,//武将Id
+				level: 40,//武将等级
+				extraAttrsAlloc: {//属性分配
+					atk: 0,
+					def: 0,
+					int: 90,
+					spd: 0
+				},
+				up: 5,
+				animation: true,
+				equipskill: [1013, 1019]
 			},
-			up: 5,
-			equipskill: [1013, 1019]
-		},
-		{
-			id: 1011,//武将Id
-			level: 40,//武将等级
-			extraAttrsAlloc: {//属性分配
-				atk: 90,
-				def: 0,
-				int: 0,
-				spd: 0
-			},
-			up: 5,
-			equipskill: [1014, 1015]
-		}
-	],
+			{
+				id: 1014,//武将Id
+				level: 40,//武将等级
+				extraAttrsAlloc: {//属性分配
+					atk: 0,
+					def: 0,
+					int: 90,
+					spd: 0
+				},
+				up: 5,
+				animation: true,
+				equipskill: [1014, 1015]
+			}
+		]
+	},
 
-	red: [
-		{
-			id: 1010,//武将Id
-			level: 40,//武将等级
-			extraAttrsAlloc: {//属性分配
-				atk: 90,
-				def: 0,
-				int: 0,
-				spd: 0
+	red: {
+		morale: 120,
+		heros:[
+			{
+				id: 1010,//武将Id
+				level: 40,//武将等级
+				extraAttrsAlloc: {//属性分配
+					atk: 90,
+					def: 0,
+					int: 0,
+					spd: 0
+				},
+				up: 5,
+				animation: true,
+				equipskill: [1012, 1026]
 			},
-			up: 5,
-			equipskill: [1012, 1026]
-		},
-		{
-			id: 1009,//武将Id
-			level: 40,//武将等级
-			extraAttrsAlloc: {//属性分配
-				atk: 0,
-				def: 0,
-				int: 90,
-				spd: 0
+			{
+				id: 1009,//武将Id
+				level: 40,//武将等级
+				extraAttrsAlloc: {//属性分配
+					atk: 0,
+					def: 0,
+					int: 90,
+					spd: 0
+				},
+				up: 5,
+				animation: true,
+				equipskill: [1023, 1024]
 			},
-			up: 5,
-			animation: true,
-			equipskill: [1023, 1024]
-		},
-		{
-			id: 1008,//武将Id
-			level: 40,//武将等级
-			extraAttrsAlloc: {//属性分配
-				atk: 0,
-				def: 90,
-				int: 0,
-				spd: 0
+			{
+				id: 1008,//武将Id
+				level: 40,//武将等级
+				extraAttrsAlloc: {//属性分配
+					atk: 0,
+					def: 90,
+					int: 0,
+					spd: 0
+				},
+				up: 5,
+				animation: true,
+				equipskill: [1018, 1017]
 			},
-			up: 5,
-			animation: true,
-			equipskill: [1018, 1017]
-		},
-	]
+		]
+	}
 })
 
 const battleStart = () => {

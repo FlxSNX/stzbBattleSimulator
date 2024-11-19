@@ -12,7 +12,7 @@
  * Study: 是否可学习
  */
 
-import { clacAttackDamage, getRandomBool, calcRecover, getRandomInt, clacSkillAdditionRate, clacInteDamage } from "./battleCalcFunc"
+import { clacAttackDamage, getRandomBool, calcRecover, getRandomInt, clacSkillAdditionRate, clacInteDamage, clacInte2Damage } from "./battleCalcFunc"
 import { keepTwoDecimal, makeSkillTag } from "../uilts";
 import { BattleHero } from "./battleHero";
 
@@ -215,7 +215,7 @@ export const __SKILLS__ = [
 
             team.forEach(e => {
                 let subskill = () => {
-                    if (getRandomBool(50)) {
+                    if (getRandomBool(self.getRealSkillRate(50))) {
                         let revocer = calcRecover(self, 68, 0.6)
                         e.revocer(revocer, self, '皇裔流离');
                     }
@@ -274,7 +274,7 @@ export const __SKILLS__ = [
 
                 e.addHook("普攻前", "连击效果", () => {
                     if (self.Manger.Round >= 1 && self.Manger.Round <= 3) {
-                        if (getRandomBool(70)) {
+                        if (getRandomBool(self.getRealSkillRate(70))) {
                             if (e.State.doubleAttack.rounds <= 0) {
                                 e.State.doubleAttack = {
                                     rounds: 1,
@@ -315,7 +315,7 @@ export const __SKILLS__ = [
 
             let subskill = () => {
                 let attack = () => {
-                    // TODO 考虑暴走
+                    //TODO 考虑暴走
                     let targets = self.getTarget(3, 2);
                     targets.forEach(e => {
                         self.Manger.Record.pushActionRecord(self, self, '执行来自', '的【奋疾先登】效果');
@@ -372,7 +372,7 @@ export const __SKILLS__ = [
             let teamMaxDamageRate = 180;
 
             let subskill = () => {
-                let currentRate = rate + (self.RATE_ADD[1010] ? self.RATE_ADD[1010].value : 0);
+                let currentRate = self.getRealSkillRate(rate) + (self.RATE_VAL[1010] ? self.RATE_VAL[1010].value : 0);
                 self.Manger.Record.pushRecord(self, '的【奇兵拒北】当前生效几率为(' + currentRate + '%)')
                 if (getRandomBool(currentRate)) {
                     self.Manger.Record.pushActionRecord(self, self, '执行来自', '的【奇兵拒北】效果');
@@ -417,15 +417,15 @@ export const __SKILLS__ = [
                         }
                     })
 
-                    if (self.RATE_ADD[1010]) {
-                        delete self.RATE_ADD[1010]
+                    if (self.RATE_VAL[1010]) {
+                        delete self.RATE_VAL[1010]
                     }
                 } else {
                     self.Manger.Record.pushRecord(self, '的【奇兵拒北】没有生效')
-                    if (self.RATE_ADD[1010]) {
-                        self.RATE_ADD[1010].value += addRate;
+                    if (self.RATE_VAL[1010]) {
+                        self.RATE_VAL[1010].value += addRate;
                     } else {
-                        self.RATE_ADD[1010] = {
+                        self.RATE_VAL[1010] = {
                             value: addRate,
                             rounds: -1
                         }
@@ -556,8 +556,8 @@ export const __SKILLS__ = [
                 let delAddRate = (attacker) => {
                     let obj = attacker.getState("attackDamageAdd", this.type, true);
                     if (obj.from == this && obj.hero == self) {
-                        attacker.delState("attackDamageAdd", this);
-                        attacker.delState("inteDamageAdd", this);
+                        attacker.delState("attackDamageAdd", this, true);
+                        attacker.delState("inteDamageAdd", this, true);
                         // self.Manger.Record.pushActionRecord(attacker, self, `来自`, `【${this.name}】的${stateName}效果消失了`, 1);
                         // self.Manger.Record.pushActionRecord(attacker, self, `来自`, `【${this.name}】的${stateName2}效果消失了`, 1);
                     }
@@ -567,7 +567,7 @@ export const __SKILLS__ = [
                 let subskill = () => {
                     if (manger.Round > 4) return;
                     self.Manger.SortSpdHeros.forEach(e => {
-                        // TODO 考虑暴走
+                        //TODO 考虑暴走
                         if (e.BattleCamp == self.BattleCamp && e.Posname == '大营') {
                             let ret = e.addState("attackDamageAdd", addRate, 1, this, self, false, 2);
                             let ret2 = e.addState("inteDamageAdd", addRate, 1, this, self, false, 2);
@@ -578,7 +578,7 @@ export const __SKILLS__ = [
                     })
                 }
                 self.addHook("行动前", "行动前添加攻击伤害增加", subskill, this, self);
-                // TODO 敌方最高兵力施加造成伤害降低 & 自身受到攻击后洞察
+                //TODO 敌方最高兵力施加造成伤害降低 & 自身受到攻击后洞察
             }
         }
     },
@@ -636,12 +636,12 @@ export const __SKILLS__ = [
             let subskill = (attacker, damageInfo, skill) => {
                 if (damageInfo.type == 1 && skill == null) {
                     // 恢复一定兵力
-                    if (getRandomBool(50)) {
+                    if (getRandomBool(self.getRealSkillRate(50))) {
                         self.revocer(calcRecover(self, 200, 0, 2), self, this.name);
                     }
 
                     // 移除负面效果
-                    if (getRandomBool(50)) {
+                    if (getRandomBool(self.getRealSkillRate(50))) {
                         self.clearDebuff(this, self);
                     }
 
@@ -652,7 +652,7 @@ export const __SKILLS__ = [
 
             let subskill2 = () => {
                 // 援护友军
-                if (getRandomBool(50)) {
+                if (getRandomBool(self.getRealSkillRate(50))) {
 
                 }
             }
@@ -689,7 +689,7 @@ export const __SKILLS__ = [
 
             team.forEach(e => {
                 let subskill = () => {
-                    if (getRandomBool(50)) {
+                    if (getRandomBool(self.getRealSkillRate(50))) {
                         let revocer = calcRecover(self, revocerRate, revocerRateAdd)
                         e.revocer(revocer, self, '金匮要略');
                     }
@@ -738,7 +738,7 @@ export const __SKILLS__ = [
     {
         id: 1018,
         name: "大赏三军",
-        desc: "战斗开始后前3回合，使我军全体受到的所有伤害降低20.4%（受谋略属性影响），同时使我军全体受到伤害时，有50.0%的几率能恢复一定兵力（恢复率80.0%，受谋略属性影响）",
+        desc: "战斗开始后前3回合，使我军群体进行攻击和策略攻击时的伤害提高30.0%（受谋略属性影响）",
         level: "S",
         type: 1,
         target: 2,
@@ -850,8 +850,10 @@ export const __SKILLS__ = [
                 let damage = clacInteDamage(self, e, damageInfo, this);
                 e.addHook("行动时", "策略攻击伤害", () => {
                     if (e.Manger.Round == 3) {
-                        self.Manger.Record.pushActionRecord(self, e, `的【${this.name}】使`, '受到策略攻击伤害');
-                        e.beHurtByNum(self, damageInfo, this, damage);
+                        e.beHurtByNum(self, damageInfo, this, damage, () => {
+                            self.Manger.Record.pushActionRecord(self, e, `由于`,`【${this.name}】施加的效果损失了${damage}兵力(${e.Arms})`);
+                        });
+                        
                     }
                 }, this, self, "debuff");
                 self.Manger.Record.pushRecord(e, "的受到策略攻击伤害效果已施加", 1);
@@ -872,11 +874,11 @@ export const __SKILLS__ = [
         study: false,
         callskill: function (self) {
             let tag = makeSkillTag(self, this, "发动次数");
-            let currentRate = this.rate + (self.RATE_ADD[this.id] ? self.RATE_ADD[this.id].value : 0);
+            let currentRate = this.rate + (self.RATE_VAL[this.id] ? self.RATE_VAL[this.id].value : 0);
             if (getRandomBool(currentRate)) {
                 self.Manger.Record.pushRecord(self, '发动【威震河朔】')
                 self.countAdd(tag, 1);
-                self.RATE_ADD[this.id] = {
+                self.RATE_VAL[this.id] = {
                     value: -10 * self.countGet(tag),
                     rounds: -1
                 }
@@ -887,7 +889,7 @@ export const __SKILLS__ = [
                         rate: 200
                     }, this);
                 });
-                //该技能在攻略里没找到成长值 成长值大概为这个 可能有些许误差
+                //QUESTION 该技能在攻略里没找到成长值 成长值大概为这个 可能有些许误差
                 let value = clacSkillAdditionRate(20, 0.125, self.Attrs.atk);
                 self.addState("activeDamageAdd", value, 2, this, self);
                 let targets = self.getTarget(5, 1, 3);
@@ -975,56 +977,56 @@ export const __SKILLS__ = [
                 clear: false
             };
 
-            team[0].addHook("造成伤害后","造成伤害后记录目标",(attacker, target) => {
-                if(team[0].Storage[this.id].clear == true){
+            team[0].addHook("造成伤害后", "造成伤害后记录目标", (attacker, target) => {
+                if (team[0].Storage[this.id].clear == true) {
                     team[0].Storage[this.id].clear = false;
                     team[0].Storage[this.id].hero = [];
                 }
                 let add = true;
                 team[0].Storage[this.id].hero.forEach(e => {
-                    if(e == target){
-                        console.log('debug',"已有目标",target,`第${self.Manger.Round}回合`);
+                    if (e == target) {
+                        console.log('debug', "已有目标", target, `第${self.Manger.Round}回合`);
                         add = false;
                         return
                     }
                 });
-                if(add){
-                    console.log('debug',"添加目标",target,`第${self.Manger.Round}回合`);
+                if (add) {
+                    console.log('debug', "添加目标", target, `第${self.Manger.Round}回合`);
                     team[0].Storage[this.id].hero.push(target)
                 }
-            },this,self);
-            
-            team[0].addHook("回合开始时","设置清除标记",() => {
+            }, this, self);
+
+            team[0].addHook("回合开始时", "设置清除标记", () => {
                 team[0].Storage[this.id].clear = true;
-            },this,self);
+            }, this, self);
 
             //周仓造成伤害
             let subskill = () => {
                 let damageRate = 120;
                 for (let index = 0; index < 3; index++) {
-                    if(getRandomBool(50)){
-                        if(team[0].Storage[this.id].hero.length > 0){
+                    if (getRandomBool(self.getRealSkillRate(50))) {
+                        if (team[0].Storage[this.id].hero.length > 0) {
                             let atkTarget = team[0].Storage[this.id].hero[Math.floor(Math.random() * team[0].Storage[this.id].hero.length)];
-                            console.log('debug',team[0].Storage[this.id].hero,`第${self.Manger.Round}回合`);
+                            console.log('debug', team[0].Storage[this.id].hero, `第${self.Manger.Round}回合`);
                             self.Manger.Record.pushActionRecord(self, self, '执行来自', `的【${this.name}】效果`);
-                            self.Manger.Record.pushRecord(self,`【${this.name}】当前伤害率${damageRate}%`)
-                            atkTarget.beHurt(self,{
+                            self.Manger.Record.pushRecord(self, `【${this.name}】当前伤害率${damageRate}%`)
+                            atkTarget.beHurt(self, {
                                 type: 1,
                                 rate: damageRate
-                            },this);
+                            }, this);
                             //TODO 差一个暴走的控制判断
                             //如果目标不处于控制状态 伤害率降低20%
-                            if(!atkTarget.isActiveLimit() && !atkTarget.isActiveLimit() && !atkTarget.isConfusion()){
+                            if (!atkTarget.isActiveLimit() && !atkTarget.isActiveLimit() && !atkTarget.isConfusion()) {
                                 damageRate -= 20;
                             }
                         }
-                    }else{
-                        self.Manger.Record.pushRecord(self,`【${this.name}】的效果未生效`)
+                    } else {
+                        self.Manger.Record.pushRecord(self, `【${this.name}】的效果未生效`)
                     }
                 }
             }
 
-            self.addHook("行动时","行动时概率造成伤害",subskill,this,self)
+            self.addHook("行动时", "行动时概率造成伤害", subskill, this, self)
         },
     },
 
@@ -1047,10 +1049,10 @@ export const __SKILLS__ = [
                     let targets = self.getTarget(this.limit, this.target);
 
                     targets.forEach(target => {
-                        target.beHurt(self,{
+                        target.beHurt(self, {
                             type: 1,
                             rate: 280
-                        },this);
+                        }, this);
                     })
                 }
 
@@ -1089,6 +1091,200 @@ export const __SKILLS__ = [
 
                 self.addReadySkill(this, 1, subskill);
                 return true;
+            }
+        }
+    },
+
+    {
+        id: 1028, //ID
+        name: "魏武之世", //名称
+        desc: "在本场战斗中，使敌军全体攻击属性、防御属性、谋略属性、速度属性下降15.0%（受谋略属性影响），并使我军全体攻击距离+1", //描述
+        level: "S", //战法级别
+        type: 1, //战法类型 1=指挥 2=主动 3=追击 4=被动
+        target: 3, //目标数量
+        target_type: "enemy", //作用目标
+        limit: 5, //战法距离
+        rate: "--", //战法发动率
+        study: false, //战法是否可学习
+        callskill: function (self) {
+            self.Manger.Record.pushRecord(self, `发动【${this.name}】`);
+            let enemy = self.BattleCamp == "blue" ? self.Manger.RedTeam.hero : self.Manger.BlueTeam.hero;
+            let subrate = clacSkillAdditionRate(15, 0.045, self.Attrs.int);
+
+            enemy.forEach(e => {
+                for (const key in e.Attrs) {
+                    let oattr = e.Attrs[key];
+                    // e.Attrs[key] *= (100 - subrate) / 100;
+                    let subattr = e.Attrs[key] * subrate / 100
+                    e.Attrs[key] -= subattr;
+                    self.Manger.Record.pushRecord(e, `的${key}属性降低了${subrate}%(${subattr})(${e.Attrs[key]})`, 1);
+                }
+            });
+        }
+    },
+
+    {
+        id: 1029, //ID
+        name: "火势风威", //名称
+        desc: "1回合准备，对敌军全体发动策略攻击（伤害率111.0%，受谋略属性影响），并使其在受到下一次伤害时，会额外引发一次燃烧（伤害率221.0%，受谋略属性影响）", //描述
+        level: "S", //战法级别
+        type: 2, //战法类型 1=指挥 2=主动 3=追击 4=被动
+        target: 3, //目标数量
+        target_type: "enemy", //作用目标
+        limit: 5, //战法距离
+        rate: 40, //战法发动率
+        study: false, //战法是否可学习
+        callskill: function (self) {
+            // 准备型战法先创建子技能方法 然后添加在准备战法效果执行堆里
+            let mainDamage = 111;
+            let mainDamageAdd = 0.95;
+            let fireDamage = 221;
+            let fireDamageAdd = 2.45;
+
+            if (getRandomBool(this.rate)) {
+                let subskill = () => {
+                    // 先获取目标
+                    let targets = self.getTarget(this.limit, this.target);
+                    let value = clacSkillAdditionRate(mainDamage, mainDamageAdd, self.Attrs.int);
+                    let value2 = clacSkillAdditionRate(fireDamage, fireDamageAdd, self.Attrs.int);
+
+                    targets.forEach(target => {
+                        target.beHurt(self, {
+                            type: 2,
+                            rate: value
+                        }, this);
+                    });
+                    
+                    targets.forEach(target => {
+                        let damageInfo = {
+                            type: 4,
+                            rate: value2
+                        };
+                        let damage = clacInte2Damage(self, target, damageInfo, this);
+                        let tag = target.addHook("受伤时","受伤时燃烧",() => {
+                            //需先清除执行堆或者判断该伤害不是自己触发的否则会死循环
+                            target.clearHook("受伤时",tag);
+                            target.beHurtByNum(self,damageInfo,this,damage,() => {
+                                self.Manger.Record.pushActionRecord(target,self,`由于`,`【${this.name}】施加的燃烧效果损失了${damage}兵力(${target.Arms})`,1);
+                            });
+                        },this, self, "debuff");
+                        self.Manger.Record.pushRecord(target,`的燃烧效果已施加`,1);
+                        target.callHook('被施加持续伤害时',this,self,damage,damageInfo,"燃烧");
+                    });
+                }
+
+                self.addReadySkill(this, 1, subskill);
+                return true;
+            }
+        }
+    },
+
+    {
+        id: 1030, //ID
+        name: "衔命建功", //名称
+        desc: "敌军全体每回合首次受到持续性伤害时，周瑜有50.0%几率对其发动一次策略攻击（伤害率140.0%，受谋略属性影响）；第3回合起，敌军武将陷入持续性伤害时，立即额外引发一次该持续性伤害", //描述
+        level: "S", //战法级别
+        type: 1, //战法类型 1=指挥 2=主动 3=追击 4=被动
+        target: 3, //目标数量
+        target_type: "enemy", //作用目标
+        limit: 5, //战法距离
+        rate: "--", //战法发动率
+        study: false, //战法是否可学习
+        callskill: function (self) {
+            self.Manger.Record.pushRecord(self, `发动【${this.name}】`);
+            let enemy = self.BattleCamp == "blue" ? self.Manger.RedTeam.hero : self.Manger.BlueTeam.hero;
+
+            self.Storage[this.id] = {
+                hero: {}
+            };
+            
+            enemy.forEach(e => {
+                //敌军武将陷入持续性伤害时，立即额外引发一次该持续性伤害
+                e.addHook('被施加持续伤害时','立即额外引发一次该持续性伤害',(skill, hero, damage, damageInfo, damageName) => {
+                    if(self.Manger.Round >= 3){
+                        self.Manger.Record.pushRecord(e,`的${damageName}效果已被触发`,1);
+                        e.beHurtByNum(self,damageInfo,this,damage,() => {
+                            self.Manger.Record.pushActionRecord(e,hero,`由于`,`【${skill.name}】施加的${damageName}效果损失了${damage}兵力(${e.Arms})`,1);
+                        });
+                    }
+                }, this, self, 'debuff');
+                e.addHook('受伤时','受到持续性伤害时概率发动策略攻击',(attacker, damageInfo) => {
+                    
+                    if((damageInfo.type == 3 || damageInfo.type == 4) && self.Storage[this.id].hero[e.BattleCamp+e.Posname+e.Name] != true){
+                        //必须在执行伤害前添加标记 否则会有问题
+                        self.Storage[this.id].hero[e.BattleCamp+e.Posname+e.Name] = true;
+                        self.Manger.Record.pushRecord(self,`的【${this.name}】当前生效几率为${self.getRealSkillRate(50)}%`,1)
+                        if(self.getRealSkillRate(50)){
+                            self.Manger.Record.pushActionRecord(self, self, '执行来自', `的【${this.name}】效果`,1);
+                            e.beHurt(self,{
+                                type: 2,
+                                rate: 140 //TODO 伤害率成长值暂未添加
+                            });
+                            // console.log('debug',damageInfo,self.Storage[this.id].hero,e.BattleCamp+e.Posname+e.Name,222);
+                        }else{
+                            self.Manger.Record.pushRecord(self,`的【${this.name}】效果没有生效`,1)
+                        }
+                    }
+                },this,self,'debuff');
+            });
+
+            self.addHook("回合开始时", "清除标记", () => {
+                self.Storage[this.id].hero = {};
+            }, this, self);
+        }
+    },
+
+    {
+        id: 1031, //ID
+        name: "胜兵求战", //名称
+        desc: "战斗中，每当自身发动需要准备的主战法时，有80.0%的几率跳过1回合的准备时间。同时，任意友军发动主动战法后，自身下一次主动战法造成的伤害提高15.0%，此效果最多叠加3次", //描述
+        level: "B", //战法级别
+        type: 1, //战法类型 1=指挥 2=主动 3=追击 4=被动
+        target: 1, //目标数量
+        target_type: "self", //作用目标
+        limit: 2, //战法距离
+        rate: "--", //战法发动率
+        study: true, //战法是否可学习
+        callskill: function (self) {
+            self.Manger.Record.pushRecord(self, `发动【${this.name}】`);
+            self.addHook("开始准备战法时","跳过准备回合",(skill) => {
+                let realrate = self.getRealSkillRate(80);
+                self.Manger.Record.pushActionRecord(self,self,`来自`,`的【${this.name}】当前生效几率为${realrate}%`);
+                let skip = getRandomBool(realrate);
+                if(skip){
+                    self.READY_VAL[skill.id] = {
+                        skip: -1,
+                        from: this
+                    };
+                    self.Manger.Record.pushActionRecord(self,self,`【${this.name}】使`,"主战法减少准备1回合");
+                }else{
+                    self.Manger.Record.pushActionRecord(self,self,`来自`,`的【${this.name}】没有生效`);
+                }
+            },this,self);
+        }
+    },
+
+    {
+        id: 1032,
+        name: "深谋远虑",
+        desc: "使自身进行策略攻击的伤害提高11.0%，此效果每回合开始时额外叠加一次，持续直到战斗结束",
+        level: "A",
+        type: 4,
+        target: 1,
+        target_type: "self",
+        limit: 0,
+        rate: "--",
+        study: true,
+        callskill: function (self) {
+            let value = 11;
+            if (self.Manger.Round == "-1") {
+                self.Manger.Record.pushRecord(self, `的战法【${this.name}】生效`);
+                self.addState("inteDamageAdd", value, -1, this, self, true)
+                let subskill = () => {
+                    self.addState("inteDamageAdd", value, -1, this, self, true)
+                }
+
+                self.addHook("回合开始时", "回合开始时添加策略伤害提高", subskill, this, self);
             }
         }
     },

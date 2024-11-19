@@ -5,8 +5,8 @@
 import { __HEROS__ } from "./heros";
 import { __ARMS__ as ARMS } from "./armys";
 import { __SKILLS__ } from "./skills"
-import { keepTwoDecimal, makeSkillTag } from "../uilts"
-import { clacAttackDamage, getRandomBool, clacInteDamage } from "./battleCalcFunc"
+import { keepTwoDecimal, makeSkillTag, roundEightNine } from "../uilts"
+import { clacAttackDamage, getRandomBool, clacInteDamage, clacInte2Damage } from "./battleCalcFunc"
 
 const CanAddAttrsKey = ['atk', 'def', 'int', 'spd'];
 export class BattleHero {
@@ -25,7 +25,7 @@ export class BattleHero {
             }
 
     */
-    constructor(config, battlecamp, Manger) {
+    constructor(config, battlecamp, Manger, morale) {
 
         this.HOOKS = {
             ON_HURT: {}, //受击时执行堆
@@ -36,7 +36,9 @@ export class BattleHero {
             BEFORE_ATK: {}, //攻击前
             AFTER_ATK: {}, //攻击后
             ON_DAMAGE: {}, //造成伤害时
-            AFTER_DAMAGE: {} //造成伤害后
+            AFTER_DAMAGE: {}, //造成伤害后
+            START_READY_SKILL: {},//开始准备战法时
+            ADD_CONTINUOUS_DAMAGE:{} //被施加持续伤害时
         }
 
         //准备中的战法
@@ -46,8 +48,14 @@ export class BattleHero {
         this.Counter = {};
         //存储
         this.Storage = {};
-        //发动率增加效果
-        this.RATE_ADD = {};
+        //发动率增减效果
+        this.RATE_VAL = {};
+        //准备战法回合增减
+        this.READY_VAL = {};
+        //属性增减
+        this.ATTR_CALC = {
+            system: [] //不会冲突的 来自四大营或者兵种特性等待
+        };
 
         //一些效果已执行的标记
         this.StateFlag = {
@@ -209,8 +217,9 @@ export class BattleHero {
 
         },
 
-            this.Manger = Manger;
+        this.Manger = Manger;
         this.BattleCamp = battlecamp;
+        this.Morale = morale;
 
         //初始化属性值
         this.initAttrs(config);
@@ -346,8 +355,8 @@ export class BattleHero {
                 if (!e) return;
                 let skill = this.Skills[e];
                 if (skill.type == 2) {
-                    console.log(this.RATE_ADD);
-                    let currentRate = skill.rate + (this.RATE_ADD[skill.id] ? this.RATE_ADD[skill.id].value : 0);
+                    console.log(this.RATE_VAL);
+                    let currentRate = this.getRealSkillRate(skill.rate) + (this.RATE_VAL[skill.id] ? this.RATE_VAL[skill.id].value : 0);
                     console.log(this.canAddReadySkill(skill));
                     if (this.canAddReadySkill(skill)) {
                         this.Manger.Record.pushRecord(this, `的【${skill.name}】发动率为${currentRate}%`)
@@ -376,7 +385,7 @@ export class BattleHero {
     }
 
     //获取一个攻击目标
-    // TODO: 考虑暴走时的情况
+    //TODO: 考虑暴走时的情况
     getAttackTarget() {
         let canAtk = [];
 
@@ -507,7 +516,7 @@ export class BattleHero {
             type //伤害类型 暂定 1物理 2谋略
         }
     */
-    beHurt(attacker, damageInfo, skill = null, num = null) {
+    beHurt(attacker, damageInfo, skill = null, num = null, record = false) {
         attacker.callHook("攻击前");
         let realDamage = 0;
         let damage;
@@ -515,9 +524,16 @@ export class BattleHero {
             damage = num;
         } else {
             if (damageInfo.type == 1) {
+                //物理伤害
                 damage = clacAttackDamage(attacker, this, damageInfo, skill);
             } else if (damageInfo.type == 2) {
+                //策略/火攻伤害
                 damage = clacInteDamage(attacker, this, damageInfo, skill);
+            } else if (damageInfo.type == 3){
+                //动摇伤害
+            } else if (damageInfo.type == 4){
+                //燃烧/恐慌/妖术伤害
+                damage = clacInte2Damage(attacker, this, damageInfo, skill);
             }
         }
 
@@ -531,7 +547,11 @@ export class BattleHero {
             this.Arms -= damage;
         }
 
-        this.Manger.Record.pushRecord(this, `损失 ${realDamage} 兵力(${this.Arms})`, 1)
+        if(record){
+            record();
+        }else{
+            this.Manger.Record.pushRecord(this, `损失 ${realDamage} 兵力(${this.Arms})`, 1)
+        }
 
         attacker.callHook("攻击后", attacker, this);
         attacker.callHook("造成伤害后", attacker, this);
@@ -549,18 +569,18 @@ export class BattleHero {
     }
 
     //受到伤害,不计算伤害,使用传入的值作为伤害值。 给类似【白衣渡江】这种指挥阶段就确定伤害的战法使用
-    beHurtByNum(attacker, damageInfo, skill, num) {
-        this.beHurt(attacker, damageInfo, skill, num);
+    beHurtByNum(attacker, damageInfo, skill, num, record = false) {
+        this.beHurt(attacker, damageInfo, skill, num, record);
     }
 
     //受到恢复
     revocer(recoverNum, source, name) {
         if (this.Arms == 0) return;
         if (this.HurtArms == 0) recoverNum = 0;
-        if (recoverNum >= this.HurtArms){
+        if (recoverNum >= this.HurtArms) {
             recoverNum = this.HurtArms;
             this.HurtArms = 0;
-        }else{
+        } else {
             this.HurtArms -= recoverNum;
         }
         this.Arms += recoverNum;
@@ -678,7 +698,7 @@ export class BattleHero {
 
     //由于处于犹豫跳过发动战法()
     skipAttackByActiveLimit() {
-        console.log('debug',this.State.activeLimit);
+        console.log('debug', this.State.activeLimit);
         this.Manger.Record.pushRecord(this, '陷入犹豫无法发动战法');
         this.StateFlag.activeLimit = true;
     }
@@ -749,7 +769,7 @@ export class BattleHero {
         // }
 
 
-        // TODO 后续添加 暴走 恐慌 妖术 燃烧 动摇 围困 时添加清除
+        //TODO 后续添加 暴走 恐慌 妖术 燃烧 动摇 围困 时添加清除
     }
 
     //获取效果对象
@@ -782,6 +802,12 @@ export class BattleHero {
             case "造成伤害后":
                 obj = this.HOOKS.AFTER_DAMAGE;
                 break;
+            case "开始准备战法时":
+                obj = this.HOOKS.START_READY_SKILL;
+                break;
+            case "被施加持续伤害时":
+                obj = this.HOOKS.ADD_CONTINUOUS_DAMAGE;
+                break;
         }
         return obj;
     }
@@ -802,6 +828,7 @@ export class BattleHero {
             skill: skill,
             hero: hero
         }
+        return tag;
     }
     //移除技能效果
     clearHook(on, tag) {
@@ -1014,12 +1041,12 @@ export class BattleHero {
         name 类型名称
         from 来源技能
     */
-    delState(name, from) {
+    delState(name, from, recordtab = false) {
         let typename = this.getSkillTypeName(from.type);
         if (this.State[name][typename]) {
             let hero = this.State[name][typename].hero;
             delete this.State[name][typename];
-            this.Manger.Record.pushActionRecord(this, hero, `的来自`, `【${from.name}】的${this.getStateName(name)}效果消失了`);
+            this.Manger.Record.pushActionRecord(this, hero, `的来自`, `【${from.name}】的${this.getStateName(name)}效果消失了`,recordtab);
         }
     }
     // subStates() {
@@ -1030,13 +1057,22 @@ export class BattleHero {
     //添加准备技能
     addReadySkill(from, round, func) {
         if (this.canAddReadySkill(from)) {
-            let ready = {
-                from,
-                round,
-                func
+            this.callHook('开始准备战法时',from);
+            if(this.READY_VAL[from.id]){
+                round += this.READY_VAL[from.id].skip;
             }
-            this.IN_READY_SKILL.push(ready);
-            this.Manger.Record.pushRecord(this, `的战法【${from.name}】开始准备`);
+            if(round <= 0){
+                this.Manger.Record.pushRecord(this, `发动【${from.name}】`);
+                func();
+            }else{
+                let ready = {
+                    from,
+                    round,
+                    func
+                }
+                this.IN_READY_SKILL.push(ready);
+                this.Manger.Record.pushRecord(this, `的战法【${from.name}】开始准备`);
+            }
             return true;
         }
         return false;
@@ -1067,4 +1103,86 @@ export class BattleHero {
         });
         return ret;
     }
+
+    // //获取增减后的属性
+    // getAttr(key) {
+    //     let attr = this.Attrs[key];
+    //     return attr;
+    // }
+
+    // getAttrName(key) {
+    //     let attrs = {
+    //         atk: "攻击",
+    //         def: "防御",
+    //         int: "谋略",
+    //         spd: "速度",
+    //         des: "攻城"
+    //     };
+    //     return attrs[key] || false;
+    // }
+
+    // addMultipleAttrCalc(key = [], value, round, from, hero, ratio = false, stack = false) {
+    //     key.forEach(e => {
+    //         this.addAttrCalc(e, value, round, from, hero, stack);
+    //     });
+    // }
+
+    // /* 
+    //     key 属性key
+    //     value 数值
+    //     round 回合数
+    //     from 来源技能
+    //     hero 来源武将
+    //     stack 是否可叠加
+    // */
+    // addAttrCalc(key, value, round, from, hero, ratio = false, stack = false) {
+    //     let typename = this.getSkillTypeName(from.type);
+    //     if (this.ATTR_CALC[key][typename]) {
+    //         if (from == this.ATTR_CALC[key][typename].from && hero == this.StATTR_CALCate[key][typename].hero && stack) {
+    //             this.ATTR_CALC[key][typename].value += value;
+    //             if (this.Manger.Round < 1) {
+    //                 // this.Manger.Record.pushRecord(this, `${}${this.ATTR_CALC[key][typename].value}%`, 1);
+    //                 this.Manger.Record.pushRecord(this, `的${this.getAttrName(key)}属性${value > 0 ? "提高" : "降低"}了${ratio ? ratio + `%(${value})` : value}(${this.getAttr(key)})`, 1);
+    //             } else {
+    //                 // this.Manger.Record.pushActionRecord(hero, this, `【${from.name}】使`, `${this.getAttrName(key)}${this.ATTR_CALC[key][typename].value}%`);
+    //                 this.Manger.Record.pushActionRecord(hero, this, `【${from.name}】的效果使`, `的${this.getAttrName(key)}属性${value > 0 ? "提高" : "降低"}了${value}(${this.getAttr(key)})`, 1);
+    //             }
+    //             return this.ATTR_CALC[key][typename];
+    //         } else if (value > this.ATTR_CALC[key][typename].value) {
+
+    //         } else {
+    //             this.Manger.Record.pushRecord(this, `已存在来自【${this.ATTR_CALC[key][typename].from.name}】的${this.getStateName(key)}更强的效果`);
+    //         }
+
+    //     } else {
+    //         this.ATTR_CALC[key][typename] = {
+    //             type: type, //类型
+    //             value: value, //数值
+    //             rounds: round, //回合数
+    //             from: from, //效果来源技能
+    //             hero: hero
+    //         }
+    //         if (this.Manger.Round < 1) {
+    //             this.Manger.Record.pushRecord(this, `${this.getStateName(name)}${this.ATTR_CALC[key][typename].value}%`, 1);
+    //         } else {
+    //             this.Manger.Record.pushActionRecord(hero, this, `【${from.name}】使`, `${this.getStateName(key)}${this.ATTR_CALC[key][typename].value}%`);
+    //         }
+    //         return this.ATTR_CALC[namekey][typename];
+    //     }
+    // }
+
+    //获取真实发动率
+    getRealSkillRate(rate){
+        let rateAddByMorale = Math.round((this.Morale - 100) / (100 + 0.5 * this.Morale) * 1000) / 1000;
+        rate *= 1 + rateAddByMorale;
+        // return rate;
+        //QUESTION 暂时不确定是8舍9入还是向下取整
+        //已测试是向下取整
+        return Math.floor(rate);
+    }
+
+    /* //提交持续性伤害
+    addContinuousDamage(){
+        
+    } */
 }
