@@ -1214,7 +1214,7 @@ export const __SKILLS__ = [
                         //必须在执行伤害前添加标记 否则会有问题
                         self.Storage[this.id].hero[e.BattleCamp+e.Posname+e.Name] = true;
                         self.Manger.Record.pushRecord(self,`的【${this.name}】当前生效几率为${self.getRealSkillRate(50)}%`,1)
-                        if(self.getRealSkillRate(50)){
+                        if(getRandomBool(self.getRealSkillRate(50))){
                             self.Manger.Record.pushActionRecord(self, self, '执行来自', `的【${this.name}】效果`,1);
                             e.beHurt(self,{
                                 type: 2,
