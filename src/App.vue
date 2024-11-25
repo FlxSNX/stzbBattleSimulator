@@ -95,8 +95,8 @@ const team = ref({
 				level: 40,//武将等级
 				extraAttrsAlloc: {//属性分配
 					atk: 0,
-					def: 90,
-					int: 0,
+					def: 0,
+					int: 90,
 					spd: 0
 				},
 				up: 5,

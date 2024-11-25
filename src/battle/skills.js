@@ -1193,7 +1193,7 @@ export const __SKILLS__ = [
         callskill: function (self) {
             self.Manger.Record.pushRecord(self, `发动【${this.name}】`);
             let enemy = self.BattleCamp == "blue" ? self.Manger.RedTeam.hero : self.Manger.BlueTeam.hero;
-            let value = clacSkillAdditionRate(140, 1.25, self.Attrs.int);
+            let value = clacSkillAdditionRate(140, 0.8, self.Attrs.int);
             self.Storage[this.id] = {
                 hero: {}
             };
