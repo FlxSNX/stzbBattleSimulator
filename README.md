@@ -63,7 +63,3 @@
 ```
 四舍五入((基础数值 * 0.4) + ((基础数值 * 0.6) * (属性值 / 80)))
 ```
-## 交流群
-QQ交流群:709926440 
-
-<img src="https://stzb-battle-simulator.vercel.app/group.jpg" width="260" height="462">
